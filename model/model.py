@@ -1,7 +1,7 @@
 class Board():
     """Class modelizing the board
     """
-    def __init__(self):
+    def __init__(self, n_rows, n_columns):
         """Constructor for Board
         """
         self.n_rows = 0
@@ -22,7 +22,7 @@ class Cell():
 class GameInfo():
     """Class for general game information
     """
-    def __init__(self, our_species_name):
+    def __init__(self, our_species_name, n_rows, n_columns):
         """ Constructor for General game information
         
         Arguments:
@@ -31,3 +31,4 @@ class GameInfo():
         self.our_name = our_species_name
         assert((self.our_name in ["werewolves", "vampires"]), 'Not allowed creature name')
         self.opponent_name = "werewolves" if self.our_name == "vampires" else "vampires"
+        self.board = Board(n_rows, n_columns)
