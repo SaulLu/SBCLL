@@ -8,6 +8,16 @@ class Board():
         self.n_columns = 0
         self.grid = [[Cell() for col in range(self.n_columns) ] for lig in range(self.n_rows)]
 
+    def update_board(self, dic):
+        """update the grid with the info received from the server
+        
+        Arguments:
+            dic {dict} -- keys (x,y) -> dict -> keys species and number
+        """
+        for coord in dic:
+            self.grid[coord].creature = dic[coord]['species']
+            self.grid[coord].number = dic[coord]['number']
+
 class Cell():
     """Class for the content of a cell
     """
