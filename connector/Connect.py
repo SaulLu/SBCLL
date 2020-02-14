@@ -106,7 +106,18 @@ def process_command(command : str, sock):
         print(recieve_hme(sock))
     elif command == 'MAP' or command == 'UDP':
         print(recieve_udp(sock))
-        
+        if command == 'UPD':
+            send_mov(ask_moves())
+
+def ask_moves():
+    old_x = input("old_x?")
+    old_y = input("old_y?")
+    n = input("n?")
+    new_x = input("new_x?")
+    new_y = input("new_y?")
+    return [mov((old_x,old_y), n, (new_x, new_y))]
+
+
 def run(name):
 
     config = load_config()
