@@ -1,8 +1,16 @@
 import socket
 import sys
 import json
+import pathlib
+import argparse
 from time import sleep, time
 from threading import Thread
+
+def load_config():
+    config_path = pathlib.Path(__file__).parent / "config.json"
+    with open(config_path) as f:
+        content = json.load(f)
+    return content
 
 def get_command(sock):
     command = bytes()
@@ -66,12 +74,29 @@ def recieve_udp(sock):
         n_vampires = get_int(sock)
         n_werewolf = get_int(sock)
         dic['coords'] = (x,y)
-        dic['spiecie'] = None # werewolfes humans vampires
+
+        dic['species'] = None # werewolfes humans vampires
+        species_alive = 0
+        if n_humans:
+            dic['species'] = "humans"
+            species_alive += 1
+        if n_vampires:
+            dic['species'] = "vampires"
+            species_alive += 1
+        if n_werewolf:
+            dic['species'] = "werewolfes"
+            species_alive += 1
+
+        if species_alive > 1:
+            raise ValueError(f"Too many species: {n_humans} {n_vampires} {n_werewolf}")
+
+        
+
         dic['number'] = n_humans + n_vampires + n_werewolf
         changes_coords.append(dic)
     return changes_coords
 
-def process_command(command, sock):
+def process_command(command : str, sock):
     print(f"I recieved the command {command}")
     if command == 'SET':
         print(recieve_set(sock))
@@ -82,18 +107,26 @@ def process_command(command, sock):
     elif command == 'MAP' or command == 'UDP':
         print(recieve_udp(sock))
         
-def run():
-    file = open("config.json", "r")
-    config = json.load(file)
+def run(name):
+
+    config = load_config()
     IP, port = config["IP"], int(config["port"])
 
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.connect((IP, port))
     print("Connect")
-    send_nme(sock, "test")
+    send_nme(sock, name)
     
     while True:
         command = get_command(sock)
         process_command(command, sock)
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=True,
+                        help='name of the algo', type=str)
+    args = parser.parse_args()
+    run(args.algo_name)
