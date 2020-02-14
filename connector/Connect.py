@@ -66,7 +66,7 @@ def recieve_udp(sock):
         n_vampires = get_int(sock)
         n_werewolf = get_int(sock)
         dic['coords'] = (x,y)
-        dic['spiecie'] = 'default'
+        dic['spiecie'] = None # werewolfes humans vampires
         dic['number'] = n_humans + n_vampires + n_werewolf
         changes_coords.append(dic)
     return changes_coords
@@ -79,6 +79,8 @@ def process_command(command, sock):
         print(recieve_hum(sock))
     elif command == "HME":
         print(recieve_hme(sock))
+    elif command == 'MAP' or command == 'UDP':
+        print(recieve_udp(sock))
         
 def run():
     file = open("config.json", "r")
