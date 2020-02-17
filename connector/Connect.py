@@ -95,7 +95,7 @@ def receive_upd(sock):
         n_werewolf = get_int(sock)
         dic['coords'] = (x, y)
 
-        dic['species'] = None  # werewolfes humans vampires
+        dic['species'] = None  #werewolfes humans vampires
         species_alive = 0
         if n_humans:
             dic['species'] = "humans"
@@ -127,18 +127,15 @@ def process_command(command: str, sock):
     elif command == 'MAP' or command == 'UPD':
         print(receive_upd(sock))
         if command == 'UPD':
-            send_mov(ask_moves())
+            send_mov(sock, ask_moves())
 
 def ask_moves():
-    old_x = input("old_x?")
-    old_y = input("old_y?")
-    n = input("n?")
-    new_x = input("new_x?")
-    new_y = input("new_y?")
+    old_x = int(input("old_x?"))
+    old_y = int(input("old_y?"))
+    n = int(input("n?"))
+    new_x = int(input("new_x?"))
+    new_y = int(input("new_y?"))
     return [mov((old_x,old_y), n, (new_x, new_y))]
-
-
-def run(name):
 
 def run(name):
     config = load_config()
