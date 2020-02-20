@@ -52,19 +52,14 @@ class ConnectProcess(threading.Thread):
 
     def _process_command(self, command):
         """ analyse a socket command and launch the appropriate function """
-        #print(f"I recieved the command {command}")
         if command == 'SET':
             self.board_size = receive_set(self.sock)
-            #print(f"I recieved the board size: {self.board_size}")
         elif command == 'HUM':
             self.human_locations = receive_hum(self.sock)
-            #print(f"I recieved the humans locations: {self.human_locations}")
         elif command == "HME":
             self.start_location = receive_hme(self.sock)
-            #print(f"I recieved the start location: {self.start_location}")
         elif command == 'MAP' or command == 'UPD':
             new_board_changes = receive_upd(self.sock)
-            #print(f"I recieved the board_changes: {new_board_changes}")
             self.board_changes.put(new_board_changes)
         elif command == 'BYE':
             self.server_closed = True
@@ -101,7 +96,7 @@ class Client:
         self.connect_process.start()
 
     def get_board_size(self, timeout = 5):
-        """ wait for a board size to be received (with a timeout) and send them"""
+        """ wait for a board size to be received (with a timeout) and return it"""
         if self.connect_process.running:
             t0 = time.time()
             while self.connect_process.board_size == None and time.time() - t0 < timeout:
