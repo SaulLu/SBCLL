@@ -43,10 +43,9 @@ def send_nme(sock, name):
     sock.send(message)
 
 
-def send_mov(sock, movements):
+def send_moves(sock, movements):
     message = bytes()
     message += 'MOV'.encode()
-    print(movements)
     message += bytes([len(movements)])
     for mov in movements:
         message += bytes([mov.coord_init[0]])
@@ -118,7 +117,6 @@ def receive_upd(sock):
 def process_command(command: str, sock):
     print(f"I recieved the command {command}")
     if command == 'SET':
-
         print(receive_set(sock))
     elif command == 'HUM':
         print(receive_hum(sock))
