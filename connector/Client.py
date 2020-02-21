@@ -2,7 +2,7 @@ import socket
 import threading
 import queue
 import copy
-from Connect import *
+from connector.connect import *
 import time
 
 class ConnectProcess(threading.Thread):
@@ -10,16 +10,24 @@ class ConnectProcess(threading.Thread):
 
     This class implements the class threading.Thread. It is designed to
     handle the socket communication with the serveur on a separate thread.    
-    
     """
     
-    def __init__(self, name, IP, port, moves_to_send, board_changes):
+    def __init__(self, name, IP, port, sending_queue, changes_queue):
+        """Constructor
+
+        Arguments:
+            name {str} -- name the algo will give to the server
+            IP {str} -- IP adress of the server
+            port {int} -- port of the server
+            sending_queue {queue.Queue<List<move>>} -- Queue for the moves that we want to play
+            changes_queue {queue.Queue<List<dict>>} -- Queue for the board changes that are send each turn
+        """
         threading.Thread.__init__(self)
         self.name = name
         self.IP = IP
         self.port = port
-        self.moves_to_send = moves_to_send
-        self.board_changes = board_changes
+        self.sending_queue = sending_queue
+        self.changes_queue = changes_queue
         self.sock = None
         self.board_size = None
         self.human_locations = None
@@ -48,32 +56,34 @@ class ConnectProcess(threading.Thread):
                     break
             elif command == 'BYE':
                 break
+        sock.close()
 
     def _process_command(self, command):
-        """ analyse a socket command and launch the appropriate function """
-        #print(f"I recieved the command {command}")
+        """ analyse a socket command and launch the appropriate function 
+            
+            Arguments:
+                command {str} -- 3 caracter string to designate the received command
+        """
         if command == 'SET':
             self.board_size = receive_set(self.sock)
-            #print(f"I recieved the board size: {self.board_size}")
         elif command == 'HUM':
             self.human_locations = receive_hum(self.sock)
-            #print(f"I recieved the humans locations: {self.human_locations}")
         elif command == "HME":
             self.start_location = receive_hme(self.sock)
-            #print(f"I recieved the start location: {self.start_location}")
         elif command == 'MAP' or command == 'UPD':
             new_board_changes = receive_upd(self.sock)
-            #print(f"I recieved the board_changes: {new_board_changes}")
-            self.board_changes.put(new_board_changes)
+            self.changes_queue.put(new_board_changes)
         elif command == 'BYE':
             self.server_closed = True
-            self.moves_to_send.put(None)
+            self.sending_queue.put(None)
         elif command == 'END':
             self.game_ended = True
+        else:
+            raise RuntimeError(f"unknown command : {command}")
 
     def _wait_send_moves(self):
         """ wait for a moves and send them """
-        next_moves = self.moves_to_send.get()
+        next_moves = self.sending_queue.get()
         self.waiting_moves = False
         if next_moves is None:
             return False
@@ -84,11 +94,18 @@ class Client:
     """Handle the communication with the server from a game logic view"""
 
     def __init__(self, name, IP, port):
+        """Constructor
+
+        Arguments:
+            name {str} -- name the algo will give to the server
+            IP {str} -- IP adress of the server
+            port {int} -- port of the server
+        """
         self.name = name
         self.IP = IP
         self.port = port
-        self.moves_to_send = queue.Queue()
-        self.board_changes = queue.Queue()
+        self.sending_queue = queue.Queue()
+        self.changes_queue = queue.Queue()
         self.connect_process = None
         self.config_wait = 0.05
         self.has_game_end = False
@@ -96,11 +113,15 @@ class Client:
 
     def start(self):
         """ launch the ConnectProcess as a thread for communication """
-        self.connect_process = ConnectProcess(self.name, self.IP, self.port, self.moves_to_send, self.board_changes)
+        self.connect_process = ConnectProcess(self.name, self.IP, self.port, self.sending_queue, self.changes_queue)
         self.connect_process.start()
 
     def get_board_size(self, timeout = 5):
-        """ wait for a board size to be received (with a timeout) and send them"""
+        """ wait for a board size to be received (with a timeout) and return it
+
+        Arguments:
+            timeout {int} -- time in seconds to wait before throwing a RuntimeError if nothin is received
+        """
         if self.connect_process.running:
             t0 = time.time()
             while self.connect_process.board_size == None and time.time() - t0 < timeout:
@@ -113,7 +134,11 @@ class Client:
 
 
     def get_humans_locations(self, timeout = 5):
-        """ wait for the humans locations to be received (with a timeout) and return them"""
+        """ wait for the humans locations to be received (with a timeout) and return them
+
+        Arguments:
+            timeout {int} -- time in seconds to wait before throwing a RuntimeError if nothin is received
+        """
         if self.connect_process.running:
             t0 = time.time()
             while self.connect_process.human_locations == None and time.time() - t0 < timeout:
@@ -125,7 +150,11 @@ class Client:
             raise RuntimeError("the client is not running, please call start() method first")
 
     def get_start_location(self, timeout = 5):
-        """ wait for the starting location to be received (with a timeout) and return it"""
+        """ wait for the starting location to be received (with a timeout) and return it
+
+        Arguments:
+            timeout {int} -- time in seconds to wait before throwing a RuntimeError if nothin is received
+        """
         if self.connect_process.running:
             t0 = time.time()
             while self.connect_process.start_location == None and time.time() - t0 < timeout:
@@ -137,22 +166,30 @@ class Client:
             raise RuntimeError("the client is not running, please call start() method first")
 
     def get_board_changes(self, timeout = 5):
-        """ wait for new board changes to be received (with a timeout) and return them"""
+        """ wait for new board changes to be received (with a timeout) and return them
+
+        Arguments:
+            timeout {int} -- time in seconds to wait before throwing a RuntimeError if nothin is received
+        """
         if self.connect_process.running:
             t0 = time.time()
-            while self.board_changes.empty() and time.time() - t0 < timeout:
+            while self.changes_queue.empty() and time.time() - t0 < timeout:
                 time.sleep(self.config_wait)
-            if self.board_changes.empty():
+            if self.changes_queue.empty():
                 raise RuntimeError("Could not get the board changes in time")
-            return self.board_changes.get()
+            return self.changes_queue.get()
         else:
             raise RuntimeError("the client is not running, please call start() method first")
 
     def put_moves_to_send(self, moves_to_send):
-        """ add a list of moves to the sending Queue """
+        """ add a list of moves to the sending Queue
+
+        Arguments:
+            moves_to_send {List<move>} -- moves to play that turn
+        """
         if self.connect_process.running:
             self.connect_process.waiting_moves = False
-            self.moves_to_send.put(copy.deepcopy(moves_to_send))
+            self.sending_queue.put(copy.deepcopy(moves_to_send))
         else:
             raise RuntimeError("the client is not running, please call start() method first")
 
@@ -167,7 +204,7 @@ class Client:
 
     def close(self):
         """ close the communication and kill the thread """
-        self.moves_to_send.put(None)
+        self.sending_queue.put(None)
     
 
 if __name__ == '__main__':

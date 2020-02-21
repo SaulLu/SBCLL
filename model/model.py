@@ -7,8 +7,8 @@ class Board:
         """Constructor for Board
         
         Arguments:
-            number_rows {[type]} -- number of rows wanted
-            number_columns {[type]} -- number of columns wanted
+            number_rows {int} -- number of rows wanted
+            number_columns {int} -- number of columns wanted
         """
         self.n_rows = number_rows
         self.n_columns = number_rows
@@ -45,7 +45,7 @@ class Board:
             j_coord {int} -- index of column
         """
         assert(i_coord>=0 and i_coord<self.n_rows,"Row index out of grid")
-        assert(((j_coord>=0)and(j_coord<self.n_columns)),"Column index out of grid")
+        assert(((j_coord>=0) and (j_coord<self.n_columns)),"Column index out of grid")
 
         adjacent = []
         for x,y in [(i_coord+i,j_coord+j) for i in (-1,0,1) for j in (-1,0,1) if i != 0 or j != 0]:
