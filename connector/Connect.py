@@ -26,15 +26,6 @@ def get_int(sock):
     return int.from_bytes(data, byteorder='big')
 
 
-def receive_bye(sock):
-    sock.close()
-
-
-def receive_end(sock):
-    # supprimertoutcequiexiste
-    pass
-
-
 def send_nme(sock, name):
     message = bytes()
     message += 'NME'.encode()
@@ -94,7 +85,7 @@ def receive_upd(sock):
         n_werewolf = get_int(sock)
         dic['coords'] = (x, y)
 
-        dic['species'] = None  #werewolfes humans vampires
+        dic['species'] = None  #werewolves humans vampires
         species_alive = 0
         if n_humans:
             dic['species'] = "humans"
@@ -103,7 +94,7 @@ def receive_upd(sock):
             dic['species'] = "vampires"
             species_alive += 1
         if n_werewolf:
-            dic['species'] = "werewolfes"
+            dic['species'] = "werewolves"
             species_alive += 1
 
         if species_alive > 1:
@@ -125,9 +116,10 @@ def process_command(command: str, sock):
     elif command == 'MAP' or command == 'UPD':
         print(receive_upd(sock))
         if command == 'UPD':
-            send_mov(sock, ask_moves())
+            send_moves(sock, ask_moves())
 
 def ask_moves():
+    """ask a player to play by hand"""
     moves = []
     while True:
         old_x = int(input("old_x?"))
@@ -139,19 +131,6 @@ def ask_moves():
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
-
-def run(name):
-    config = load_config()
-    IP, port = config["IP"], int(config["port"])
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((IP, port))
-    print("Connect")
-    send_nme(sock, name)
-
-    while True:
-        command = get_command(sock)
-        process_command(command, sock)
 
 
 if __name__ == "__main__":
