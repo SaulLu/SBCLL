@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from models.model import *
-from models.engine import *
+from models.board import Board
+from models.engine import Engine
 
 
 class Strategy(ABC):
@@ -25,13 +25,6 @@ class Strategy(ABC):
             # update_one_cell format is like {'coords': (2, 2), 'species': 'humans', 'number': 1}
             self.current_board.update_cell(update_one_cell, our_name)
 
-class RandomStrategy(Strategy):
-    def __init__(self):
-        super()
-        #super().__init__(new_attribute_1, new_attribute_2):
 
-    def next_moves(self):
-        #do random stuff
-        pass
 
 
