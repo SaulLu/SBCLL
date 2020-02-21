@@ -1,4 +1,3 @@
-      
 class Cell:
     """Class for the content of a cell
     """

@@ -2,8 +2,7 @@ import socket
 import json
 import pathlib
 import argparse
-import time
-
+from models import mov
 
 
 def load_config():
@@ -56,14 +55,6 @@ def send_moves(sock, movements):
     sock.send(message)
 
 
-class mov:
-    def __init__(self, init, numb, arriv):
-        self.coord_arriv = arriv
-        self.coord_init = init
-        self.number_indiv = numb
-
-
-
 def receive_set(sock):
     n = get_int(sock)
     m = get_int(sock)
@@ -94,7 +85,7 @@ def receive_upd(sock):
         n_werewolf = get_int(sock)
         dic['coords'] = (x, y)
 
-        dic['species'] = None  #werewolves humans vampires
+        dic['species'] = None  # werewolves humans vampires
         species_alive = 0
         if n_humans:
             dic['species'] = "humans"
@@ -127,6 +118,7 @@ def process_command(command: str, sock):
         if command == 'UPD':
             send_moves(sock, ask_moves())
 
+
 def ask_moves():
     moves = []
     while True:
@@ -135,10 +127,11 @@ def ask_moves():
         n = int(input("n?"))
         new_x = int(input("new_x?"))
         new_y = int(input("new_y?"))
-        moves.append(mov((old_x,old_y), n, (new_x, new_y)))
+        moves.append(mov((old_x, old_y), n, (new_x, new_y)))
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
+
 
 def run(name):
     config = load_config()

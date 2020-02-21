@@ -2,36 +2,6 @@ import numpy as np
 import itertools
 
 
-def is_legal(board, mov):
-    y_max = board.n_rows
-    x_max = board.n_columns
-    if mov.coord_arriv == mov.coord_init:
-        return False
-    if mov.coord_arriv[0] < 0 or mov.coord_arriv[0] > y_max:
-        return False
-    if mov.coord_arriv[1] < 0 or mov.coord_arriv[1] > x_max:
-        return False
-    return True
-
-
-def recursiv_attribution(prev_attributions, remaining_creatures, avalaible_moves):
-    if remaining_creatures == 0:
-        return list(prev_attributions) + len(avalaible_moves) * [0]
-    elif len(avalaible_moves) == 0:
-        return [list(prev_attributions)]
-    else:
-        all_attributions = []
-        move = avalaible_moves[0]
-        min_attribution = 0
-        if len(avalaible_moves) == 1 and sum([p[1] for p in prev_attributions]) == 0:
-            min_attribution = 1
-        for i in range(min_attribution, remaining_creatures):
-            new_attribution = list(prev_attributions) + [(move, i)]
-            all_attributions = all_attributions + f(new_attribution, remaining_creatures - i, avalaible_moves[1:])
-        return all_attributions
-
-
-
 class Engine():
     """Class doing any calculation required on a board
     """
@@ -53,14 +23,42 @@ class Engine():
             for j in range(-1, 1):
                 coord_dest = (cell.x - i, cell.y - j)
                 mov = (coord_init, 1, coord_dest)
-                if is_legal(board, mov):
+                if self.is_legal(board, mov):
                     possible_moves.append(mov)
 
         for combin_moves in itertools.chain(*(itertools.combinations(possible_moves, long) for long in range(1, len(possible_moves)))):
-            for p in recursiv_attribution([], number_creature, combin_moves):
+            for p in self.recursiv_attribution([], number_creature, combin_moves):
                 return_moves.append(p)
 
+        print(return_moves)
         return return_moves
+
+    def is_legal(self, board, mov):
+        y_max = board.n_rows
+        x_max = board.n_columns
+        if mov.coord_arriv == mov.coord_init:
+            return False
+        if mov.coord_arriv[0] < 0 or mov.coord_arriv[0] > y_max:
+            return False
+        if mov.coord_arriv[1] < 0 or mov.coord_arriv[1] > x_max:
+            return False
+        return True
+
+    def recursiv_attribution(self, prev_attributions, remaining_creatures, avalaible_moves):
+        if remaining_creatures == 0:
+            return list(prev_attributions) + len(avalaible_moves) * [0]
+        elif len(avalaible_moves) == 0:
+            return [list(prev_attributions)]
+        else:
+            all_attributions = []
+            move = avalaible_moves[0]
+            min_attribution = 0
+            if len(avalaible_moves) == 1 and sum([p[1] for p in prev_attributions]) == 0:
+                min_attribution = 1
+            for i in range(min_attribution, remaining_creatures):
+                new_attribution = list(prev_attributions) + [(move, i)]
+                all_attributions = all_attributions + f(new_attribution, remaining_creatures - i, avalaible_moves[1:])
+            return all_attributions
 
 
     def cell_output_if_attacked(self, defender_cell, attacker_species, attacker_qty):

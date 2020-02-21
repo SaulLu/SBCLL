@@ -1,5 +1,3 @@
-from models.cell import Cell
-
 class Board:
     """Class modelizing the board
     """
