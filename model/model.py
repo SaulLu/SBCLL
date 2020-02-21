@@ -130,7 +130,7 @@ class Cell:
             defender_qty {int}  -- number of attackers 
         """ 
         # 1. Calculate probability p
-        if attacker_qty = defender_qty :
+        if attacker_qty == defender_qty :
             p = 0.5
         elif attacker_qty < defender_qty:
             p = attacker_qty / (2*defender_qty)
@@ -161,8 +161,8 @@ class Cell:
             proba_to_survive {float}  -- probability to survive
         """ 
         total_survivors = 0
-            for i in range(initial_quantity):
-                total_survivors += np.random.choice([1, 0], 1, p=[proba_to_survive, 1-proba_to_survive])[0]
+        for i in range(initial_quantity):
+            total_survivors += np.random.choice([1, 0], 1, p=[proba_to_survive, 1-proba_to_survive])[0]
         return total_survivors
         
 

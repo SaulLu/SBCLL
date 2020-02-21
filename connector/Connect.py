@@ -125,7 +125,7 @@ def process_command(command: str, sock):
     elif command == 'MAP' or command == 'UPD':
         print(receive_upd(sock))
         if command == 'UPD':
-            send_mov(sock, ask_moves())
+            send_moves(sock, ask_moves())
 
 def ask_moves():
     old_x = int(input("old_x?"))
