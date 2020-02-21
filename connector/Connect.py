@@ -94,7 +94,7 @@ def receive_upd(sock):
         n_werewolf = get_int(sock)
         dic['coords'] = (x, y)
 
-        dic['species'] = None  #werewolfes humans vampires
+        dic['species'] = None  #werewolves humans vampires
         species_alive = 0
         if n_humans:
             dic['species'] = "humans"
@@ -103,7 +103,7 @@ def receive_upd(sock):
             dic['species'] = "vampires"
             species_alive += 1
         if n_werewolf:
-            dic['species'] = "werewolfes"
+            dic['species'] = "werewolves"
             species_alive += 1
 
         if species_alive > 1:
