@@ -10,15 +10,14 @@ class Player():
     """
     def __init__(self, strategy):
         """ Constructor for player
+
+        Arguments:
+            strategy {Strategy} -- the instance of strategy used for this game
         """
         self.our_name = None
         self.opponent_name = None
         self.first_position = None
         self.strategy = strategy
-    
-    def init_connection(self, ip, port):
-        # call function to init the connection
-        pass
 
     def init_board(self, max_x, max_y):
         """Function to init the board when SET is received
@@ -36,14 +35,14 @@ class Player():
         """Function to store our info when HME is received
         
         Arguments:
-            x {int} -- row
-            y {[type]} -- column
+            x {int} -- column
+            y {int} -- row
         """
         self.first_position = (x,y)
 
     def init_game(self):
-        """Initialise the game with the info received by the command 
-            """
+        """Initialize the game with the info received by the command 
+        """
         config_connector = load_config_connect()
         config_player = self.__load_config()
         cl = Client(config_player['player_name'],config_connector['IP'],int(config_connector['port']))
@@ -67,8 +66,6 @@ class Player():
         
         self.strategy.update_board(initial_setup, self.our_name)
         print(f"I just got the initial setup : {initial_setup}")
-
-        #us vs ennemis
     
     def play(self):
 
