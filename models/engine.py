@@ -1,5 +1,5 @@
 import numpy as np
-
+import itertools as iter 
 
 class Engine():
     """Class doing any calculation required on a board
@@ -86,7 +86,38 @@ class Engine():
             if ((x>=0) and (x<board.max_x) and (y>=0) and (y<board.max_y)):
                 adjacent.append((x,y))
         
-        return adjacent    
+        return adjacent 
+
+    def possible_moves_one_cell(self, cell, board):
+        """Lists all the ways to divide (or not) the current group and move the members to adjacent cells.
+        Returns all possibilities, including not doing anything.
+        
+        Arguments:
+            cell {[type]} -- [description]
+            board {[type]} -- [description]
+        """
+        possible_moves = []
+
+        # current cell and adjacent cells
+        possible_cells = [(cell.x, cell.y)]
+        for cell in self.adjacent_cells(cell.x, cell.y, board):
+            possible_cells.append(cell)
+        
+        # all combinations of the integers from 0 to the number of creatures included,
+        # contains all possible ways of diving the members present on the cell in different groups
+        all_div = iter.combinations_with_replacement(range(cell.number+1), len(possible_cells))
+
+        for div in all_div: 
+            if sum(div) == cell.number: # possible division, with the correct number of creatures
+                permutations = iter.permutations(div)  
+                permutations = set(permutations) # removes duplicates
+                for perm in permutations:
+                    move = []
+                    for i in range(len(perm)):
+                        move.append(((cell.x,cell.y), perm[i], possible_cells[i])) # initial coordinates are that of the considered cell
+                    possible_moves.append(move)
+    
+        return possible_moves
         
     def count_creatures(self, board):
         """Method to count the number of each creature (us, them, humans). 
