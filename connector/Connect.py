@@ -85,7 +85,7 @@ def receive_upd(sock):
         n_werewolf = get_int(sock)
         dic['coords'] = (x, y)
 
-        dic['species'] = None  #werewolfes humans vampires
+        dic['species'] = None  #werewolves humans vampires
         species_alive = 0
         if n_humans:
             dic['species'] = "humans"
@@ -94,7 +94,7 @@ def receive_upd(sock):
             dic['species'] = "vampires"
             species_alive += 1
         if n_werewolf:
-            dic['species'] = "werewolfes"
+            dic['species'] = "werewolves"
             species_alive += 1
 
         if species_alive > 1:
@@ -116,7 +116,7 @@ def process_command(command: str, sock):
     elif command == 'MAP' or command == 'UPD':
         print(receive_upd(sock))
         if command == 'UPD':
-            send_mov(sock, ask_moves())
+            send_moves(sock, ask_moves())
 
 def ask_moves():
     """ask a player to play by hand"""
