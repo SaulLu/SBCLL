@@ -128,12 +128,17 @@ def process_command(command: str, sock):
             send_mov(sock, ask_moves())
 
 def ask_moves():
-    old_x = int(input("old_x?"))
-    old_y = int(input("old_y?"))
-    n = int(input("n?"))
-    new_x = int(input("new_x?"))
-    new_y = int(input("new_y?"))
-    return [mov((old_x,old_y), n, (new_x, new_y))]
+    moves = []
+    while True:
+        old_x = int(input("old_x?"))
+        old_y = int(input("old_y?"))
+        n = int(input("n?"))
+        new_x = int(input("new_x?"))
+        new_y = int(input("new_y?"))
+        moves.append(mov((old_x,old_y), n, (new_x, new_y)))
+        if not "y" in input("continue (y/n) ?").lower():
+            break
+    return moves
 
 def run(name):
     config = load_config()

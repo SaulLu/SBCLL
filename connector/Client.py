@@ -2,7 +2,7 @@ import socket
 import threading
 import queue
 import copy
-from Connect import *
+from connector.connect import *
 import time
 
 class ConnectProcess(threading.Thread):
@@ -56,6 +56,7 @@ class ConnectProcess(threading.Thread):
                     break
             elif command == 'BYE':
                 break
+        sock.close()
 
     def _process_command(self, command):
         """ analyse a socket command and launch the appropriate function 
