@@ -1,14 +1,16 @@
 import numpy as np
 
 class Engine:
-
+    """Class doing any calculation required on a board
+    """
     def __init__(self):
         pass
 
     def cell_output_if_attacked(self, defender_cell, attacker_species, attacker_qty):
-        """Method that gives the hypothetic output state of the cell if it is under attack .
+        """Method that gives the hypothetic output state of cell if it is under attack .
         
         Arguments:
+            defender_cell {Cell} -- cell that is being attacked
             attacker_species {string} -- name of the creature attacking the cell
             attacker_qty {int}  -- number of attackers  
         """  
@@ -16,21 +18,21 @@ class Engine:
             if attacker_qty >= defender_cell.number :
                 output = {"creature":attacker_species, "number": defender_cell.number + attacker_qty}
             else:
-                output = self.__random_battle(attacker_species,attacker_qty,defender_cell) 
+                output = self.__random_battle(defender_cell, attacker_species,attacker_qty) 
         elif attacker_qty >= 1.5*defender_cell.number:
             output = {"creature":attacker_species, "number": attacker_qty}
         else:
-            output = self.__random_battle(attacker_species,attacker_qty,defender_cell)
+            output = self.__random_battle(defender_cell, attacker_species,attacker_qty)
         return output
 
-    def __random_battle(self, attacker_species, attacker_qty, defender_cell):
+
+    def __random_battle(self, defender_cell, attacker_species, attacker_qty):
             """Private method that simulates a random battle.
             
             Arguments:
+                defender_cell {Cell} -- cell that is being attacked
                 attacker_species {string} -- name of the creature attacking the cell
                 attacker_qty {int}  -- number of attackers
-                defender_species {string} -- name of the creature attacking the cell
-                defender_qty {int}  -- number of attackers 
             """ 
             # 1. Calculate probability p
             if attacker_qty == defender_cell.number :
