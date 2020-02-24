@@ -3,7 +3,7 @@ import json
 
 from models.board import Board
 from connector.Connect import load_config as load_config_connect
-from connector.Client import *
+from connector.Client import Client
 
 class Player():
     """Class 
@@ -75,7 +75,7 @@ class Player():
         self.strategy.current_board = Board(max_x, max_y)
 
     def __init_humans(self, humans_coords):
-        #useless apiori
+        #useless apriori
         pass
 
     def __init_home(self, x, y):
@@ -95,7 +95,7 @@ class Player():
         Returns:
             Json object -- the content of the config file
         """
-        config_path = pathlib.Path(__file__).parent.parent / "config.json"
+        config_path = pathlib.Path(__file__).parent / "config.json"
         with open(config_path) as f:
             content = json.load(f)
         return content

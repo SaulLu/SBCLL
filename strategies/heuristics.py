@@ -7,7 +7,7 @@ def naive_heuristic(board):
         board {Board} -- the instance of Board to evaluate
     
     Returns:
-        int -- difference between the number of us left and the number if them left
+        int -- difference between the number of us left and the number of them left
     """
 
     engine = Engine()
