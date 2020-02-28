@@ -16,14 +16,14 @@ class Engine():
         pass
 
     #Add method to use in cell_output_if_attacked
-    def create_possible_board(self, current_board, moves_list, attacker_species, method=None):
+    def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
         """Method that generates a possible board for any given legal combination of moves"""
         return_board = Board(current_board)
         for move in moves_list:
-            return_board = self.create_possible_board(return_board, move, attacker_species, method=None)
+            return_board = self.create_possible_board_one_move(return_board, move, attacker_species, method=None)
         return return_board
 
-    def create_possible_board(self, current_board, move, attacker_species, method):
+    def create_possible_board_one_move(self, current_board, move, attacker_species, method):
         """Method that generates a possible board for any given legal move"""
         x_init = move.coord_init[0]
         y_init = move.coord_init[1]
