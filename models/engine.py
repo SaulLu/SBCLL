@@ -1,6 +1,6 @@
 import numpy as np
 import itertools as iter 
-from models.mov import Mov 
+from models.mov import Mov
 
 class Engine():
     """Class doing any calculation required on a board
@@ -104,8 +104,8 @@ class Engine():
 
         # current cell and adjacent cells
         possible_cells = [(cell.x, cell.y)]
-        for cell in self.adjacent_cells(cell.x, cell.y, board):
-            possible_cells.append(cell)
+        for adj_cell in self.adjacent_cells(cell.x, cell.y, board):
+            possible_cells.append(adj_cell)
         
         # all combinations of the integers from 0 to the number of creatures included,
         # contains all possible ways of diving the members present on the cell in different groups
@@ -119,10 +119,12 @@ class Engine():
                     move = []
                     for i in range(len(perm)):                        
                         if (perm[i]>0):
-                            mov = Mov((cell.x,cell.y), perm[i], possible_cells[i])
-                            move.append(mov) # initial coordinates are that of the considered cell
+                            if ((cell.x,cell.y) != possible_cells[i]):
+                                mov = Mov((cell.x,cell.y), perm[i], possible_cells[i])
+                                move.append(mov) # initial coordinates are that of the considered cell
                     if len(move)>0:
                         possible_moves.append(move)
+                    
     
         return possible_moves
 
@@ -140,7 +142,7 @@ class Engine():
         moves = []
         # find all cells with correct creatures
         cells=[]
-        for row in board:
+        for row in board.grid:
             for cell in row:
                 if cell.creature == creature_name:
                     cells.append(cell)
@@ -158,16 +160,17 @@ class Engine():
         # identify the move where nothing changes and take it out    
         result = []
         for c in combinations:
-            only_one_move = list(filter(lambda x : len(x) == 1, c)) # combination of moves where the group is not divided
-            nothing_changes = list(filter(lambda x: x[0].coord_init == x[0].coord_arriv, only_one_move)) # combination of moves where origin = destination for each : invalid 
-            if not(len(nothing_changes) == len(cells)):
-                flatten_c = []
-                for item in c:
-                    if isinstance(item, list):
-                        for item_bis in item:
-                            flatten_c.append(item_bis)
-                    else :
-                        flatten_c.append(item)
+            flatten_c = []
+            for item in c:
+                if isinstance(item, list):
+                    for item_bis in item:
+                        flatten_c.append(item_bis)
+                else :
+                    flatten_c.append(item)
+
+            departurs = set(x.coord_init for x in flatten_c)
+            arrivals = set(x.coord_arriv for x in flatten_c)
+            if len(list(departurs & arrivals)) == 0:
                 result.append(flatten_c)    
             
         return result

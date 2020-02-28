@@ -9,6 +9,7 @@ from connector.connect import load_config as load_config_connect
 from connector.client import Client
 from strategies.random_strategy import RandomStrategy
 import argparse
+import time
 
 class Player():
     """Class 
@@ -31,23 +32,19 @@ class Player():
         """Initializes the game and loops between our turn and ennemy's turn until the end 
         """
 
-        try:
-	        self.__init_game()
+        self.__init_game()
 
-	        while True:
-	            while not(self.client.is_my_turn() or self.client.has_game_ended()):
-	                time.sleep(0.15)
-	            if self.client.is_my_turn():
-	                board_changes = self.client.get_board_changes()
-	                print(f"It's my turn, changes recieved: {board_changes}")
-	                self.strategy.update_board(board_changes)
-	                self.client.put_moves_to_send(self.strategy.next_moves())
-	            else:
-	                print("game has ended")
-	                break
-        except Error as e:
-        	print(f"got error {e}")
-        	self.client.close()
+        while True:
+            while not(self.client.is_my_turn() or self.client.has_game_ended()):
+                time.sleep(0.15)
+            if self.client.is_my_turn():
+                board_changes = self.client.get_board_changes()
+                print(f"It's my turn, changes recieved: {board_changes}")
+                self.strategy.update_board(board_changes, self.our_name)
+                self.client.put_moves_to_send(self.strategy.next_moves())
+            else:
+                print("game has ended")
+                break
 
         self.client.close()
 
@@ -65,7 +62,7 @@ class Player():
         self.strategy = self.strategy_class(board_size[1],board_size[0])
     
         coords_start = self.client.get_start_location()
-        self.__init_home(coords_start)
+        self.__init_home(coords_start[0], coords_start[1])
         print(f"I just got the starting location: {coords_start}")
 
         initial_setup = self.client.get_board_changes(timeout = 5*60)
