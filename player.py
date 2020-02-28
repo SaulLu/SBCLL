@@ -9,7 +9,8 @@ from connector.connect import load_config as load_config_connect
 from connector.client import Client
 from strategies.random_strategy import RandomStrategy
 from strategies.next_best_strategy import NextBestStrategy
-from strategies.heuristics import * 
+from strategies.random_walk_strategy import RandomWalkStrategy
+from strategies.heuristics import naive_heuristic
 import argparse
 import time
 
@@ -112,37 +113,48 @@ if __name__ == '__main__':
     command: python Client.py -n <player_name>
     """
 
-    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "next_best":NextBestStrategy}
-    heuristic_dic = {"default":naive_heuristic, "naive":naive_heuristic, "humans":human_focus_heuristic}
+    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "random_walk":RandomWalkStrategy, "next_best":NextBestStrategy}
+    heuristics_dic = {"default":naive_heuristic, "naive":naive_heuristic, "humans":human_focus_heuristic}
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=True,
+    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=False,
                         help='name of the algo', type=str)
-    parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=True,
+    parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=False,
                         help=f'name of the strategy, avalaible: {strategy_dic.keys()}', type=str)
-    
-    parser.add_argument('-H', '--heuristic_name', metavar="<heuristic_name>", required=True,
-                        help=f'name of the heuristic, avalaible: {heuristic_dic.keys()}', type=str)
+    parser.add_argument('-he', '--heuristic', metavar="<heuristic>", required=False,
+                        help=f'name of the heuristic, avalaible: {heuristics_dic.keys()}', type=str)
 
     args = parser.parse_args()
 
-    try:
-        strategy_class = strategy_dic[args.strategy_name]
-        print(f"using {args.strategy_name} strategy")
-    except KeyError:
+    if args.strategy_name:
+        try:
+            strategy_class = strategy_dic[args.strategy_name]
+            print(f"using {args.strategy_name} strategy")
+        except KeyError:
+            strategy_class = strategy_dic["default"]
+            print(f"using default strategy") 
+    else:
         strategy_class = strategy_dic["default"]
-        print(f"using default strategy")
+        print(f"using default strategy") 
 
-    try:
-        heuristic = heuristic_dic[args.heuristic_name]
-        print(f"using {args.heuristic_name} strategy")
-    except KeyError:
-        heuristic = heuristic_dic["default"]
-        print(f"using default heuristic")
+    if args.heuristic:
+        try:
+            heuristic = heuristics_dic[args.heuristic]
+            print(f"using {args.heuristic} heuristic")
+        except KeyError:
+            heuristic = heuristics_dic["default"]
+            print(f"using default heuristic") 
+    else:
+        heuristic = heuristics_dic["default"]
+        print(f"using default heuristic") 
 
-    
-    player = Player(strategy_class, heuristic, args.algo_name)
+    if args.algo_name:
+        algo_name = args.algo_name
+    else:
+        algo_name = "group 1"
+
+    player = Player(strategy_class, heuristic, algo_name)
     player.play()
     
 
