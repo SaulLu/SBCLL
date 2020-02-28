@@ -1,8 +1,10 @@
 from models.cell import Cell
 
+
 class Board:
     """Class modelizing the board
     """
+
     def __init__(self, max_x, max_y):
         """Constructor for Board
         
@@ -12,11 +14,11 @@ class Board:
         """
         self.max_x = max_x
         self.max_y = max_y
-        self.grid = [[Cell(x,y) for y in range(self.max_y) ] for x in range(self.max_x)]
+        self.grid = [[Cell(x, y) for y in range(self.max_y)] for x in range(self.max_x)]
 
     def update_cell(self, coords, species, number, our_name):
         """Method to update a given cell.
-        
+
         Arguments:
             coords {(int, int)} -- tuple indicating the number of row and the number of columns
             species {string} -- name of the creature present in this cell
@@ -27,4 +29,16 @@ class Board:
         cell_to_update = self.grid[coords[0]][coords[1]]
         # Anonymization
         species_anonymous = 'us' if species == our_name else 'them'
-        cell_to_update.update(species_anonymous, number)          
+        cell_to_update.update(species_anonymous, number)
+
+    def update_cell(self, cell, our_name):
+        """Method to update a given cell.
+
+                Arguments:
+                    the new cell
+                """
+        self.update_cell([cell.x, cell.y], cell.creature, cell.number, our_name)
+
+    def get_cell(self, x, y):
+        """This method returns a cell element for a given x and y"""
+        return self.grid[x][y]
