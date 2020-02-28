@@ -1,4 +1,5 @@
 from models.cell import Cell
+import numpy as np
 
 class Board:
     """Class modelizing the board
@@ -12,7 +13,7 @@ class Board:
         """
         self.max_x = max_x
         self.max_y = max_y
-        self.grid = [[Cell(x,y) for y in range(self.max_y) ] for x in range(self.max_x)]
+        self.grid = np.asarray([[Cell(x,y) for y in range(self.max_y) ] for x in range(self.max_x)])
 
     def update_cell(self, coords, species, number, our_name):
         """Method to update a given cell.
