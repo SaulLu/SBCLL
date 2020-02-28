@@ -1,9 +1,16 @@
+import sys
+sys.path.append('.')
+print(sys.path)
+
 import socket
 import threading
 import queue
 import copy
 from connector.connect import *
+from models.mov import Mov
 import time
+import argparse
+
 
 class ConnectProcess(threading.Thread):
     """Handle the client-serveur communication

@@ -9,4 +9,4 @@ class RandomStrategy(Strategy):
 
     def next_moves(self):
         all_possible_turns = self.engine.get_possible_turns(self.board)
-        return all_possibles_moves[np.random.randint(len(all_possibles_moves))]
+        return all_possible_turns[np.random.randint(len(all_possible_turns))]
