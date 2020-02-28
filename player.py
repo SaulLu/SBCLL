@@ -8,13 +8,15 @@ from models.board import Board
 from connector.connect import load_config as load_config_connect
 from connector.client import Client
 from strategies.random_strategy import RandomStrategy
+from strategies.next_best_strategy import NextBestStrategy
+from strategies.heuristics import * 
 import argparse
 import time
 
 class Player():
     """Class 
     """
-    def __init__(self, strategy_class, algo_name = "group_1"):
+    def __init__(self, strategy_class,  heuristic, algo_name = "group_1"):
         """ Constructor for player
 
         Arguments:
@@ -27,6 +29,7 @@ class Player():
         self.strategy_class = strategy_class
         self.strategy = None
         self.client = None
+        self.heuristic = heuristic
     
     def play(self):
         """Initializes the game and loops between our turn and ennemy's turn until the end 
@@ -59,7 +62,7 @@ class Player():
 
         board_size = self.client.get_board_size()
         print(f"I just got the board size: {board_size}")
-        self.strategy = self.strategy_class(board_size[1],board_size[0])
+        self.strategy = self.strategy_class(board_size[1],board_size[0], self.heuristic)
     
         coords_start = self.client.get_start_location()
         self.__init_home(coords_start[0], coords_start[1])
@@ -109,7 +112,8 @@ if __name__ == '__main__':
     command: python Client.py -n <player_name>
     """
 
-    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy}
+    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "next_best":NextBestStrategy}
+    heuristic_dic = {"default":naive_heuristic, "naive":naive_heuristic}
 
     parser = argparse.ArgumentParser()
 
@@ -117,6 +121,9 @@ if __name__ == '__main__':
                         help='name of the algo', type=str)
     parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=True,
                         help=f'name of the strategy, avalaible: {strategy_dic.keys()}', type=str)
+    
+    parser.add_argument('-H', '--heuristic_name', metavar="<heuristic_name>", required=True,
+                        help=f'name of the heuristic, avalaible: {heuristic_dic.keys()}', type=str)
 
     args = parser.parse_args()
 
