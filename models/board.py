@@ -26,19 +26,20 @@ class Board:
             number {int} -- number of creatures present in this cell
             our_name {string} -- name of the species played by us
         """
-        print(coords, species, number, our_name)
         cell_to_update = self.grid[coords[0]][coords[1]]
         # Anonymization
         species_anonymous = 'us' if species == our_name else 'them'
         cell_to_update.update(species_anonymous, number)
 
-    def update_cell(self, cell, our_name):
+    def update_cell_without_name(self, cell):
         """Method to update a given cell.
 
                 Arguments:
                     the new cell
                 """
-        self.update_cell([cell.x, cell.y], cell.creature, cell.number, our_name)
+        cell_to_update = self.grid[cell.x][cell.y]
+        # Anonymization
+        cell_to_update.update(cell.creature, cell.number)
 
     def get_cell(self, x, y):
         """This method returns a cell element for a given x and y"""
