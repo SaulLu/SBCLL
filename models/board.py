@@ -49,3 +49,12 @@ class Board:
     def get_cell(self, x, y):
         """This method returns a cell element for a given x and y"""
         return self.grid[x][y]
+
+    def __str__(self):
+        grid_s = ""
+        for y in range(self.max_y):
+            for x in range(self.max_x):
+                c = self.grid[x][y].creature if self.grid[x][y].creature != None else "-"
+                grid_s += f"{c[0]}-{self.grid[x][y].number}\t"
+            grid_s += "\n"
+        return grid_s
