@@ -2,15 +2,19 @@
 class Cell:
     """Class for the content of a cell
     """
-    def __init__(self, x, y):
+
+    def __init__(self, x, y, creature=None, number=0):
         """Constructor for Cell
-        """
-        self.creature = None
-        self.number = 0
+                """
+        self.number = number
+        if self.number == 0:
+            self.creature = None #If there's no one in the cell then creature type is None
+        else:
+            self.creature = creature
         self.x = x
         self.y = y
         creatures = [None, "humans", "us", "them"]
-        assert((self.creature in creatures), 'Not allowed creature')
+        assert ((self.creature in creatures), 'Not allowed creature')
         
     def update(self, creature_name, number_creatures):
         """Method to update the cell.
