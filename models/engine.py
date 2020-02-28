@@ -1,6 +1,6 @@
 import numpy as np
-import itertools
-
+import itertools as iter 
+from models.mov import Mov 
 
 class Engine():
     """Class doing any calculation required on a board
@@ -140,7 +140,90 @@ class Engine():
             if ((x>=0) and (x<board.max_x) and (y>=0) and (y<board.max_y)):
                 adjacent.append((x,y))
         
-        return adjacent    
+        return adjacent 
+
+    def get_cell_moves(self, cell, board):
+        """Lists all the ways to divide (or not) the current group and move the members to adjacent cells.
+        Returns all possibilities, including not doing anything.
+        
+        Arguments:
+            cell {Cell} -- the instance of Cell from which we want to know possible moves
+            board {Board} -- the instance of Board
+        
+        Returns:
+            [array] -- an array containing arrays of the combination of possible Mov instances
+        """
+        possible_moves = []
+
+        # current cell and adjacent cells
+        possible_cells = [(cell.x, cell.y)]
+        for cell in self.adjacent_cells(cell.x, cell.y, board):
+            possible_cells.append(cell)
+        
+        # all combinations of the integers from 0 to the number of creatures included,
+        # contains all possible ways of diving the members present on the cell in different groups
+        all_div = iter.combinations_with_replacement(range(cell.number+1), len(possible_cells))
+
+        for div in all_div: 
+            if sum(div) == cell.number: # possible division, with the correct number of creatures
+                permutations = iter.permutations(div)  
+                permutations = set(permutations) # removes duplicates
+                for perm in permutations:
+                    move = []
+                    for i in range(len(perm)):                        
+                        if (perm[i]>0):
+                            mov = Mov((cell.x,cell.y), perm[i], possible_cells[i])
+                            move.append(mov) # initial coordinates are that of the considered cell
+                    if len(move)>0:
+                        possible_moves.append(move)
+    
+        return possible_moves
+
+    def get_possible_turns(self, board, creature_name):
+        """Computes all possible moves for a given board and given creature
+        
+        Arguments:
+            board {Board} -- the instance of Board to consider
+            creature_name {string} -- the creature to be considered, "us" or "them"
+        
+        Returns:
+            [array] -- an array containing array of Mov instances : each array represents a board
+                obtainable from considered board after movs have been played 
+        """
+        moves = []
+        # find all cells with correct creatures
+        cells=[]
+        for row in board:
+            for cell in row:
+                if cell.creature == creature_name:
+                    cells.append(cell)
+
+        # list all possible moves for each of the cells
+        for cell in cells: 
+            moves_cell = []
+            for m in self.get_cell_moves(cell, board):
+                moves_cell.append(m)
+            moves.append(moves_cell)  
+               
+        # combine all different moves for each cell together
+        combinations = iter.product(*moves)
+
+        # identify the move where nothing changes and take it out    
+        result = []
+        for c in combinations:
+            only_one_move = list(filter(lambda x : len(x) == 1, c)) # combination of moves where the group is not divided
+            nothing_changes = list(filter(lambda x: x[0].coord_init == x[0].coord_arriv, only_one_move)) # combination of moves where origin = destination for each : invalid 
+            if not(len(nothing_changes) == len(cells)):
+                flatten_c = []
+                for item in c:
+                    if isinstance(item, list):
+                        for item_bis in item:
+                            flatten_c.append(item_bis)
+                    else :
+                        flatten_c.append(item)
+                result.append(flatten_c)    
+            
+        return result
         
     def count_creatures(self, board):
         """Method to count the number of each creature (us, them, humans). 

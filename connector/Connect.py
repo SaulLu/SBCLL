@@ -2,7 +2,8 @@ import socket
 import json
 import pathlib
 import argparse
-from models import mov
+import time
+from models.Mov import Mov
 
 
 def load_config():
@@ -119,7 +120,7 @@ def ask_moves():
         n = int(input("n?"))
         new_x = int(input("new_x?"))
         new_y = int(input("new_y?"))
-        moves.append(mov((old_x, old_y), n, (new_x, new_y)))
+        moves.append(Mov((old_x,old_y), n, (new_x, new_y)))
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
