@@ -10,6 +10,6 @@ class NextBestStrategy(Strategy):
         all_possible_boards = [self.engine.create_possible_board_many_moves(
             self.current_board, turn, 'us') for turn in all_possible_turns]
 
-        graded_boards = np.array(map(self.heuristic, all_possible_boards))
+        graded_boards = np.array(map(lambda x: self.heuristic(self.engine, x), all_possible_boards))
         best_board_index = np.argmax(graded_boards)
         return all_possible_turns[best_board_index]

@@ -43,7 +43,6 @@ class Player():
                 time.sleep(0.15)
             if self.client.is_my_turn():
                 board_changes = self.client.get_board_changes()
-                print(f"It's my turn, changes recieved: {board_changes}")
                 self.strategy.update_board(board_changes, self.our_name)
                 self.client.put_moves_to_send(self.strategy.next_moves())
             else:
@@ -67,7 +66,7 @@ class Player():
     
         coords_start = self.client.get_start_location()
         self.__init_home(coords_start[0], coords_start[1])
-        print(f"I just got the starting location: {coords_start}")
+        print("I just got the starting location")
 
         initial_setup = self.client.get_board_changes(timeout = 5*60)
         for dico_cell in initial_setup:
@@ -77,7 +76,7 @@ class Player():
                 self.opponent_name = "werewolves" if self.our_name == "vampires" else "vampires"
         
         self.strategy.update_board(initial_setup, self.our_name)
-        print(f"I just got the initial setup : {initial_setup}")
+        print("I just got the initial setup")
 
     def __init_humans(self, humans_coords):
         #useless apriori
@@ -114,7 +113,7 @@ if __name__ == '__main__':
     """
 
     strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "random_walk":RandomWalkStrategy, "next_best":NextBestStrategy}
-    heuristics_dic = {"default":naive_heuristic, "naive":naive_heuristic, "humans":human_focus_heuristic}
+    heuristics_dic = {"default":naive_heuristic, "naive":naive_heuristic}
 
     parser = argparse.ArgumentParser()
 

@@ -35,8 +35,8 @@ class Engine():
         new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
         new_state_attacker_cell = Cell(x_init, y_init, attacker_species, current_board.get_cell(x_init, y_init).number - move.number_indiv)
 
-        new_possible_board.update_cell_without_name(new_state_defender_cell)
-        new_possible_board.update_cell_without_name(new_state_attacker_cell)
+        new_possible_board.update_cell2(new_state_defender_cell)
+        new_possible_board.update_cell2(new_state_attacker_cell)
 
         return new_possible_board
 
