@@ -120,12 +120,15 @@ class Engine():
         assert (i_coord >= 0 and i_coord < board.max_x, "Row index out of grid")
         assert (((j_coord >= 0) and (j_coord < board.max_y)), "Column index out of grid")
 
-        adjacent = []
+        adjacents = []
         for x, y in [(i_coord + i, j_coord + j) for i in (-1, 0, 1) for j in (-1, 0, 1) if i != 0 or j != 0]:
             if ((x >= 0) and (x < board.max_x) and (y >= 0) and (y < board.max_y)):
-                adjacent.append((x, y))
+                adjacents.append((x, y))
 
-        return adjacent
+        return adjacents
+
+    def get_targetable_cells(self, i_coord, j_coord, creature, board):
+        return [adj for adj in self.adjacent_cells(i_coord, j_coord, board) if board.grid[adj[0]][adj[1]].creature != creature ]
 
     def get_cell_moves(self, cell, board):
         """Lists all the ways to divide (or not) the current group and move the members to adjacent cells.
@@ -212,6 +215,36 @@ class Engine():
                 result.append(flatten_c)    
             
         return result
+
+    def get_random_turn(self, board, creature_name):
+        """randomly select a turn for a given board and given creature
+        
+        Arguments:
+            board {Board} -- the instance of Board to consider
+            creature_name {string} -- the creature to be considered, "us" or "them"
+        
+        Returns:
+            [Mov()] -- an array of Mov instances : it represents a board
+                obtainable from considered board after movs have been played 
+        """
+        cells=[]
+        for row in board.grid:
+            for cell in row:
+                if cell.creature == creature_name:
+                    cells.append(cell)
+
+        moves = []
+        while len(moves) == 0:
+            for cell in cells:
+                targets = self.get_targetable_cells(cell.x, cell.y, creature_name, board)
+                if len(targets):
+                    for i in range(cell.number):
+                        if np.random.random() > 0.5: #will move!
+                            target_i = np.random.randint(0,len(targets))
+                            moves.append(Mov((cell.x, cell.y), 1, targets[target_i]))
+        return moves
+
+
 
     def count_creatures(self, board):
         """Method to count the number of each creature (us, them, humans). 

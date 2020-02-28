@@ -36,7 +36,7 @@ class RandomWalkStrategy(Strategy):
         
         return all_possible_turns[chosen_turn_index]
 
-    def randomWalk(self, board, next_species, step_left):
+    def randomWalk2(self, board, next_species, step_left):
         if step_left == 0:
             return self.heuristic(self.engine, board)
         else:
@@ -44,6 +44,20 @@ class RandomWalkStrategy(Strategy):
             if len(all_possible_turns):
                 random_turn = all_possible_turns[np.random.randint(0,len(all_possible_turns))]
 
+                reverse_species ={'us':'them','them':'us'}
+
+                new_board = self.engine.create_possible_board_many_moves(board, random_turn, next_species, None)
+                return self.randomWalk(new_board, reverse_species[next_species], step_left - 1)
+            else:
+                return self.heuristic(self.engine, board)
+
+    def randomWalk(self, board, next_species, step_left):
+        if step_left == 0:
+            return self.heuristic(self.engine, board)
+        else:
+            n_us, n_them, n_h = self.engine.count_creatures(board)
+            if n_us * n_them:
+                random_turn = self.engine.get_random_turn(board, next_species)
                 reverse_species ={'us':'them','them':'us'}
 
                 new_board = self.engine.create_possible_board_many_moves(board, random_turn, next_species, None)

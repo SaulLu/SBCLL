@@ -21,5 +21,5 @@ class NextBestStrategy(Strategy):
         #print(all_possible_boards[-1])
         #print('\n')
         #return [Mov((5,5),5,(5,5))]
-        time.sleep(1)
+        time.sleep(0.5)
         return all_possible_turns[best_board_index]
