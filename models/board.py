@@ -25,6 +25,7 @@ class Board:
             number {int} -- number of creatures present in this cell
             our_name {string} -- name of the species played by us
         """
+        print(coords, species, number, our_name)
         cell_to_update = self.grid[coords[0]][coords[1]]
         # Anonymization
         species_anonymous = 'us' if species == our_name else 'them'

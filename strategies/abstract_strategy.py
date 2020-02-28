@@ -30,7 +30,8 @@ class Strategy(ABC):
         """
         for update_one_cell in list_updates:
             # update_one_cell format is like {'coords': (2, 2), 'species': 'humans', 'number': 1}
-            self.current_board.update_cell(update_one_cell, our_name)
+            print(update_one_cell, our_name)
+            self.current_board.update_cell(update_one_cell['coords'], update_one_cell['species'], update_one_cell['number'],  our_name)
 
 
 

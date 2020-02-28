@@ -3,7 +3,7 @@ import json
 import pathlib
 import argparse
 import time
-from models.Mov import Mov
+from models.mov import Mov
 
 
 
