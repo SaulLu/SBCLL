@@ -3,6 +3,7 @@ import json
 import pathlib
 import argparse
 import time
+from models.Mov import Mov
 
 
 
@@ -45,14 +46,6 @@ def send_moves(sock, movements):
         message += bytes([mov.coord_arriv[0]])
         message += bytes([mov.coord_arriv[1]])
     sock.send(message)
-
-
-class mov:
-    def __init__(self, init, numb, arriv):
-        self.coord_arriv = arriv
-        self.coord_init = init
-        self.number_indiv = numb
-
 
 
 def receive_set(sock):
@@ -127,7 +120,7 @@ def ask_moves():
         n = int(input("n?"))
         new_x = int(input("new_x?"))
         new_y = int(input("new_y?"))
-        moves.append(mov((old_x,old_y), n, (new_x, new_y)))
+        moves.append(Mov((old_x,old_y), n, (new_x, new_y)))
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
