@@ -229,11 +229,11 @@ class Engine():
 
         for i in range(board.max_x):
             for j in range(board.max_y):
-                if board[i][j].creature == "us":
+                if board.grid[i][j].creature == "us":
                     number_of_us += 1
-                elif board[i][j].creature == "them":
+                elif board.grid[i][j].creature == "them":
                     number_of_them += 1
-                elif board[i][j].creature == "humans":
+                elif board.grid[i][j].creature == "humans":
                     number_of_humans += 1
 
         return number_of_us, number_of_them, number_of_humans

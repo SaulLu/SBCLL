@@ -28,7 +28,12 @@ class Board:
         """
         cell_to_update = self.grid[coords[0]][coords[1]]
         # Anonymization
-        species_anonymous = 'us' if species == our_name else 'them'
+        if species == 'humans':
+            species_anonymous = 'humans'
+        elif species == our_name:
+            species_anonymous = 'us'
+        else :
+            species_anonymous = 'them'
         cell_to_update.update(species_anonymous, number)
 
     def update_cell_without_name(self, cell):

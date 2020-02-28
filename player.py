@@ -16,7 +16,7 @@ import time
 class Player():
     """Class 
     """
-    def __init__(self, strategy_class,  heuristic, algo_name = "group_1"):
+    def __init__(self, strategy_class, heuristic, algo_name = "group_1"):
         """ Constructor for player
 
         Arguments:
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     """
 
     strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "next_best":NextBestStrategy}
-    heuristic_dic = {"default":naive_heuristic, "naive":naive_heuristic}
+    heuristic_dic = {"default":naive_heuristic, "naive":naive_heuristic, "humans":human_focus_heuristic}
 
     parser = argparse.ArgumentParser()
 
@@ -134,7 +134,15 @@ if __name__ == '__main__':
         strategy_class = strategy_dic["default"]
         print(f"using default strategy")
 
-    player = Player(strategy_class, args.algo_name)
+    try:
+        heuristic = heuristic_dic[args.heuristic_name]
+        print(f"using {args.heuristic_name} strategy")
+    except KeyError:
+        heuristic = heuristic_dic["default"]
+        print(f"using default heuristic")
+
+    
+    player = Player(strategy_class, heuristic, args.algo_name)
     player.play()
     
 
