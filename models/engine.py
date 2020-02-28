@@ -1,5 +1,6 @@
 import numpy as np
 import itertools as iter
+import copy
 
 from models.board import Board
 from models.cell import Cell
@@ -16,7 +17,7 @@ class Engine():
     #Add method to use in cell_output_if_attacked
     def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
         """Method that generates a possible board for any given legal combination of moves"""
-        return_board = Board(current_board)
+        return_board = copy.deepcopy(current_board)
         for move in moves_list:
             return_board = self.create_possible_board_one_move(return_board, move, attacker_species, method=None)
         return return_board
@@ -28,14 +29,14 @@ class Engine():
         x_dest = move.coord_arriv[0]
         y_dest = move.coord_arriv[1]
 
-        new_possible_board = Board(current_board)
-        defender_cell = Cell(current_board.get_cell(x_dest, y_dest))
+        new_possible_board = copy.deepcopy(current_board)
+        defender_cell = copy.deepcopy(current_board.get_cell(x_dest, y_dest))
 
         new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
         new_state_attacker_cell = Cell(x_init, y_init, attacker_species, current_board.get_cell(x_init, y_init).number - move.number_indiv)
 
-        new_possible_board.updatecell(new_state_defender_cell)
-        new_possible_board.updatecell(new_state_attacker_cell)
+        new_possible_board.update_cell2(new_state_defender_cell)
+        new_possible_board.update_cell2(new_state_attacker_cell)
 
         return new_possible_board
 

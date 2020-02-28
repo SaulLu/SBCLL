@@ -4,8 +4,8 @@ import numpy as np
 import time
 
 class RandomStrategy(Strategy):
-    def __init__(self, max_x, max_y):
-        super().__init__(max_x, max_y)
+    def __init__(self, max_x, max_y, heuristic):
+        super().__init__(max_x, max_y, heuristic)
         #super().__init__(new_attribute_1, new_attribute_2):
 
     def next_moves(self):

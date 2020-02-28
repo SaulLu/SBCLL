@@ -31,7 +31,7 @@ class Board:
         species_anonymous = 'us' if species == our_name else 'them'
         cell_to_update.update(species_anonymous, number)
 
-    def update_cell(self, cell, our_name):
+    def update_cell2(self, cell, our_name):
         """Method to update a given cell.
 
                 Arguments:

@@ -7,11 +7,12 @@ from models.engine import Engine
 class Strategy(ABC):
     """Abstract class to implement player strategy
     """
-    def __init__(self, max_x, max_y):
+    def __init__(self, max_x, max_y, heuristic):
         """Strategy class constructor
         """
         self.engine = Engine()
         self.current_board = Board(max_x, max_y)
+        self.heuristic = heuristic
     
     @abstractmethod
     def next_moves(self):

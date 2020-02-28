@@ -8,13 +8,15 @@ from models.board import Board
 from connector.connect import load_config as load_config_connect
 from connector.client import Client
 from strategies.random_strategy import RandomStrategy
+from strategies.random_walk_strategy import RandomWalkStrategy
+from strategies.heuristics import naive_heuristic
 import argparse
 import time
 
 class Player():
     """Class 
     """
-    def __init__(self, strategy_class, algo_name = "group_1"):
+    def __init__(self, strategy_class, heuristic, algo_name = "group_1"):
         """ Constructor for player
 
         Arguments:
@@ -27,6 +29,7 @@ class Player():
         self.strategy_class = strategy_class
         self.strategy = None
         self.client = None
+        self.heuristic = heuristic
     
     def play(self):
         """Initializes the game and loops between our turn and ennemy's turn until the end 
@@ -59,7 +62,7 @@ class Player():
 
         board_size = self.client.get_board_size()
         print(f"I just got the board size: {board_size}")
-        self.strategy = self.strategy_class(board_size[1],board_size[0])
+        self.strategy = self.strategy_class(board_size[1],board_size[0], self.heuristic)
     
         coords_start = self.client.get_start_location()
         self.__init_home(coords_start[0], coords_start[1])
@@ -109,25 +112,48 @@ if __name__ == '__main__':
     command: python Client.py -n <player_name>
     """
 
-    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy}
+    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "random_walk":RandomWalkStrategy}
+    heuristics_dic = {"default":naive_heuristic, "naive_heuristic":naive_heuristic}
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=True,
+    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=False,
                         help='name of the algo', type=str)
-    parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=True,
+    parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=False,
                         help=f'name of the strategy, avalaible: {strategy_dic.keys()}', type=str)
+    parser.add_argument('-he', '--heuristic', metavar="<heuristic>", required=False,
+                        help=f'name of the heuristic, avalaible: {heuristics_dic.keys()}', type=str)
 
     args = parser.parse_args()
 
-    try:
-        strategy_class = strategy_dic[args.strategy_name]
-        print(f"using {args.strategy_name} strategy")
-    except KeyError:
+    if args.strategy_name:
+        try:
+            strategy_class = strategy_dic[args.strategy_name]
+            print(f"using {args.strategy_name} strategy")
+        except KeyError:
+            strategy_class = strategy_dic["default"]
+            print(f"using default strategy") 
+    else:
         strategy_class = strategy_dic["default"]
-        print(f"using default strategy")
+        print(f"using default strategy") 
 
-    player = Player(strategy_class, args.algo_name)
+    if args.heuristic:
+        try:
+            heuristic = heuristics_dic[args.heuristic]
+            print(f"using {args.heuristic} heuristic")
+        except KeyError:
+            heuristic = heuristics_dic["default"]
+            print(f"using default heuristic") 
+    else:
+        heuristic = heuristics_dic["default"]
+        print(f"using default heuristic") 
+
+    if args.algo_name:
+        algo_name = args.algo_name
+    else:
+        algo_name = "group 1"
+
+    player = Player(strategy_class, heuristic, algo_name)
     player.play()
     
 
