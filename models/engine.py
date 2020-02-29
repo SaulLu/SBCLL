@@ -15,6 +15,27 @@ class Engine():
         pass
 
     #Add method to use in cell_output_if_attacked
+
+    def apply_possible_board_many_moves(self, board, moves_list, attacker_species, method=None):
+        """Method that apply moves to a board"""
+        for move in moves_list:
+            self.apply_possible_board_one_move(board, move, attacker_species, method=None)
+
+    def apply_possible_board_one_move(self, board, move, attacker_species, method):
+        """Method that apply one move to a board"""
+        x_init = move.coord_init[0]
+        y_init = move.coord_init[1]
+        x_dest = move.coord_arriv[0]
+        y_dest = move.coord_arriv[1]
+
+        defender_cell = board.get_cell(x_dest, y_dest)
+
+        new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
+        new_state_attacker_cell = Cell(x_init, y_init, attacker_species, board.get_cell(x_init, y_init).number - move.number_indiv)
+
+        board.update_cell2(new_state_defender_cell)
+        board.update_cell2(new_state_attacker_cell)
+
     def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
         """Method that generates a possible board for any given legal combination of moves"""
         return_board = deepcopy(current_board)
