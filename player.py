@@ -72,7 +72,6 @@ class Player():
         for dico_cell in initial_setup:
             if dico_cell['coords'] == self.first_position:
                 self.our_name = dico_cell['species']
-                assert((self.our_name in ["werewolves", "vampires"]), 'Not allowed creature name')
                 self.opponent_name = "werewolves" if self.our_name == "vampires" else "vampires"
         
         self.strategy.update_board(initial_setup, self.our_name)

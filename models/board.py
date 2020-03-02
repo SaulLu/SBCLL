@@ -42,9 +42,7 @@ class Board:
                 Arguments:
                     the new cell
                 """
-        cell_to_update = self.grid[cell.x][cell.y]
-        # Anonymization
-        cell_to_update.update(cell.creature, cell.number)
+        self.grid[cell.x][cell.y].update(cell.creature, cell.number)
 
     def get_cell(self, x, y):
         """This method returns a cell element for a given x and y"""
@@ -58,3 +56,11 @@ class Board:
                 grid_s += f"{c[0]}-{self.grid[x][y].number}\t"
             grid_s += "\n"
         return grid_s
+
+    def deepcopy(self):
+        new_board = Board(self.max_x, self.max_y)
+        for x in range(self.max_x):
+            for y in range(self.max_y):
+                if self.grid[x][y].number:
+                    new_board.update_cell2(self.grid[x][y])
+        return new_board

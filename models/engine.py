@@ -38,9 +38,8 @@ class Engine():
 
     def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
         """Method that generates a possible board for any given legal combination of moves"""
-        return_board = deepcopy(current_board)
-        for move in moves_list:
-            return_board = self.create_possible_board_one_move(return_board, move, attacker_species, method=None)
+        return_board = current_board.deepcopy()
+        self.apply_possible_board_many_moves(return_board, moves_list, attacker_species, method)
         return return_board
 
     def create_possible_board_one_move(self, current_board, move, attacker_species, method):
@@ -50,7 +49,7 @@ class Engine():
         x_dest = move.coord_arriv[0]
         y_dest = move.coord_arriv[1]
 
-        new_possible_board = deepcopy(current_board)
+        new_possible_board = current_board.deepcopy()
         defender_cell = new_possible_board.get_cell(x_dest, y_dest)
 
         new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
@@ -138,8 +137,6 @@ class Engine():
             i_coord {int} -- index of row
             j_coord {int} -- index of column
         """
-        assert (i_coord >= 0 and i_coord < board.max_x, "Row index out of grid")
-        assert (((j_coord >= 0) and (j_coord < board.max_y)), "Column index out of grid")
 
         adjacents = []
         for x, y in [(i_coord + i, j_coord + j) for i in (-1, 0, 1) for j in (-1, 0, 1) if i != 0 or j != 0]:

@@ -16,7 +16,7 @@ class RandomWalkStrategy(Strategy):
         scoring = [{'n_walks':0, 'sum':0} for i in range(len(all_possible_turns))]
 
         timeout = 8
-        max_step = 15
+        max_step = 5
         count = 0
         while time.time() - t0  < timeout:
             random_turn_index = np.random.randint(0,len(all_possible_turns))
@@ -26,7 +26,7 @@ class RandomWalkStrategy(Strategy):
             scoring[random_turn_index]['sum'] += score
             count += 1
 
-        print(f"\nI did {count} walks")
+        print(f"\nI did {count} walks, amongs {len(all_possible_turns)} first turns")
 
         
 
@@ -38,7 +38,6 @@ class RandomWalkStrategy(Strategy):
         
         scoring_computed = [s['sum'] / s['n_walks'] if s['n_walks'] else -np.inf  for s in scoring]
         chosen_turn_index = np.argmax(scoring_computed)
-        print(chosen_turn_index, len(scoring_computed))
         best_score = scoring_computed[chosen_turn_index]
         print(f"best_score: {best_score}")
 
