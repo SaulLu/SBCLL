@@ -16,6 +16,7 @@ class Board:
         self.max_x = max_x
         self.max_y = max_y
         self.grid = np.asarray([[Cell(x,y) for y in range(self.max_y) ] for x in range(self.max_x)])
+        self.creatures_list = {'us':{}, 'them':{},'humans':{}}
 
     def update_cell(self, coords, species, number, our_name):
         """Method to update a given cell.
@@ -28,13 +29,24 @@ class Board:
         """
         cell_to_update = self.grid[coords[0]][coords[1]]
         # Anonymization
-        if species == 'humans':
-            species_anonymous = 'humans'
-        elif species == our_name:
-            species_anonymous = 'us'
-        else :
-            species_anonymous = 'them'
+        for s in ['us','them','humans']:
+            try:
+                self.creatures_list[s].pop((coords[0],coords[1]))
+                break
+            except KeyError:
+                pass
+        if number:
+            if species == 'humans':
+                species_anonymous = 'humans'
+            elif species == our_name:
+                species_anonymous = 'us'
+            else :
+                species_anonymous = 'them'
+            self.creatures_list[species_anonymous][(coords[0],coords[1])] = number
+        else:
+            species_anonymous = None
         cell_to_update.update(species_anonymous, number)
+            
 
     def update_cell2(self, cell):
         """Method to update a given cell.
@@ -43,6 +55,16 @@ class Board:
                     the new cell
                 """
         self.grid[cell.x][cell.y].update(cell.creature, cell.number)
+
+        for s in ['us','them','humans']:
+            try:
+                self.creatures_list[s].pop((cell.x, cell.y))
+                break
+            except KeyError:
+                pass
+        if cell.number:
+            self.creatures_list[cell.creature][(cell.x, cell.y)] = cell.number
+            
 
     def get_cell(self, x, y):
         """This method returns a cell element for a given x and y"""

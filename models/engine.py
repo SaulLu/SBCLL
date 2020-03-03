@@ -287,4 +287,9 @@ class Engine():
                 elif board.grid[i][j].creature == "humans":
                     number_of_humans += board.grid[i][j].number
 
+        if number_of_us != sum(board.creatures_list['us'].values()):
+            print(number_of_us)
+            print(board.creatures_list['us'], np.sum(board.creatures_list['us'].values))
+            print(board)
+            raise RuntimeError("count error")
         return number_of_us, number_of_them, number_of_humans

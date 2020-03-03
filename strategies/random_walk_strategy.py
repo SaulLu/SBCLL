@@ -2,7 +2,6 @@
 from strategies.abstract_strategy import Strategy
 import numpy as np 
 import time
-import copy
 
 class RandomWalkStrategy(Strategy):
     def __init__(self, max_x, max_y, heuristic):
