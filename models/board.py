@@ -86,3 +86,6 @@ class Board:
                 if self.grid[x][y].number:
                     new_board.update_cell2(self.grid[x][y])
         return new_board
+
+    def count_creatures(self):
+        return sum(self.creatures_list['us'].values()), sum(self.creatures_list['them'].values()), sum(self.creatures_list['humans'].values())

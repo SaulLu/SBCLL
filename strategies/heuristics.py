@@ -9,6 +9,6 @@ def naive_heuristic(engine, board):
     Returns:
         int -- difference between the number of us left and the number of them left
     """
-    number_of_us, number_of_them, _ = engine.count_creatures(board)
+    number_of_us, number_of_them, _ = board.count_creatures()
     
     return number_of_us - number_of_them
