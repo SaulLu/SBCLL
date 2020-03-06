@@ -1,6 +1,6 @@
 import numpy as np
 import itertools as iter
-from copy import deepcopy
+import math
 
 from models.board import Board
 from models.cell import Cell
@@ -286,6 +286,44 @@ class Engine():
                     number_of_them += board.grid[i][j].number
                 elif board.grid[i][j].creature == "humans":
                     number_of_humans += board.grid[i][j].number
-                    
+
         return number_of_us, number_of_them, number_of_humans
+
+
+
+    def __recursive_target_attribution(self, prev_attributions, remaining_creatures, avalaible_targets):
+        n_avalaible_targets = len(avalaible_targets)
+        if remaining_creatures == 0 or n_avalaible_targets == 0:
+            return [prev_attributions + [(target, 0) for target in avalaible_targets]]
+        else:
+            all_attributions = []
+            target = avalaible_targets[0]
+
+            new_attribution = prev_attributions + [(target, 0)]
+            all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution, remaining_creatures, avalaible_targets[1:])
+            if target['min_takeover'] <= remaining_creatures:
+                for i in range(target['min_takeover'], remaining_creatures + 1):
+                    new_attribution = prev_attributions + [(target, i)]
+                    all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution, remaining_creatures - i, avalaible_targets[1:])
+                
+            return all_attributions
+
+
+    def get_target_moves(self, cell, board):
+        min_takeover_factor = {'them':1.5, 'humans':1}
+        creature = cell.creature
+        targets = []
+        for s in board.creatures_list:
+            if s != creature:
+                for cell_coords in board.creatures_list[s]:
+                    number = board.creatures_list[s][cell_coords]
+                    min_takeover = int(math.ceil(min_takeover_factor[s] * number))
+                    targets.append({'coords': cell_coords, 'number':number, 'creature':s, 'min_takeover': min_takeover })
+
+        global_min = min([t['min_takeover'] for t in targets])
+        all_attributions = self.__recursive_target_attribution([], cell.number, targets)
+
+        return all_attributions
+
+
 

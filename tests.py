@@ -36,6 +36,27 @@ def board_test_1():
 			print(board.creatures_list)
 			raise RuntimeError("creature count error")
 
+
+def targets_test_1():
+	engine = Engine()
+	board = Board(5,5)
+
+	board.update_cell((1,4), "humans", 2, "vampires")
+	board.update_cell((4,4), "humans", 2, "vampires")
+	board.update_cell((1,3), "wervolves", 1, "vampires")
+	board.update_cell((3,3), "wervolves", 4, "vampires")
+	board.update_cell((2,2), "vampires", 4, "vampires")
+
+	for target_mov in engine.get_target_moves(board.get_cell(2,2), board):
+		s = ""
+		for t,n in target_mov:
+			s = s + f" {t['coords']}, {t['creature']}, {t['number']} => {n};"
+		print(s)
+
+
 if __name__ == "__main__":
-	board_test_1()
-	print("board_test_1 done")
+	#board_test_1()
+	#print("board_test_1 done")
+
+	targets_test_1()
+	print("targets_test_1 done")
