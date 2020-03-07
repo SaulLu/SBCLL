@@ -14,7 +14,7 @@ class Engine():
     def __init__(self):
         pass
 
-    #Add method to use in cell_output_if_attacked
+    # Add method to use in cell_output_if_attacked
 
     def apply_possible_board_many_moves(self, board, moves_list, attacker_species, method=None):
         """Method that apply moves to a board"""
@@ -30,8 +30,10 @@ class Engine():
 
         defender_cell = board.get_cell(x_dest, y_dest)
 
-        new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
-        new_state_attacker_cell = Cell(x_init, y_init, attacker_species, board.get_cell(x_init, y_init).number - move.number_indiv)
+        new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv,
+                                                               method)
+        new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
+                                       board.get_cell(x_init, y_init).number - move.number_indiv)
 
         board.update_cell2(new_state_defender_cell)
         board.update_cell2(new_state_attacker_cell)
@@ -52,16 +54,15 @@ class Engine():
         new_possible_board = current_board.deepcopy()
         defender_cell = new_possible_board.get_cell(x_dest, y_dest)
 
-        new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
-        new_state_attacker_cell = Cell(x_init, y_init, attacker_species, current_board.get_cell(x_init, y_init).number - move.number_indiv)
+        new_state_defender_cell = self.cell_output_if_attacked(defender_cell, attacker_species, move.number_indiv,
+                                                               method)
+        new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
+                                       current_board.get_cell(x_init, y_init).number - move.number_indiv)
 
         new_possible_board.update_cell2(new_state_defender_cell)
         new_possible_board.update_cell2(new_state_attacker_cell)
 
         return new_possible_board
-
-
-
 
     def cell_output_if_attacked(self, defender_cell, attacker_species, attacker_qty, method):
         """Method that gives the hypothetic output state of cell if it is under attack .
@@ -146,7 +147,8 @@ class Engine():
         return adjacents
 
     def get_targetable_cells(self, i_coord, j_coord, creature, board):
-        return [adj for adj in self.adjacent_cells(i_coord, j_coord, board) if board.grid[adj[0]][adj[1]].creature != creature ]
+        return [adj for adj in self.adjacent_cells(i_coord, j_coord, board) if
+                board.grid[adj[0]][adj[1]].creature != creature]
 
     def get_cell_moves(self, cell, board):
         """Lists all the ways to divide (or not) the current group and move the members to adjacent cells.
@@ -165,7 +167,6 @@ class Engine():
         possible_cells = [(cell.x, cell.y)]
         for adj_cell in self.adjacent_cells(cell.x, cell.y, board):
             possible_cells.append(adj_cell)
-        
 
         # all combinations of the integers from 0 to the number of creatures included,
         # contains all possible ways of diving the members present on the cell in different groups
@@ -177,14 +178,14 @@ class Engine():
                 permutations = set(permutations)  # removes duplicates
                 for perm in permutations:
                     move = []
-                    for i in range(len(perm)):                        
-                        if (perm[i]>0):
-                            if ((cell.x,cell.y) != possible_cells[i]):
-                                mov = Mov((cell.x,cell.y), perm[i], possible_cells[i])
-                                move.append(mov) # initial coordinates are that of the considered cell
-                    if len(move)>0:
+                    for i in range(len(perm)):
+                        if (perm[i] > 0):
+                            if ((cell.x, cell.y) != possible_cells[i]):
+                                mov = Mov((cell.x, cell.y), perm[i], possible_cells[i])
+                                move.append(mov)  # initial coordinates are that of the considered cell
+                    if len(move) > 0:
                         possible_moves.append(move)
-                    
+
         return possible_moves
 
     def get_possible_turns(self, board, creature_name):
@@ -200,7 +201,7 @@ class Engine():
         """
         moves = []
         # find all cells with correct creatures
-        cells=[]
+        cells = []
         for row in board.grid:
             for cell in row:
                 if cell.creature == creature_name:
@@ -224,14 +225,14 @@ class Engine():
                 if isinstance(item, list):
                     for item_bis in item:
                         flatten_c.append(item_bis)
-                else :
+                else:
                     flatten_c.append(item)
 
             departurs = set(x.coord_init for x in flatten_c)
             arrivals = set(x.coord_arriv for x in flatten_c)
             if len(list(departurs & arrivals)) == 0:
-                result.append(flatten_c)    
-            
+                result.append(flatten_c)
+
         return result
 
     def get_random_turn(self, board, creature_name):
@@ -245,7 +246,7 @@ class Engine():
             [Mov()] -- an array of Mov instances : it represents a board
                 obtainable from considered board after movs have been played 
         """
-        cells=[]
+        cells = []
         for row in board.grid:
             for cell in row:
                 if cell.creature == creature_name:
@@ -257,12 +258,10 @@ class Engine():
                 targets = self.get_targetable_cells(cell.x, cell.y, creature_name, board)
                 if len(targets):
                     for i in range(cell.number):
-                        if np.random.random() > 0.5: #will move!
-                            target_i = np.random.randint(0,len(targets))
+                        if np.random.random() > 0.5:  # will move!
+                            target_i = np.random.randint(0, len(targets))
                             moves.append(Mov((cell.x, cell.y), 1, targets[target_i]))
         return moves
-
-
 
     def count_creatures(self, board):
         """Method to count the number of each creature (us, them, humans). 
@@ -289,41 +288,47 @@ class Engine():
 
         return number_of_us, number_of_them, number_of_humans
 
-
-
-    def __recursive_target_attribution(self, prev_attributions, remaining_creatures, avalaible_targets):
-        n_avalaible_targets = len(avalaible_targets)
-        if remaining_creatures == 0 or n_avalaible_targets == 0:
-            return [prev_attributions + [(target, 0) for target in avalaible_targets]]
+    def __recursive_target_attribution(self, prev_attributions, remaining_creatures, available_targets):
+        n_available_targets = len(available_targets)
+        if remaining_creatures == 0 or n_available_targets == 0:
+            return [prev_attributions + [(target, 0) for target in available_targets]]
         else:
             all_attributions = []
-            target = avalaible_targets[0]
+            target = available_targets[0]
 
             new_attribution = prev_attributions + [(target, 0)]
-            all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution, remaining_creatures, avalaible_targets[1:])
+            all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution,
+                                                                                      remaining_creatures,
+                                                                                      available_targets[1:])
             if target['min_takeover'] <= remaining_creatures:
                 for i in range(target['min_takeover'], remaining_creatures + 1):
                     new_attribution = prev_attributions + [(target, i)]
-                    all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution, remaining_creatures - i, avalaible_targets[1:])
-                
+                    all_attributions = all_attributions + self.__recursive_target_attribution(new_attribution,
+                                                                                              remaining_creatures - i,
+                                                                                              available_targets[1:])
+
             return all_attributions
 
-
     def get_target_moves(self, cell, board):
-        min_takeover_factor = {'them':1.5, 'humans':1}
+        min_takeover_factor = {'them': 1.5, 'humans': 1}
         creature = cell.creature
         targets = []
         for s in board.creatures_list:
             if s != creature:
-                for cell_coords in board.creatures_list[s]:
-                    number = board.creatures_list[s][cell_coords]
+                for cell_coordinates in board.creatures_list[s]:
+                    number = board.creatures_list[s][cell_coordinates]
                     min_takeover = int(math.ceil(min_takeover_factor[s] * number))
-                    targets.append({'coords': cell_coords, 'number':number, 'creature':s, 'min_takeover': min_takeover })
+                    targets.append(
+                        {'coords': cell_coordinates, 'number': number, 'creature': s, 'min_takeover': min_takeover})
 
         global_min = min([t['min_takeover'] for t in targets])
         all_attributions = self.__recursive_target_attribution([], cell.number, targets)
 
         return all_attributions
 
-
-
+    def get_target_turns(self, creature, board):
+        targets_per_cell = []
+        for x,y in board.creatures_list[creature]:
+            targets_per_cell.append(self.get_target_moves(board.get_cell(x,y), Board))
+        all_attributions = []
+        
