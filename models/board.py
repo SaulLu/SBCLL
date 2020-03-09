@@ -17,6 +17,7 @@ class Board:
         self.max_y = max_y
         self.grid = np.asarray([[Cell(x,y) for y in range(self.max_y) ] for x in range(self.max_x)])
         self.creatures_list = {'us':{}, 'them':{},'humans':{}}
+        self.targets = {}
 
     def update_cell(self, coords, species, number, our_name):
         """Method to update a given cell.
