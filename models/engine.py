@@ -79,7 +79,7 @@ def cell_output_if_attacked(defender_cell, attacker_species, attacker_qty, metho
         else:
             output = __random_battle(defender_cell, attacker_species, attacker_qty)
     elif attacker_qty >= 1.5 * defender_cell.number:
-            assert(attacker_species==defender_cell.creature, "This is not an attack")
+        assert(attacker_species==defender_cell.creature, "This is not an attack")
         output = {"creature": attacker_species, "number": attacker_qty}
     else:
         output = __random_battle(defender_cell, attacker_species, attacker_qty)
