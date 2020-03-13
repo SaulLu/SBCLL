@@ -1,4 +1,3 @@
-      
 class Cell:
     """Class for the content of a cell
     """
@@ -8,13 +7,13 @@ class Cell:
                 """
         self.number = number
         if self.number == 0:
-            self.creature = None #If there's no one in the cell then creature type is None
+            self.creature = None  # If there's no one in the cell then creature type is None
         else:
             self.creature = creature
         self.x = x
         self.y = y
         creatures = [None, "humans", "us", "them"]
-        
+
     def update(self, creature_name, number_creatures):
         """Method to update the cell.
         
@@ -28,4 +27,3 @@ class Cell:
 
     def deepcopy(self):
         return Cell(self.x, self.y, self.creature, self.number)
-
