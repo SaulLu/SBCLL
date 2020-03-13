@@ -7,8 +7,9 @@ import math
 
 from models.board import Board
 from models.cell import Cell
-from models.mov import Mov
 import models.engine as engine
+import parameters
+
 
 def __recursive_target_attribution(prev_attributions, remaining_creatures, available_targets):
     n_available_targets = len(available_targets)
@@ -50,12 +51,30 @@ def get_target_moves(cell: Cell, board: Board):
     return all_attributions
 
 
+def get_available_targets(creature, board: Board):
+    """
+    This function return the coordinates of the cells that are different from creature (humans or opponent)
+    :param creature: name of the attacker
+    :param board: the board to look at
+    :return: List<(int,int)> list of cells' coordinates
+    """
+    return [list(board.creatures_list[s]) for s in board.creatures_list.keys() if s != creature]
+
+
 def get_target_turns(creature, board: Board):
     targets_per_cell = []
     for x, y in board.creatures_list[creature]:
-        targets_per_cell.append(get_target_moves(board.get_cell(x, y), board))
+        targets_per_cell.append(get_target_moves(board.get_cell(x=x, y=y), board))
     all_attributions = []
 
 
+def get_min_takeover(cell: Cell):
+    if cell.creature == 'humans':
+        return math.ceil(cell.number * parameters.HUMANS_TAKEOVER_FACTOR)
+    return math.ceil(cell.number * parameters.OPPONENT_TAKEOVER_FACTOR)
+
+
 def get_feasible_targets(board: Board, creature):
-    min_takeover_factor = {engine.reverse_creature(creature): 1.5, 'humans': 1}
+    targets_coordinates = get_available_targets(creature, board)
+    targets = [{'coordinates': coordinate, 'min_takeover': get_min_takeover(board.get_cell(coordinate))} for coordinate
+               in targets_coordinates]
