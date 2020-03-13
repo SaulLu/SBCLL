@@ -3,6 +3,7 @@ import json
 import pathlib
 import argparse
 import time
+from models.mov import Mov
 
 
 
@@ -26,15 +27,6 @@ def get_int(sock):
     return int.from_bytes(data, byteorder='big')
 
 
-def receive_bye(sock):
-    sock.close()
-
-
-def receive_end(sock):
-    # supprimertoutcequiexiste
-    pass
-
-
 def send_nme(sock, name):
     message = bytes()
     message += 'NME'.encode()
@@ -54,14 +46,6 @@ def send_moves(sock, movements):
         message += bytes([mov.coord_arriv[0]])
         message += bytes([mov.coord_arriv[1]])
     sock.send(message)
-
-
-class mov:
-    def __init__(self, init, numb, arriv):
-        self.coord_arriv = arriv
-        self.coord_init = init
-        self.number_indiv = numb
-
 
 
 def receive_set(sock):
@@ -128,6 +112,7 @@ def process_command(command: str, sock):
             send_moves(sock, ask_moves())
 
 def ask_moves():
+    """ask a player to play by hand"""
     moves = []
     while True:
         old_x = int(input("old_x?"))
@@ -135,23 +120,10 @@ def ask_moves():
         n = int(input("n?"))
         new_x = int(input("new_x?"))
         new_y = int(input("new_y?"))
-        moves.append(mov((old_x,old_y), n, (new_x, new_y)))
+        moves.append(Mov((old_x,old_y), n, (new_x, new_y)))
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
-
-def run(name):
-    config = load_config()
-    IP, port = config["IP"], int(config["port"])
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((IP, port))
-    print("Connect")
-    send_nme(sock, name)
-
-    while True:
-        command = get_command(sock)
-        process_command(command, sock)
 
 
 if __name__ == "__main__":

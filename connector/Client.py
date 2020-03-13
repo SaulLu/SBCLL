@@ -1,9 +1,15 @@
+import sys
+sys.path.append('.')
+
 import socket
 import threading
 import queue
 import copy
 from connector.connect import *
+from models.mov import Mov
 import time
+import argparse
+
 
 class ConnectProcess(threading.Thread):
     """Handle the client-serveur communication
@@ -40,7 +46,7 @@ class ConnectProcess(threading.Thread):
     def run(self):
         """ launch and process the communication """
         self.running = True
-
+        self.server_closed = False
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((self.IP, self.port))
 
@@ -56,7 +62,6 @@ class ConnectProcess(threading.Thread):
                     break
             elif command == 'BYE':
                 break
-        sock.close()
 
     def _process_command(self, command):
         """ analyse a socket command and launch the appropriate function 
@@ -76,6 +81,7 @@ class ConnectProcess(threading.Thread):
         elif command == 'BYE':
             self.server_closed = True
             self.sending_queue.put(None)
+            self.sock.close()
         elif command == 'END':
             self.game_ended = True
         else:
