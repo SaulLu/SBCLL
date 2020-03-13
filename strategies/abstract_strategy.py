@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
 from models.board import Board
-from models.engine import Engine
 
 
 class Strategy(ABC):
@@ -10,12 +9,11 @@ class Strategy(ABC):
     def __init__(self, max_x, max_y, heuristic):
         """Strategy class constructor
         """
-        self.engine = Engine()
         self.current_board = Board(max_x, max_y)
         self.heuristic = heuristic
     
     @abstractmethod
-    def next_moves(self):
+    def next_moves(self, think_time):
         """Function to overide. Should return dictionnary of moves to play
         """
         pass
@@ -31,7 +29,8 @@ class Strategy(ABC):
         """
         for update_one_cell in list_updates:
             # update_one_cell format is like {'coords': (2, 2), 'species': 'humans', 'number': 1}
-            self.current_board.update_cell(update_one_cell['coords'], update_one_cell['species'], update_one_cell['number'],  our_name)
+            self.current_board.update_cell(update_one_cell['coords'], update_one_cell['species'],
+                                           update_one_cell['number'],  our_name)
 
 
 

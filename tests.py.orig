@@ -71,9 +71,10 @@ def targets_test_1():
 
 
 if __name__ == "__main__":
-    #board_test_1()
-    #print("board_test_1 done")
+    board_test_1()
+    print("board_test_1 done")
 
+<<<<<<< HEAD
 	#targets_test_1()
 	#print("targets_test_1 done")
 
@@ -82,3 +83,7 @@ if __name__ == "__main__":
 
 	distance_target_heuristic_test_1()
 	print("distance_target_heuristic_test_1 done")
+=======
+    targets_test_1()
+    print("targets_test_1 done")
+>>>>>>> origin/master
