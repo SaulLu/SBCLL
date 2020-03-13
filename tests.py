@@ -2,7 +2,7 @@ import numpy as np
 
 from models.cell import Cell
 from models.board import Board
-from models.engine import Engine
+import models.engine as engine
 from strategies.heuristics import naive_heuristic
 
 
@@ -10,7 +10,6 @@ def board_test_1():
     max_x = 5
     max_y = 5
     board = Board(max_x, max_y)
-    engine = Engine()
     our_name = 'vampires'
     for i in range(5000):
         if np.random.random() > 0.5:
@@ -39,7 +38,6 @@ def board_test_1():
 
 
 def targets_test_1():
-    engine = Engine()
     board = Board(5, 5)
 
     board.update_cell((1, 4), "humans", 2, "vampires")
@@ -56,8 +54,8 @@ def targets_test_1():
 
 
 if __name__ == "__main__":
-    # board_test_1()
-    # print("board_test_1 done")
+    board_test_1()
+    print("board_test_1 done")
 
     targets_test_1()
     print("targets_test_1 done")

@@ -1,23 +1,24 @@
 import sys
-sys.path.append('.')
-
 import pathlib
 import json
+import argparse
+import time
 
-from models.board import Board
+sys.path.append('.')
+
 from connector.connect import load_config as load_config_connect
 from connector.client import Client
 from strategies.random_strategy import RandomStrategy
 from strategies.next_best_strategy import NextBestStrategy
 from strategies.random_walk_strategy import RandomWalkStrategy
 from strategies.heuristics import naive_heuristic
-import argparse
-import time
+
 
 class Player():
     """Class 
     """
-    def __init__(self, strategy_class, heuristic, algo_name = "group_1"):
+
+    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time = 9500):
         """ Constructor for player
 
         Arguments:
@@ -31,7 +32,8 @@ class Player():
         self.strategy = None
         self.client = None
         self.heuristic = heuristic
-    
+        self.think_time = think_time
+
     def play(self):
         """Initializes the game and loops between our turn and ennemy's turn until the end 
         """
@@ -39,12 +41,12 @@ class Player():
         self.__init_game()
 
         while True:
-            while not(self.client.is_my_turn() or self.client.has_game_ended()):
+            while not (self.client.is_my_turn() or self.client.has_game_ended()):
                 time.sleep(0.15)
             if self.client.is_my_turn():
                 board_changes = self.client.get_board_changes()
                 self.strategy.update_board(board_changes, self.our_name)
-                self.client.put_moves_to_send(self.strategy.next_moves())
+                self.client.put_moves_to_send(self.strategy.next_moves(self.think_time))
             else:
                 print("game has ended")
                 break
@@ -56,29 +58,29 @@ class Player():
         """
         config_connector = load_config_connect()
         config_player = self.__load_config()
-        self.client = Client(self.algo_name,config_connector['IP'],int(config_connector['port']))
+        self.client = Client(self.algo_name, config_connector['IP'], int(config_connector['port']))
         self.client.start()
-        #time.sleep(1)
+        # time.sleep(1)
 
         board_size = self.client.get_board_size()
         print(f"I just got the board size: {board_size}")
-        self.strategy = self.strategy_class(board_size[1],board_size[0], self.heuristic)
-    
+        self.strategy = self.strategy_class(board_size[1], board_size[0], self.heuristic)
+
         coords_start = self.client.get_start_location()
         self.__init_home(coords_start[0], coords_start[1])
         print("I just got the starting location")
 
-        initial_setup = self.client.get_board_changes(timeout = 5*60)
+        initial_setup = self.client.get_board_changes(timeout=5 * 60)
         for dico_cell in initial_setup:
             if dico_cell['coords'] == self.first_position:
                 self.our_name = dico_cell['species']
                 self.opponent_name = "werewolves" if self.our_name == "vampires" else "vampires"
-        
+
         self.strategy.update_board(initial_setup, self.our_name)
         print("I just got the initial setup")
 
     def __init_humans(self, humans_coords):
-        #useless apriori
+        # useless apriori
         pass
 
     def __init_home(self, x, y):
@@ -88,10 +90,8 @@ class Player():
             x {int} -- column
             y {int} -- row
         """
-        self.first_position = (x,y)
+        self.first_position = (x, y)
 
-
-        
     def __load_config(self):
         """Function to load the player config
         
@@ -111,8 +111,9 @@ if __name__ == '__main__':
     command: python Client.py -n <player_name>
     """
 
-    strategy_dic = {"default":RandomStrategy, "random":RandomStrategy, "random_walk":RandomWalkStrategy, "next_best":NextBestStrategy}
-    heuristics_dic = {"default":naive_heuristic, "naive":naive_heuristic}
+    strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
+                    "next_best": NextBestStrategy}
+    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic}
 
     parser = argparse.ArgumentParser()
 
@@ -131,10 +132,10 @@ if __name__ == '__main__':
             print(f"using {args.strategy_name} strategy")
         except KeyError:
             strategy_class = strategy_dic["default"]
-            print(f"using default strategy") 
+            print(f"using default strategy")
     else:
         strategy_class = strategy_dic["default"]
-        print(f"using default strategy") 
+        print(f"using default strategy")
 
     if args.heuristic:
         try:
@@ -142,10 +143,10 @@ if __name__ == '__main__':
             print(f"using {args.heuristic} heuristic")
         except KeyError:
             heuristic = heuristics_dic["default"]
-            print(f"using default heuristic") 
+            print(f"using default heuristic")
     else:
         heuristic = heuristics_dic["default"]
-        print(f"using default heuristic") 
+        print(f"using default heuristic")
 
     if args.algo_name:
         algo_name = args.algo_name
@@ -154,7 +155,3 @@ if __name__ == '__main__':
 
     player = Player(strategy_class, heuristic, algo_name)
     player.play()
-    
-
-
-    
