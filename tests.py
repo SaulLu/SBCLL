@@ -46,7 +46,7 @@ def targets_test_1():
     board.update_cell((3, 3), "werewolves", 4, "vampires")
     board.update_cell((2, 2), "vampires", 4, "vampires")
 
-    for target_mov in engine.get_target_moves(board.get_cell(2, 2), board):
+    for target_mov in engine.get_target_moves(board.get_cell(x=2, y=2), board):
         s = ""
         for t, n in target_mov:
             s = s + f" {t['target']}, {t['creature']}, {t['number']} => {n};"

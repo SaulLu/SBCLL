@@ -23,12 +23,12 @@ def apply_possible_board_one_move(board: Board, move: Mov, attacker_species, met
     x_dest = move.arrival_coordinates[0]
     y_dest = move.arrival_coordinates[1]
 
-    defender_cell = board.get_cell(x_dest, y_dest)
+    defender_cell = board.get_cell(x=x_dest, y=y_dest)
 
     new_state_defender_cell = cell_output_if_attacked(defender_cell, attacker_species, move.n_creatures,
                                                       method)
     new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
-                                   board.get_cell(x_init, y_init).number - move.n_creatures)
+                                   board.get_cell(x=x_init, y=y_init).number - move.n_creatures)
 
     board.update_cell2(new_state_defender_cell)
     board.update_cell2(new_state_attacker_cell)
@@ -49,12 +49,12 @@ def create_possible_board_one_move(current_board: Board, move: Mov, attacker_spe
     y_dest = move.arrival_coordinates[1]
 
     new_possible_board = current_board.deepcopy()
-    defender_cell = new_possible_board.get_cell(x_dest, y_dest)
+    defender_cell = new_possible_board.get_cell(x=x_dest, y=y_dest)
 
     new_state_defender_cell = cell_output_if_attacked(defender_cell, attacker_species, move.n_creatures,
                                                       method)
     new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
-                                   current_board.get_cell(x_init, y_init).number - move.n_creatures)
+                                   current_board.get_cell(x=x_init, y=y_init).number - move.n_creatures)
 
     new_possible_board.update_cell2(new_state_defender_cell)
     new_possible_board.update_cell2(new_state_attacker_cell)
@@ -148,12 +148,12 @@ def adjacent_cells(i_coord, j_coord, board):
     return adjacents
 
 
-def get_targetable_cells(i_coord, j_coord, creature, board: Board):
+def get_attainable_cells(i_coord: int, j_coord: int, creature, board: Board):
     return [adj for adj in adjacent_cells(i_coord, j_coord, board) if
             board.grid[adj[0]][adj[1]].creature != creature]
 
 
-def get_cell_moves(cell, board: Board):
+def get_cell_moves(cell: Cell, board: Board):
     """Lists all the ways to divide (or not) the current group and move the members to adjacent cells.
     Returns all possibilities, including not doing anything.
 
@@ -260,7 +260,7 @@ def get_random_turn(board, creature_name):
     moves = []
     while len(moves) == 0:
         for cell in cells:
-            targets = get_targetable_cells(cell.x, cell.y, creature_name, board)
+            targets = get_attainable_cells(cell.x, cell.y, creature_name, board)
             if len(targets):
                 for i in range(cell.number):
                     if np.random.random() > 0.5:  # will move!

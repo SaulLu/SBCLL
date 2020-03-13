@@ -64,15 +64,19 @@ class Board:
         if cell.number:
             self.creatures_list[cell.creature][(cell.x, cell.y)] = cell.number
 
-    def get_cell(self, x, y):
-        """This method returns a cell element for a given x and y"""
-        return self.grid[x][y]
+    def get_cell(self, coordinate=None, x=None, y=None):
+        """This method returns a cell element for a given coordinate"""
+        if not (coordinate is None):
+            return self.grid[coordinate[0]][coordinate[1]]
+        if not (x is None or y in None):
+            return self.grid[x][y]
+        raise RuntimeError("please specify coordinate or x and y")
 
     def __str__(self):
         grid_s = ""
         for y in range(self.max_y):
             for x in range(self.max_x):
-                c = self.grid[x][y].creature if self.grid[x][y].creature != None else "-"
+                c = self.grid[x][y].creature if not(self.grid[x][y].creature is None) else "-"
                 grid_s += f"{c[0]}-{self.grid[x][y].number}\t"
             grid_s += "\n"
         return grid_s
