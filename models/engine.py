@@ -19,7 +19,7 @@ class Engine():
     def apply_possible_board_many_moves(self, board, moves_list, attacker_species, method=None):
         """Method that applies moves to a board"""
         for move in moves_list:
-            self.apply_possible_board_one_move(board, move, attacker_species, method=None)
+            self.apply_possible_board_one_move(board, move, attacker_species, method)
 
     def apply_possible_board_one_move(self, board, move, attacker_species, output_species=None, output_qty=None):
         """Method that applies the result of one move to a board"""
@@ -40,31 +40,68 @@ class Engine():
         board.update_cell2(new_state_defender_cell)
         board.update_cell2(new_state_attacker_cell)
 
-    def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
-        """Method that generates a possible board for any given legal combination of moves"""
-        return_board = current_board.deepcopy()
-        self.apply_possible_board_many_moves(return_board, moves_list, attacker_species, method)
-        return return_board
-
-    def create_possible_board_one_move(self, current_board, move, attacker_species, method):
-        """Method that generates a possible board for any given legal move"""
-        new_possible_board = current_board.deepcopy()
-        self.apply_possible_board_one_move(new_possible_board, move, attacker_species, method)
-        return new_possible_board
-
-    def get_all_possible_boards_many_moves(self,current_board, moves_list, attacker_species):
-        
     
-    def get_all_possible_boards_one_move(self,current_board, move, attacker_species, method):
-        """Method that returns all the possible boards resulting from a move on a board and their probabilities"""
+    def create_possible_boards_many_moves(self,current_board, moves_list, attacker_species, method):
+         """Method that returns all the possible boards resulting from a list of moves on a board and their probabilities
+        
+         Arguments:
+            current_board {Board} -- the original board
+            move {list}  -- list of moves to apply
+            attacker_species {string} -- name of the creature doing the moves (attacker)
+            method {string}  -- None, to have only 1 output OR "esperance" to have 2 outputs (attackers win or lose)
+
+        Returns:
+            A list of (board, probability_of_board)
+        """
+        all_boards_and_probas = []
+        
+        all_moves_possibilities = []
+        for move in moves_list:
+            all_moves_possibilities.append(create_possible_boards_one_move(current_board, move, attacker_species, method))
+        all_combinations = iter.product(*all_moves_possibilities)
+        
+        for combination in all_combinations:
+            new_board = current_board.deepcopy()
+            self.apply_possible_board_many_moves(new_board, moves_list, attacker_species, method)
+            combination_probabilities = [x["output_proba"] for x in combination]
+            board_probability = sum(combination_probabilities)
+            all_boards_and_probas.append((new_board, board_probability))
+        
+        return all_boards_and_probas
+
+    #TO REMOVE
+    # def create_possible_board_many_moves(self, current_board, moves_list, attacker_species, method=None):
+    #     """Method that generates a possible board for any given legal combination of moves"""
+    #     return_board = current_board.deepcopy()
+    #     self.apply_possible_board_many_moves(return_board, moves_list, attacker_species, method)
+    #     return return_board
+    
+    def create_possible_boards_one_move(self,current_board, move, attacker_species, method):
+        """Method that returns all the possible boards resulting from a move on a board and their probabilities
+        
+         Arguments:
+            current_board {Board} -- the original board
+            move {Mov}  -- the move to do
+            attacker_species {string} -- name of the creature attacking the cell
+            method {string}  -- None, to have only 1 output OR "esperance" to have 2 outputs (attackers win or lose)
+
+        Returns:
+            A list of (board, probability_of_board)
+        """
         all_possibilities = []
         possible_outputs = self.cell_outputs_if_attacked(defender_cell, attacker_species, move.number_indiv, method)
         for output in possible_outputs:
             new_board = current_board.deepcopy()
-            new_board.apply_possible_board_one_move(current_board, move, output["winning_species"], output["output_qty"])
+            new_board.apply_possible_board_one_move(current_board, move, attacker_species, output["winning_species"], output["output_qty"])
             all_possibilities.append((new_board, output["output_proba"]))
         return all_possibilities
 
+    #TO REMOVE
+    # def create_possible_board_one_move(self, current_board, move, attacker_species, method):
+    #     """Method that generates a possible board for any given legal move"""
+    #     new_possible_board = current_board.deepcopy()
+    #     self.apply_possible_board_one_move(new_possible_board, move, attacker_species, method)
+    #     return new_possible_board
 
     def cell_outputs_if_attacked(self, defender_cell, attacker_species, attacker_qty, method=None):
         """Method that gives the hypothetic output state of cell if it is under attack .
@@ -74,8 +111,8 @@ class Engine():
             attacker_species {string} -- name of the creature attacking the cell
             attacker_qty {int}  -- number of attackers
 
-        :returns
-           a list of possible outputs
+        Returns:
+           A list of possible outputs with 3 elements : output_proba, output_species, output_qty
         """
         outputs = []
         if defender_cell.creature == "humans":
@@ -97,45 +134,43 @@ class Engine():
         
         return outputs
 
-    
-    def _all_outputs_random_battle(self, defender_cell, attacker_species, attacker_qty):
-        
-         # 1. Calculate probability p that attackers win
+    def _get_proba_to_win(attaquer_qty, defender_qty):
         if attacker_qty == defender_cell.number:
             p = 0.5
         elif attacker_qty < defender_cell.number:
             p = attacker_qty / (2 * defender_cell.number)
         else:
             p = -0.5 + attacker_qty / defender_cell.number
+        return p 
+
+    
+    def _all_outputs_random_battle(self, defender_cell, attacker_species, attacker_qty):
+        
+        # 1. Calculate probability p that attackers win
+        p = _get_proba_to_win(attacker_qty, defender_cell.number)
         
         # 2. Get mean output of attackers survivors if attackers win
-        esperance_attackers = 0
-        for possible_number_survivors in range(1,attacker_qty+1):
-            esperance_attackers += possible_number_survivors * get_probability(possible_number_survivors, attacker_qty, p)
-        esperance_attackers = esperance_attackers*p
+        esperance_attackers_knowing_win = attacker_qty *p
 
         # add mean nb of humans survivors if they are the defenders
         if defender_cell.creature == "humans":
-            esperance_humans = 0
-            for possible_number_survivors in range(1, defender_cell.number+1):
-                esperance_humans += possible_number_survivors * get_probability(possible_number_survivors, defender_cell.number, p)
-        esperance_attackers += esperance_humans
+            esperance_humans = defender_cell.number*p
+            esperance_attackers_knowing_win += esperance_humans
+        
+        esperance_attackers = p * esperance_attackers_knowing_win
 
         # 3. Get mean output of defenders survivors if attackers lose
-        esperance_defenders = 0
-        for possible_number_survivors in range(1, defender_cell.number+1):
-            esperance_defenders += possible_number_survivors * get_probability(possible_number_survivors, defender_cell.number, 1-p)
+        esperance_defenders = defender_cell.number *(1-p) * (1-p)
 
         return [{"output_proba":p, "output_species": attacker_species, "output_qty":esperance_attackers},
         {"output_proba":1-p, "output_species": defender_cell.creature, "output_qty":esperance_defenders}]
 
-    def get_probability(possible_number_survivors, initial_total_number, p):
-        """Calculate the binomial probability of having possible_number_survivors"""
-        return binom(initial_total_number, possible_number_survivors) * p**(possible_number_survivors) * (1-p)**(initial_total_number-possible_number_survivors)
+    # def get_probability(possible_number_survivors, initial_total_number, p):
+    #     """Calculate the binomial probability of having possible_number_survivors"""
+    #     return binom(initial_total_number, possible_number_survivors) * p**(possible_number_survivors) * (1-p)**(initial_total_number-possible_number_survivors)
 
-
-    def binom(n, k):
-        return math.factorial(n) // math.factorial(k) // math.factorial(n - k)
+    # def binom(n, k):
+    #     return math.factorial(n) // math.factorial(k) // math.factorial(n - k)
     
     def __random_battle(self, defender_cell, attacker_species, attacker_qty):
         """Private method that simulates a random battle.
@@ -150,12 +185,7 @@ class Engine():
                 dict{string: <string,int>} -- return the type of the winner species in the cell and their quantity
         """
         # 1. Calculate probability p that attackers win
-        if attacker_qty == defender_cell.number:
-            p = 0.5
-        elif attacker_qty < defender_cell.number:
-            p = attacker_qty / (2 * defender_cell.number)
-        else:
-            p = -0.5 + attacker_qty / defender_cell.number
+        p = _get_proba_to_win(attacker_qty, defender_cell.number)
 
         # 2. Determine winner
         winner_species = np.random.choice([attacker_species, defender_cell.creature], 1, p=[p, 1 - p])[0]
