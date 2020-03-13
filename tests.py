@@ -4,6 +4,19 @@ from models.cell import Cell
 from models.board import Board
 from models.engine import Engine
 from strategies.heuristics import naive_heuristic
+from strategies.heuristics import distance_target_heuristic
+
+def __create_random_board(max_x, max_y):
+	board = Board(max_x, max_y)
+	for _ in range(20):
+		species = [None, 'us', 'them', 'humans']
+		s = species[np.random.randint(len(species))]
+		if s == None:
+			number = 0
+		else:
+			number = np.random.randint(10)
+		board.update_cell2(Cell(np.random.randint(max_x), np.random.randint(max_y), s, number))
+	print(board)
 
 def board_test_1():
 	max_x = 5
@@ -36,6 +49,10 @@ def board_test_1():
 			print(board.creatures_list)
 			raise RuntimeError("creature count error")
 
+def distance_target_heuristic_test_1():
+	board = __create_random_board(6,9)
+	print(distance_target_heuristic(board))
+
 
 def targets_test_1():
 	engine = Engine()
@@ -58,5 +75,11 @@ if __name__ == "__main__":
 	#board_test_1()
 	#print("board_test_1 done")
 
-	targets_test_1()
-	print("targets_test_1 done")
+	#targets_test_1()
+	#print("targets_test_1 done")
+
+	#__create_random_board(5,8)
+	#print("create_random_board done")
+
+	distance_target_heuristic_test_1()
+	print("distance_target_heuristic_test_1 done")
