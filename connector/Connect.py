@@ -40,11 +40,11 @@ def send_moves(sock, movements):
     message += 'MOV'.encode()
     message += bytes([len(movements)])
     for mov in movements:
-        message += bytes([mov.coord_init[0]])
-        message += bytes([mov.coord_init[1]])
-        message += bytes([mov.number_indiv])
-        message += bytes([mov.coord_arriv[0]])
-        message += bytes([mov.coord_arriv[1]])
+        message += bytes([mov.initial_coordinates[0]])
+        message += bytes([mov.initial_coordinates[1]])
+        message += bytes([mov.n_creatures])
+        message += bytes([mov.arrival_coordinates[0]])
+        message += bytes([mov.arrival_coordinates[1]])
     sock.send(message)
 
 

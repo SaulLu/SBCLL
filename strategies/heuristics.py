@@ -1,6 +1,9 @@
-from models.engine import Engine
+"""
+This file contains the different heuristic used to evaluate boards
+"""
 
-def naive_heuristic(engine, board):
+
+def naive_heuristic(board):
     """ A naive heuristic : calculate the difference between the number of us left and the number if them left.
     
     Arguments:
@@ -9,6 +12,6 @@ def naive_heuristic(engine, board):
     Returns:
         int -- difference between the number of us left and the number of them left
     """
-    number_of_us, number_of_them, _ = engine.count_creatures(board)
-    
+    number_of_us, number_of_them, _ = board.count_creatures()
+
     return number_of_us - number_of_them
