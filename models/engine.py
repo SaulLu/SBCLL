@@ -7,13 +7,18 @@ class Engine():
     def __init__(self):
         pass
 
-    def cell_output_if_attacked(self, defender_cell, attacker_species, attacker_qty):
+    
+    
+    def simulate_attack_on_cell(self, defender_cell, attacker_species, attacker_qty):
         """Method that gives the hypothetic output state of cell if it is under attack .
         
         Arguments:
             defender_cell {Cell} -- cell that is being attacked
             attacker_species {string} -- name of the creature attacking the cell
             attacker_qty {int}  -- number of attackers  
+        
+        Returns:
+            dict{string: <string,int>} -- return the type of species in the cell and their quantity
         """  
         if defender_cell.creature == "humans":
             if attacker_qty >= defender_cell.number :
@@ -21,6 +26,7 @@ class Engine():
             else:
                 output = self.__random_battle(defender_cell, attacker_species,attacker_qty) 
         elif attacker_qty >= 1.5*defender_cell.number:
+            assert(attacker_species==defender_cell.creature, "This is not an attack")
             output = {"creature":attacker_species, "number": attacker_qty}
         else:
             output = self.__random_battle(defender_cell, attacker_species,attacker_qty)
@@ -34,7 +40,10 @@ class Engine():
                 defender_cell {Cell} -- cell that is being attacked
                 attacker_species {string} -- name of the creature attacking the cell
                 attacker_qty {int}  -- number of attackers
-            """ 
+            
+            Returns:
+                dict{string: <string,int>} -- return the type of the winner species in the cell and their quantity
+            """  
             # 1. Calculate probability p
             if attacker_qty == defender_cell.number :
                 p = 0.5
