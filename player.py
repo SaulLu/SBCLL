@@ -6,8 +6,8 @@ import time
 
 sys.path.append('.')
 
-from connector.connect import load_config as load_config_connect
-from connector.client import Client
+from connector.Connect import load_config as load_config_connect
+from connector.Client import Client
 from strategies.random_strategy import RandomStrategy
 from strategies.next_best_strategy import NextBestStrategy
 from strategies.random_walk_strategy import RandomWalkStrategy

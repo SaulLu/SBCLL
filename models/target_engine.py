@@ -63,6 +63,10 @@ def get_target_turns(creature, board: Board):
 def get_feasible_targets(board: Board, creature):
     min_takeover_factor = {engine.reverse_creature(creature): 1.5, 'humans': 1}
 
+def get_potential_moves_from_board(board : Board, creature : string):
+    targets = get_feasible_targets(board, creature) 
+    return targets_to_moves(targets)
+
 def targets_to_moves(targets_scenarios_list: list, board:Board):
     """transforms a list of scenarios in which each cell of "us" is targeting \
         another cell into a list of move scenarios
