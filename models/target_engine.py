@@ -10,6 +10,7 @@ from itertools import product
 from models.board import Board
 from models.cell import Cell
 from models.mov import Mov
+from typing import Type
 import models.engine as engine
 
 
@@ -68,12 +69,40 @@ def targets_to_moves(targets_scenarios_list, board:Board):
     mov_scenarios_list = []
     for targets_scenario in targets_scenarios_list:
         mov_scenario = []
-        for target_dict in targets_scenario:
-            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, **target_dict)
+        targets_scenario_other, targets_scenario_us = targets_scenario
+
+        for target_dict in targets_scenario_other:
+            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, \
+                **target_dict)
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
+        
+        for us_pos_dict in targets_scenario_us:
+            target_cell =  __target_cell(board=board, mov_scenario=mov_scenario, \
+                start=us_pos_dict['start'], target=us_pos_dict['target'])
+            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, \
+                start=us_pos_dict['start'], target=target_cell, \
+                number=us_pos_dict['number'])
+            if mov_temp is not None:
+                mov_scenario.append(mov_temp)
+
         mov_scenarios_list.append(mov_scenario)
     return(mov_scenarios_list)
+
+def __target_cell(board: Board, mov_scenario: Mov, start:(int,int), target:(int,int)):
+    for mov in mov_scenario:
+        if mov.initial_coordinates == target:
+            return(mov.arrival_coordinates)
+            
+    poss_targets = __get_adjacent_cells(start)
+    scores = __get_scores_adjacent_cells(poss_targets, start)
+    for poss_coord in scores[:,1:]:
+        if ((poss_coord[0] >= 0) and (poss_coord[0] < board.max_x) and \
+            (poss_coord[1] >= 0) and (poss_coord[1] < board.max_y) and \
+            (not board.grid[poss_coord[0],poss_coord[1]].creature)):
+            target = poss_coord
+            break
+    return(tuple(target))
 
 def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:(int,int), number:int):
     """
@@ -94,20 +123,14 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
     else:
         arriv = None
 
-        offsets = list(product([0,1,-1],repeat = 2))
-        offsets.remove((0,0))
-        offsets = np.array(offsets)
-
-        poss_arriv = start + offsets
+        poss_arriv = __get_adjacent_cells(start)
 
         if target in poss_arriv and board.grid[target[0],target[1]].creature != 'us':
             arriv = target
             calculate_moves[key] = Mov(start, number, tuple(arriv))
             return (calculate_moves[key])
 
-        dist = get_distance_between_array_cells(poss_arriv, target)
-        scores = np.column_stack((dist, poss_arriv))
-        scores.view('i8,i8,i8').sort(order=['f0'], axis=0)
+        scores = __get_scores_adjacent_cells(poss_arriv, target)
 
         for poss_coord in scores[:,1:]:
             if ((poss_coord[0] >= 0) and (poss_coord[0] < board.max_x) and \
@@ -121,7 +144,19 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
         else:
             calculate_moves[key] = None
         return(calculate_moves[key])
+    
+def __get_adjacent_cells(start:(int,int)):
+    offsets = list(product([0,1,-1],repeat = 2))
+    offsets.remove((0,0))
+    offsets = np.array(offsets)
+    return(start + offsets)
 
-def get_distance_between_array_cells(array_pos_cell1, array_pos_cell2):
+def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target:(int,int)):
+    dist = get_distance_between_array_cells(poss_arriv, target)
+    scores = np.column_stack((dist, poss_arriv))
+    scores.view('i8,i8,i8').sort(order=['f0'], axis=0)
+    return(scores)
+
+def get_distance_between_array_cells(array_pos_cell1: np.ndarray, array_pos_cell2):
     #asert
     return np.max(np.abs(array_pos_cell1-array_pos_cell2), axis=1)
