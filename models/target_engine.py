@@ -167,7 +167,7 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
     if np.sum(attackers.items()):  # if not every creature has a target:
         closest_ally = assign_closest_ally(list(attackers.keys()))
         for coordinate, n_creatures in attackers.items():
-            if n_creatures:
+            if n_creatures and not(closest_ally[coordinate][1] is None):
                 merge_targets_attribution.append({'start': coordinate, 'target': closest_ally[coordinate][1],
                                                   'number': n_creatures})
 
@@ -238,6 +238,8 @@ def targets_to_moves(targets_scenarios_list: list, board: Board):
                 mov_scenario.append(mov_temp)
 
         for us_pos_dict in targets_scenario_us:
+            if us_pos_dict['target'] is None:
+                print(us_pos_dict)
             target_cell = __target_cell(board=board, mov_scenario=mov_scenario,
                                         start=us_pos_dict['start'], target=us_pos_dict['target'])
             mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
