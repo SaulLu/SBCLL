@@ -6,15 +6,15 @@ class Node:
     """Class modelizing a node in the alpha beta tree
     """
 
-    def __init__(self, moves):
+    def __init__(self, moves, board, player):
         self.moves = moves
-        self.potential_boards = engine.get_possible_boards_from_turn(moves)
+        self.potential_boards = engine.create_possible_boards_many_moves(board, moves, player, method="esperance")
 
-    def get_score_node(self, heuristic):
-        score = 0
-        for board, proba in self.potential_boards:
-            score += heuristic(board)*proba
-        return score
+    # def get_score_node(self, heuristic):
+    #     score = 0
+    #     for board, proba in self.potential_boards:
+    #         score += heuristic(board)*proba
+    #     return score
 
 def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_depth, heuristic, alpha, beta):
     
@@ -24,8 +24,8 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
         
     # sinon
     else:
-        list_moves = get_next_moves(current_board) # get-next_moves dépend de la strat
-        nodes = [Node(moves) for moves in list_moves] # on génère les boards à partir des moves considérés par la strat
+        list_moves = get_next_moves(current_board, player) # get-next_moves dépend de la strat
+        nodes = [Node(moves, current_board, player) for moves in list_moves] # on génère les boards à partir des moves considérés par la strat
         
         if player == "us":
             bestMove = None

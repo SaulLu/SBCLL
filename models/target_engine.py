@@ -217,12 +217,6 @@ def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[
                in targets_coordinates]
     attackers = {coordinate: board.get_cell(coordinate).number for coordinate in board.creatures_list[creature]}
 
-
-def get_potential_moves_from_board(board: Board, creature: str):
-    targets = get_feasible_targets(board, creature)
-    return targets_to_moves(targets)
-
-
 def targets_to_moves(targets_scenarios_list: list, board: Board):
     """transforms a list of scenarios in which each cell of "us" is targeting \
         another cell into a list of move scenarios
