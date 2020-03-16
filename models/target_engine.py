@@ -174,16 +174,48 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
     return attack_targets_attribution, merge_targets_attribution
 
 
+def __suicidal_target(targets: List[Dict], attackers: Dict) -> List[Dict]:
+    friendly_coordinate = attackers.keys()[0]
+    best_min_takeover = np.inf
+    target_coordinate = None
+    for target in targets:
+        if target['min_takeover'] < best_min_takeover:
+            best_min_takeover = target['min_takeover']
+            target_coordinate = target['coordinate']
+
+    return [{'start': friendly_coordinate, 'target': target_coordinate, 'number': attackers[friendly_coordinate]}]
+
+
+def __recursive_attribution(targets: List[Dict], attack_targets_attribution: List[Dict], attackers: Dict,
+                            attackers_possible_targets: Dict) -> List[Tuple[List[Dict], List[Dict]]]:
+    if len(attackers_possible_targets) == 0:  # no more target to attack
+        merge_targets_attribution = []
+        if np.sum(attackers.items()):  # if not every creature has a target:
+            closest_ally = assign_closest_ally(list(attackers.keys()))
+            for coordinate, n_creatures in attackers.items():
+                if n_creatures:
+                    merge_targets_attribution.append({'start': coordinate, 'target': closest_ally[coordinate][1],
+                                                      'number': n_creatures})
+        if len(attackers_possible_targets) + len(merge_targets_attribution) == 0: #no target and alone
+            attackers_possible_targets = __suicidal_target(targets, attackers)
+        return [(attackers_possible_targets, merge_targets_attribution)]
+    else:
+        attribution = []
+
+
 def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[Dict]]]:
     """
-    compute
+    return at the atrget attribution possible for a turn
     :param board: actual board
     :param creature: attacker side
-    :return:
+    :return: [(List[Dict]],List[Dict]])] the keys of the dicts are: 'start' (coordinate of the attacker Cell),
+                                    'target' (target coordinate), 'number' (number of creature to send)
+                        The first List is opponent's or neutral's target, the second is friendly targets (merge intent)
     """
     targets_coordinates = get_available_targets(creature, board)
-    targets = [{'coordinates': coordinate, 'min_takeover': get_min_takeover(board.get_cell(coordinate))} for coordinate
+    targets = [{'coordinate': coordinate, 'min_takeover': get_min_takeover(board.get_cell(coordinate))} for coordinate
                in targets_coordinates]
+    attackers = {coordinate: board.get_cell(coordinate).number for coordinate in board.creatures_list[creature]}
 
 
 def get_potential_moves_from_board(board: Board, creature: str):
