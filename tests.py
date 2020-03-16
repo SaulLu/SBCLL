@@ -4,6 +4,7 @@ from models.cell import Cell
 from models.board import Board
 import models.engine as engine
 import models.target_engine as target_engine
+from strategies.heuristics import naive_heuristic
 
 
 def board_test_1():
@@ -75,10 +76,84 @@ def random_targets_test():
     for i in range(100):
         check_targets(board, target_engine.get_random_target_turn(board, 'us'))
 
+def target_to_move_test():
+    board = Board(5, 5)
+
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 1, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 2), "vampires", 4, "vampires")
+
+    print(board)
+    calculate_moves = dict()
+    config={
+        'calculate_moves': calculate_moves,
+        'start' : (1, 3),
+        'target' : (2, 2),
+        'number' : 2
+    }
+    print("Moves for the scenario")
+    print(target_engine.target_to_move(board, **config))
+
+def targets_to_move_test():
+
+    board = Board(5, 5)
+
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 1, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 2), "vampires", 4, "vampires")
+
+    print(board)
+
+    targets_scenarios_list=[
+    [
+        [{
+        'start' : (1, 3),
+        'target' : (2, 2),
+        'number' : 1
+        },
+        {
+        'start' : (3, 3),
+        'target' : (1, 4),
+        'number' : 3
+        }],
+        []
+    ],
+    [
+        [{
+        'start' : (1, 3),
+        'target' : (1, 4),
+        'number' : 1
+        },
+        {
+        'start' : (3, 3),
+        'target' : (1, 4),
+        'number' : 3
+        }],
+        [
+        {
+        'start' : (1, 3),
+        'target' : (3, 3),
+        'number' : 1
+        },
+        ]
+    ]
+    ]  
+    print("List of Moves for the scenarios")
+    print(target_engine.targets_to_moves(board=board,targets_scenarios_list=targets_scenarios_list))
 
 if __name__ == "__main__":
     board_test_1()
-    print("board_test_1 done")
+    print("board_test_1 done\n")
 
     random_targets_test()
     print("random_targets_test done")
+
+    target_to_move_test()
+    print("target_to_move_test done\n")
+
+    targets_to_move_test()
+    print("targets_to_move_test done")

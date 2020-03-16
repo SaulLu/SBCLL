@@ -5,7 +5,7 @@ import socket
 import threading
 import queue
 import copy
-from connector.connect import *
+from connector.Connect import *
 from models.mov import Mov
 import time
 import argparse
