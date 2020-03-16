@@ -24,7 +24,17 @@ def cell_outputs_if_attacked(defender_cell, attacker_species, attacker_qty, meth
            A list of possible outputs with 3 elements : output_proba, output_species, output_qty
     """    
     outputs = []
-    if defender_cell.creature == "humans":
+    
+    # If we join others members of species
+    if attacker_species == defender_cell.creature :
+        outputs.append({"output_proba":1, "output_species": attacker_species, "output_qty": defender_cell.number + attacker_qty})
+
+    # if we move to an empty cell
+    elif defender_cell.creature is None :
+        outputs.append({"output_proba":1, "output_species": attacker_species, "output_qty": attacker_qty})
+    
+    # if we attack humans
+    elif defender_cell.creature == "humans":
         if attacker_qty >= defender_cell.number:
             outputs.append({"output_proba":1, "output_species": attacker_species, "output_qty": defender_cell.number + attacker_qty})
         else:
@@ -33,8 +43,11 @@ def cell_outputs_if_attacked(defender_cell, attacker_species, attacker_qty, meth
             else:
                 outputs.append(__random_battle(defender_cell, attacker_species, attacker_qty))
                 
+    # if we attack our opponents largely (no battles)
     elif attacker_qty >= 1.5 * defender_cell.number:
             outputs.append({"output_proba":1,"output_species": attacker_species, "output_qty": attacker_qty})
+    
+    # if we attack our opponents with battles
     else:
         if method == "esperance":
             outputs = _all_outputs_random_battle(defender_cell, attacker_species, attacker_qty)
