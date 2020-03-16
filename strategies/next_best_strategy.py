@@ -11,7 +11,7 @@ class NextBestStrategy(Strategy):
 
     def next_moves(self, think_time):
         all_possible_turns = np.array(engine.get_possible_turns(self.current_board, 'us'))
-        all_possible_boards = [engine.create_possible_board_many_moves(
+        all_possible_boards = [engine.create_possible_boards_many_moves(
             self.current_board, turn, 'us') for turn in all_possible_turns]
 
         graded_boards = [self.heuristic(b) for b in all_possible_boards]

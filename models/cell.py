@@ -27,3 +27,6 @@ class Cell:
 
     def deepcopy(self):
         return Cell(self.x, self.y, self.creature, self.number)
+
+    def __repr__(self):
+        return "x: {0}, y: {1}, creature: {2}, qty: {3}".format(self.x, self.y, self.creature, self.number)
