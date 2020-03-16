@@ -262,22 +262,24 @@ def __target_cell(board: Board, mov_scenario: list, start: (int, int), target: (
     Return:
         {(int,int)} -- coordinate of the cell to target
     """
+    target_cell = None
+
     for mov in mov_scenario:
         if mov.initial_coordinates == target:
             return mov.arrival_coordinates
 
     poss_targets = np.array(engine.adjacent_cells(
-        i_coord=start[0],
-        j_coord=start[1],
+        i_coord=target[0],
+        j_coord=target[1],
         board=board
     ))
-
+    
     scores = __get_scores_adjacent_cells(poss_targets, start)
     for poss_coord in scores[:, 1:]:
         if not board.grid[poss_coord[0], poss_coord[1]].creature:
-            target = poss_coord
+            target_cell = tuple(poss_coord)
             break
-    return tuple(target)
+    return target_cell
 
 
 def target_to_move(board: Board, calculate_moves: dict, start: (int, int), target: (int, int), number: int):
