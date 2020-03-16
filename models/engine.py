@@ -21,13 +21,14 @@ def apply_possible_board_many_moves(board: Board, moves_list, attacker_species, 
         attacker_species {string} -- name of the creature doing the moves (attacker)
         moves_outputs {list}  -- list of specific results to apply if provided, otherwise random during battles
     """
-    if moves_outputs==None:
+    if moves_outputs is None:
         for move in moves_list:
             apply_possible_board_one_move(board, move, attacker_species)
     else:
         for i in range(len(moves_list)):
-            apply_possible_board_one_move(board, moves_list[i], attacker_species, 
-            moves_outputs[i]["output_species"], moves_outputs[i]["output_qty"])
+            apply_possible_board_one_move(board, moves_list[i], attacker_species,
+                                          moves_outputs[i]["output_species"], moves_outputs[i]["output_qty"])
+
 
 def apply_possible_board_one_move(board, move, attacker_species, output_species=None, output_qty=None):
     """Method that applies the result of one move to a board
@@ -47,13 +48,14 @@ def apply_possible_board_one_move(board, move, attacker_species, output_species=
 
     defender_cell = board.get_cell(x=x_dest, y=y_dest)
 
-    if output_species==None:
+    if output_species is None:
         # Get new states by using random in real time if outputs not given (only one output)
         output = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures)[0]
         output_species, output_qty = output["output_species"], output["output_qty"]
 
     new_state_defender_cell = Cell(x_dest, y_dest, output_species, output_qty)
-    new_state_attacker_cell = Cell(x_init, y_init, attacker_species, board.get_cell(x_init, y_init).number - move.n_creatures)
+    new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
+                                   board.get_cell(x=x_init, y=y_init).number - move.n_creatures)
 
     board.update_cell2(new_state_defender_cell)
     board.update_cell2(new_state_attacker_cell)
@@ -72,20 +74,20 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         A list of (board, probability_of_board)
     """
     all_boards_and_probas = []
-    
+
     all_moves_possibilities = []
 
     # Get all probable outputs for each move
     for move in moves_list:
-        defender_cell = current_board.get_cell(move.arrival_coordinates[0], move.arrival_coordinates[1])
+        defender_cell = current_board.get_cell(move.arrival_coordinates)
         possible_outputs = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures, method)
         # Add list of outputs for this move
         all_moves_possibilities.append(possible_outputs)
 
     # Get all combination by taking only one output for each move each time
     all_combinations = itertools.product(*all_moves_possibilities)
-   
-    if method != None :
+
+    if not(method is None):
         for combination in all_combinations:
             new_board = current_board.deepcopy()
             apply_possible_board_many_moves(new_board, moves_list, attacker_species, combination)
@@ -93,12 +95,12 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
             board_probability = np.prod(combination_probabilities)
             all_boards_and_probas.append((new_board, board_probability))
         return all_boards_and_probas
-    
+
     else:
         return_board = current_board.deepcopy()
         apply_possible_board_many_moves(return_board, moves_list, attacker_species)
         return return_board
-        
+
 
 def create_possible_boards_one_move(current_board, move, attacker_species, method=None):
     """Method that returns all the possible boards resulting from a move on a board and their probabilities
@@ -113,7 +115,7 @@ def create_possible_boards_one_move(current_board, move, attacker_species, metho
         A list of (board, probability_of_board)
     """
     all_possibilities = []
-    defender_cell = current_board.get_cell(move.arrival_coordinates[0], move.arrival_coordinates[1])
+    defender_cell = current_board.get_cell(move.arrival_coordinates)
     possible_outputs = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures, method)
     for output in possible_outputs:
         new_board = current_board.deepcopy()
@@ -293,8 +295,5 @@ def reverse_creature(creature):
     raise RuntimeError(f"invalid creature name: {creature}")
 
 
-def travel_distance(coo1: Tuple[int,int], coo2: Tuple[int,int]) -> int:
+def travel_distance(coo1: Tuple[int, int], coo2: Tuple[int, int]) -> int:
     return np.max(abs(coo1[0] - coo2[0]), abs(coo1[1] - coo2[1]))
-
-
-

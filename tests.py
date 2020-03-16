@@ -81,7 +81,7 @@ def random_targets_test():
 
 def esperance_tests():
     board = Board(5, 5)
-    
+
     board.update_cell((1, 4), "humans", 2, "vampires")
     board.update_cell((4, 4), "humans", 2, "vampires")
     board.update_cell((1, 3), "werewolves", 10, "vampires")
@@ -90,28 +90,29 @@ def esperance_tests():
     board.update_cell((1, 1), "werewolves", 4, "vampires")
     board.update_cell((1, 2), "humans", 5, "vampires")
 
-    init_cell = (1,3)
-    target_cell = (2,3)
-    
-    print("--before move--")
-    print("init", board.get_cell(*init_cell))
-    print("target", board.get_cell(*target_cell))
+    init_cell = (1, 3)
+    target_cell = (2, 3)
 
-    move = Mov(init_cell,3,target_cell)
-    #engine.apply_possible_board_one_move(board, move, "them", output_species="us", output_qty=2)
-    #engine.apply_possible_board_one_move(board, move, "them")
+    # print("--before move--")
+    # print("init", board.get_cell(coordinate=init_cell))
+    # print("target", board.get_cell(coordinate=target_cell))
 
-    print("--after move--")
-    print("init", board.get_cell(*init_cell))
-    print("target", board.get_cell(*target_cell))
+    move = Mov(init_cell, 3, target_cell)
+    # engine.apply_possible_board_one_move(board, move, "them", output_species="us", output_qty=2)
+    # engine.apply_possible_board_one_move(board, move, "them")
 
-    print(engine.create_possible_boards_one_move(board, move, "them", method="esperance"))
+    # print("--after move--")
+    # print("init", board.get_cell(coordinate=init_cell))
+    # print("target", board.get_cell(coordinate=target_cell))
 
-    other_move = Mov((1,1),3,(1,2))
+    # print(engine.create_possible_boards_one_move(board, move, "them", method="esperance"))
+
+    other_move = Mov((1, 1), 3, (1, 2))
     moves_list = [move, other_move]
-    
-    #print(engine.create_possible_boards_many_moves(board, moves_list, "them"))
-    print(engine.create_possible_boards_many_moves(board, moves_list, "them", method="esperance"))
+
+    # print(engine.create_possible_boards_many_moves(board, moves_list, "them"))
+    # print(engine.create_possible_boards_many_moves(board, moves_list, "them", method="esperance"))
+
 
 def target_to_move_test():
     board = Board(5, 5)
@@ -130,8 +131,8 @@ def target_to_move_test():
         'target': (2, 2),
         'number': 2
     }
-    print("Moves for the scenario")
-    print(target_engine.target_to_move(board, **config))
+    # print("Moves for the scenario")
+    # print(target_engine.target_to_move(board, **config))
 
 
 def targets_to_move_test():
@@ -183,21 +184,18 @@ def targets_to_move_test():
     print(target_engine.targets_to_moves(board=board, targets_scenarios_list=targets_scenarios_list))
 
 
-    
-    
-
 if __name__ == "__main__":
     esperance_tests()
     print("esperance_tests done")
-    
+
     board_test_1()
-    print("board_test_1 done\n")
+    print("board_test_1 done")
 
     random_targets_test()
     print("random_targets_test done")
 
-    # target_to_move_test()
-    # print("target_to_move_test done\n")
+    target_to_move_test()
+    print("target_to_move_test done")
 
-    # targets_to_move_test()
-    # print("targets_to_move_test done")
+    targets_to_move_test()
+    print("targets_to_move_test done")

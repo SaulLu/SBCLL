@@ -69,9 +69,9 @@ class Board:
 
     def get_cell(self, coordinate=None, x=None, y=None) -> Cell:
         """This method returns a cell element for a given coordinate"""
-        if not (coordinate is None):
+        if not(coordinate is None):
             return self.grid[coordinate[0]][coordinate[1]]
-        if not (x is None or y is None):
+        if not(x is None or y is None):
             return self.grid[x][y]
         raise RuntimeError("please specify coordinate or x and y")
 
