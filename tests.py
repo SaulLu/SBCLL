@@ -3,7 +3,7 @@ import numpy as np
 from models.cell import Cell
 from models.board import Board
 import models.engine as engine
-from strategies.heuristics import naive_heuristic
+import models.target_engine as target_engine
 
 
 def board_test_1():
@@ -37,25 +37,48 @@ def board_test_1():
             raise RuntimeError("creature count error")
 
 
-def targets_test_1():
-    board = Board(5, 5)
+def check_targets(board, targets):
+    attack_targets, merge_targets = targets
+    sending_per_start = {}
+    for target in attack_targets:
+        try:
+            sending_per_start[target['start']] += target['number']
+        except KeyError:
+            sending_per_start[target['start']] = target['number']
+        if target['number'] < target_engine.get_min_takeover(board.get_cell(target['target'])):
+            raise RuntimeError(f"unfeasible target: {target} \n {board}")
 
-    board.update_cell((1, 4), "humans", 2, "vampires")
-    board.update_cell((4, 4), "humans", 2, "vampires")
-    board.update_cell((1, 3), "werewolves", 1, "vampires")
-    board.update_cell((3, 3), "werewolves", 4, "vampires")
-    board.update_cell((2, 2), "vampires", 4, "vampires")
+    for target in merge_targets:
+        try:
+            sending_per_start[target['start']] += target['number']
+        except KeyError:
+            sending_per_start[target['start']] = target['number']
 
-    for target_mov in engine.get_target_moves(board.get_cell(x=2, y=2), board):
-        s = ""
-        for t, n in target_mov:
-            s = s + f" {t['target']}, {t['creature']}, {t['number']} => {n};"
-        print(s)
+    for start, number_sent in sending_per_start.items():
+        if number_sent > board.get_cell(start).number:
+            raise RuntimeError("sending too many creatures: start: {start}, number: {number} \n {board}")
+
+
+def random_targets_test():
+    board = Board(10, 3)
+    n_humans = np.random.randint(5, 10)
+    n_werewolves = np.random.randint(5, 10)
+    vampires = np.random.randint(5, 10)
+
+    for i in range(n_humans):
+        board.update_cell((i, 0), "humans", np.random.randint(1, 5), "vampires")
+    for i in range(n_werewolves):
+        board.update_cell((i, 1), "werewolves", np.random.randint(1, 10), "vampires")
+    for i in range(vampires):
+        board.update_cell((i, 2), "vampires", np.random.randint(1, 10), "vampires")
+
+    for i in range(100):
+        check_targets(board, target_engine.get_random_target_turn(board, 'us'))
 
 
 if __name__ == "__main__":
     board_test_1()
     print("board_test_1 done")
 
-    targets_test_1()
-    print("targets_test_1 done")
+    random_targets_test()
+    print("random_targets_test done")

@@ -4,6 +4,7 @@ This file hosts the basic mechanics of the game
 import numpy as np
 import itertools
 import math
+from typing import List, Set, Dict, Tuple, Optional
 
 from models.board import Board
 from models.cell import Cell
@@ -301,6 +302,10 @@ def reverse_creature(creature):
     elif creature == 'them':
         return 'us'
     raise RuntimeError(f"invalid creature name: {creature}")
+
+
+def travel_distance(coo1: Tuple[int,int], coo2: Tuple[int,int]) -> int:
+    return np.max(abs(coo1[0] - coo2[0]), abs(coo1[1] - coo2[1]))
 
 
 
