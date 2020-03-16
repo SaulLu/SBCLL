@@ -303,9 +303,9 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
-    scores = scores[np.argsort(scores[:, 0])]
-    return scores
-
+    scores = scores[np.argsort(scores[:,0])]
+    return(scores)
+    
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):
     # asert

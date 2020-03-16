@@ -5,6 +5,7 @@ from models.board import Board
 import models.engine as engine
 import models.target_engine as target_engine
 from strategies.heuristics import naive_heuristic
+from models.mov import Mov
 
 
 def board_test_1():
@@ -13,7 +14,7 @@ def board_test_1():
     board = Board(max_x, max_y)
     our_name = 'vampires'
     for i in range(5000):
-        if np.random.random() > 0.5:
+        if np.random.rand() > 0.5:
             species = [None, 'us', 'them', 'humans']
             s = species[np.random.randint(len(species))]
             if s is None:
@@ -77,6 +78,40 @@ def random_targets_test():
         for i in range(100):
             check_targets(board, target_engine.get_random_target_turn(board, 'us'))
 
+
+def esperance_tests():
+    board = Board(5, 5)
+    
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 10, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 3), "humans", 4, "vampires")
+    board.update_cell((1, 1), "werewolves", 4, "vampires")
+    board.update_cell((1, 2), "humans", 5, "vampires")
+
+    init_cell = (1,3)
+    target_cell = (2,3)
+    
+    print("--before move--")
+    print("init", board.get_cell(*init_cell))
+    print("target", board.get_cell(*target_cell))
+
+    move = Mov(init_cell,3,target_cell)
+    #engine.apply_possible_board_one_move(board, move, "them", output_species="us", output_qty=2)
+    #engine.apply_possible_board_one_move(board, move, "them")
+
+    print("--after move--")
+    print("init", board.get_cell(*init_cell))
+    print("target", board.get_cell(*target_cell))
+
+    print(engine.create_possible_boards_one_move(board, move, "them", method="esperance"))
+
+    other_move = Mov((1,1),3,(1,2))
+    moves_list = [move, other_move]
+    
+    #print(engine.create_possible_boards_many_moves(board, moves_list, "them"))
+    print(engine.create_possible_boards_many_moves(board, moves_list, "them", method="esperance"))
 
 def target_to_move_test():
     board = Board(5, 5)
@@ -148,7 +183,13 @@ def targets_to_move_test():
     print(target_engine.targets_to_moves(board=board, targets_scenarios_list=targets_scenarios_list))
 
 
+    
+    
+
 if __name__ == "__main__":
+    esperance_tests()
+    print("esperance_tests done")
+    
     board_test_1()
     print("board_test_1 done\n")
 
