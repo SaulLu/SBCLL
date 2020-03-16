@@ -176,12 +176,7 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target:(int,int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
-    print("dist", type(dist[0]))
-    print("pos arrive", poss_arriv.shape)
-    print("target", target.shape)
-    print("scores", scores.shape)
-    scores.view('i8,i8,i8').sort(order=['f0'], axis=0)
-    print("scores", type(scores))
+    scores = scores[np.argsort(scores[:,0])]
     return(scores)
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):

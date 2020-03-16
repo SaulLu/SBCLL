@@ -173,5 +173,5 @@ if __name__ == "__main__":
     target_to_move_test()
     print("target_to_move_test done\n")
 
-    #targets_to_move_test()
+    targets_to_move_test()
     print("targets_to_move_test done")
