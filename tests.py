@@ -164,14 +164,14 @@ if __name__ == "__main__":
     esperance_tests()
     print("esperance_tests done")
     
-    #board_test_1()
+    board_test_1()
     print("board_test_1 done\n")
 
-    #targets_test_1()
+    targets_test_1()
     print("targets_test_1 done\n")
 
     target_to_move_test()
     print("target_to_move_test done\n")
 
-    targets_to_move_test()
+    #targets_to_move_test()
     print("targets_to_move_test done")
