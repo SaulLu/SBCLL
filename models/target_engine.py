@@ -11,6 +11,7 @@ from typing import Type
 
 from models.board import Board
 from models.cell import Cell
+from models.mov import Mov
 import models.engine as engine
 import parameters
 
@@ -282,7 +283,7 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
 
         scores = __get_scores_adjacent_cells(poss_arriv, target)
         for poss_coord in scores[:,1:]:
-            if (not board.grid[poss_coord[0],poss_coord[1]].creature):
+            if not board.grid[poss_coord[0], poss_coord[1]].creature:
                 arriv = poss_coord
                 break
 
@@ -290,13 +291,15 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
             calculate_moves[key] = Mov(start, number, tuple(arriv))
         else:
             calculate_moves[key] = None
-        return(calculate_moves[key])
+        return calculate_moves[key]
+
 
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target:(int,int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
-    scores.view('i8,i8,i8').sort(order=['f0'], axis=0)
-    return(scores)
+    scores = scores[np.argsort(scores[:, 0])]
+    return scores
+
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):
     #asert
