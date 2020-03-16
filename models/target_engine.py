@@ -16,7 +16,6 @@ import models.engine as engine
 import parameters
 
 
-
 def __recursive_target_attribution(prev_attributions, remaining_creatures, available_targets):
     n_available_targets = len(available_targets)
     if remaining_creatures == 0 or n_available_targets == 0:
@@ -86,7 +85,7 @@ def get_min_takeover(cell: Cell) -> int:
     return math.ceil(cell.number * parameters.OPPONENT_TAKEOVER_FACTOR)
 
 
-def assign_closest_ally(ally_coordinates: Tuple[int,int]) -> Dict:
+def assign_closest_ally(ally_coordinates: Tuple[int, int]) -> Dict:
     """
     compute for every coordinate, the closest different coordinate
     :param ally_coordinates: List of coordinate (x,y) on the Board
@@ -131,35 +130,38 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
         all_attackers_coordinates = list(attackers_possible_targets.keys())
         friendly_coordinate = all_attackers_coordinates[np.random.choice(len(all_attackers_coordinates))]
 
-        i_target = np.random.choice(attackers_possible_targets[friendly_coordinate])
-        n_creatures = np.random.randint(targets[i_target]['min_takeover'], attackers[friendly_coordinate] + 1)
+        if len(attackers_possible_targets[friendly_coordinate]) == 0:  # no target for this Cell
+            attackers_possible_targets.pop(friendly_coordinate)
+        else:
+            i_target = np.random.choice(attackers_possible_targets[friendly_coordinate])
+            n_creatures = np.random.randint(targets[i_target]['min_takeover'], attackers[friendly_coordinate] + 1)
 
-        attack_targets_attribution.append({'start': friendly_coordinate, 'target': targets[i_target]['coordinate'],
-                                           'number': n_creatures})
+            attack_targets_attribution.append({'start': friendly_coordinate, 'target': targets[i_target]['coordinate'],
+                                               'number': n_creatures})
 
-        attackers[friendly_coordinate] -= n_creatures
-        n_targets = len(attackers_possible_targets[friendly_coordinate])
-        i = 0
-        while i < n_targets:
-            j_target = attackers_possible_targets[friendly_coordinate][i]
-            if targets[j_target]['min_takeover'] > attackers[friendly_coordinate]:
-                attackers_possible_targets[friendly_coordinate].remove(j_target)
-                n_targets -= 1
-            else:
-                i += 1
+            attackers[friendly_coordinate] -= n_creatures
+            n_targets = len(attackers_possible_targets[friendly_coordinate])
+            i = 0
+            while i < n_targets:
+                j_target = attackers_possible_targets[friendly_coordinate][i]
+                if targets[j_target]['min_takeover'] > attackers[friendly_coordinate]:
+                    attackers_possible_targets[friendly_coordinate].remove(j_target)
+                    n_targets -= 1
+                else:
+                    i += 1
 
-        for coordinate in all_attackers_coordinates:
-            try:
-                attackers_possible_targets[coordinate].remove(i_target)
-            except ValueError:
-                pass
-            if len(attackers_possible_targets[coordinate]) == 0:
-                # if there no target anymore for the chosen cell, send every creature remaining (no left over rule)
-                if friendly_coordinate == coordinate:
-                    attack_targets_attribution[-1]['number'] += attackers[friendly_coordinate]
-                    attackers[friendly_coordinate] = 0
-                # remove the coordinate from possible attackers
-                attackers_possible_targets.pop(coordinate)
+            for coordinate in all_attackers_coordinates:
+                try:
+                    attackers_possible_targets[coordinate].remove(i_target)
+                except ValueError:
+                    pass
+                if len(attackers_possible_targets[coordinate]) == 0:
+                    # if there no target anymore for the chosen cell, send every creature remaining (no left over rule)
+                    if friendly_coordinate == coordinate:
+                        attack_targets_attribution[-1]['number'] += attackers[friendly_coordinate]
+                        attackers[friendly_coordinate] = 0
+                    # remove the coordinate from possible attackers
+                    attackers_possible_targets.pop(coordinate)
 
     merge_targets_attribution = []
     if np.sum(attackers.items()):  # if not every creature has a target:
@@ -183,11 +185,13 @@ def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[
     targets = [{'coordinates': coordinate, 'min_takeover': get_min_takeover(board.get_cell(coordinate))} for coordinate
                in targets_coordinates]
 
-def get_potential_moves_from_board(board : Board, creature : str):
-    targets = get_feasible_targets(board, creature) 
+
+def get_potential_moves_from_board(board: Board, creature: str):
+    targets = get_feasible_targets(board, creature)
     return targets_to_moves(targets)
 
-def targets_to_moves(targets_scenarios_list: list, board:Board):
+
+def targets_to_moves(targets_scenarios_list: list, board: Board):
     """transforms a list of scenarios in which each cell of "us" is targeting \
         another cell into a list of move scenarios
     
@@ -202,24 +206,25 @@ def targets_to_moves(targets_scenarios_list: list, board:Board):
         targets_scenario_other, targets_scenario_us = targets_scenario
 
         for target_dict in targets_scenario_other:
-            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, \
-                **target_dict)
+            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
+                                      **target_dict)
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
-        
+
         for us_pos_dict in targets_scenario_us:
-            target_cell =  __target_cell(board=board, mov_scenario=mov_scenario, \
-                start=us_pos_dict['start'], target=us_pos_dict['target'])
-            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, \
-                start=us_pos_dict['start'], target=target_cell, \
-                number=us_pos_dict['number'])
+            target_cell = __target_cell(board=board, mov_scenario=mov_scenario,
+                                        start=us_pos_dict['start'], target=us_pos_dict['target'])
+            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
+                                      start=us_pos_dict['start'], target=target_cell,
+                                      number=us_pos_dict['number'])
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
 
         mov_scenarios_list.append(mov_scenario)
-    return(mov_scenarios_list)
+    return mov_scenarios_list
 
-def __target_cell(board: Board, mov_scenario: list, start:(int,int), target:(int,int)):
+
+def __target_cell(board: Board, mov_scenario: list, start: (int, int), target: (int, int)):
     """Find the cell to target when the target is "us" type
     
     Arguments:
@@ -233,22 +238,23 @@ def __target_cell(board: Board, mov_scenario: list, start:(int,int), target:(int
     """
     for mov in mov_scenario:
         if mov.initial_coordinates == target:
-            return(mov.arrival_coordinates)
-            
+            return mov.arrival_coordinates
+
     poss_targets = np.array(engine.adjacent_cells(
-            i_coord=start[0],
-            j_coord=start[1],
-            board=board
-        ))
+        i_coord=start[0],
+        j_coord=start[1],
+        board=board
+    ))
 
     scores = __get_scores_adjacent_cells(poss_targets, start)
-    for poss_coord in scores[:,1:]:
-        if not board.grid[poss_coord[0],poss_coord[1]].creature:
+    for poss_coord in scores[:, 1:]:
+        if not board.grid[poss_coord[0], poss_coord[1]].creature:
             target = poss_coord
             break
-    return(tuple(target))
+    return tuple(target)
 
-def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:(int,int), number:int):
+
+def target_to_move(board: Board, calculate_moves: dict, start: (int, int), target: (int, int), number: int):
     """[summary]
     
     Arguments:
@@ -264,8 +270,8 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
     key = start + target
 
     if key in calculate_moves:
-        return(calculate_moves[key])
-    
+        return calculate_moves[key]
+
     else:
         arriv = None
         target = np.array(target)
@@ -276,13 +282,13 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
             board=board
         ))
 
-        if (any((poss_arriv[:]==target).all(1))) and board.grid[target[0],target[1]].creature != 'us':
+        if (any((poss_arriv[:] == target).all(1))) and board.grid[target[0], target[1]].creature != 'us':
             arriv = target
             calculate_moves[key] = Mov(start, number, tuple(arriv))
-            return (calculate_moves[key])
+            return calculate_moves[key]
 
         scores = __get_scores_adjacent_cells(poss_arriv, target)
-        for poss_coord in scores[:,1:]:
+        for poss_coord in scores[:, 1:]:
             if not board.grid[poss_coord[0], poss_coord[1]].creature:
                 arriv = poss_coord
                 break
@@ -294,7 +300,7 @@ def target_to_move(board: Board, calculate_moves: dict, start:(int,int), target:
         return calculate_moves[key]
 
 
-def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target:(int,int)):
+def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
     scores = scores[np.argsort(scores[:, 0])]
@@ -302,5 +308,5 @@ def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target:(int,int)):
 
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):
-    #asert
-    return np.max(np.abs(array_pos_cell1-pos_cell2), axis=1)
+    # asert
+    return np.max(np.abs(array_pos_cell1 - pos_cell2), axis=1)

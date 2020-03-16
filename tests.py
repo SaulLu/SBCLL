@@ -61,20 +61,22 @@ def check_targets(board, targets):
 
 
 def random_targets_test():
-    board = Board(10, 3)
-    n_humans = np.random.randint(5, 10)
-    n_werewolves = np.random.randint(5, 10)
-    vampires = np.random.randint(5, 10)
+    for k in range(50):
+        board = Board(10, 3)
+        n_humans = np.random.randint(5, 10)
+        n_werewolves = np.random.randint(5, 10)
+        vampires = np.random.randint(5, 10)
 
-    for i in range(n_humans):
-        board.update_cell((i, 0), "humans", np.random.randint(1, 5), "vampires")
-    for i in range(n_werewolves):
-        board.update_cell((i, 1), "werewolves", np.random.randint(1, 10), "vampires")
-    for i in range(vampires):
-        board.update_cell((i, 2), "vampires", np.random.randint(1, 10), "vampires")
+        for i in range(n_humans):
+            board.update_cell((i, 0), "humans", np.random.randint(1, 5), "vampires")
+        for i in range(n_werewolves):
+            board.update_cell((i, 1), "werewolves", np.random.randint(1, 10), "vampires")
+        for i in range(vampires):
+            board.update_cell((i, 2), "vampires", np.random.randint(1, 10), "vampires")
 
-    for i in range(100):
-        check_targets(board, target_engine.get_random_target_turn(board, 'us'))
+        for i in range(100):
+            check_targets(board, target_engine.get_random_target_turn(board, 'us'))
+
 
 def target_to_move_test():
     board = Board(5, 5)
@@ -87,17 +89,17 @@ def target_to_move_test():
 
     print(board)
     calculate_moves = dict()
-    config={
+    config = {
         'calculate_moves': calculate_moves,
-        'start' : (1, 3),
-        'target' : (2, 2),
-        'number' : 2
+        'start': (1, 3),
+        'target': (2, 2),
+        'number': 2
     }
     print("Moves for the scenario")
     print(target_engine.target_to_move(board, **config))
 
-def targets_to_move_test():
 
+def targets_to_move_test():
     board = Board(5, 5)
 
     board.update_cell((1, 4), "humans", 2, "vampires")
@@ -108,42 +110,43 @@ def targets_to_move_test():
 
     print(board)
 
-    targets_scenarios_list=[
-    [
-        [{
-        'start' : (1, 3),
-        'target' : (2, 2),
-        'number' : 1
-        },
-        {
-        'start' : (3, 3),
-        'target' : (1, 4),
-        'number' : 3
-        }],
-        []
-    ],
-    [
-        [{
-        'start' : (1, 3),
-        'target' : (1, 4),
-        'number' : 1
-        },
-        {
-        'start' : (3, 3),
-        'target' : (1, 4),
-        'number' : 3
-        }],
+    targets_scenarios_list = [
         [
-        {
-        'start' : (1, 3),
-        'target' : (3, 3),
-        'number' : 1
-        },
+            [{
+                'start': (1, 3),
+                'target': (2, 2),
+                'number': 1
+            },
+                {
+                    'start': (3, 3),
+                    'target': (1, 4),
+                    'number': 3
+                }],
+            []
+        ],
+        [
+            [{
+                'start': (1, 3),
+                'target': (1, 4),
+                'number': 1
+            },
+                {
+                    'start': (3, 3),
+                    'target': (1, 4),
+                    'number': 3
+                }],
+            [
+                {
+                    'start': (1, 3),
+                    'target': (3, 3),
+                    'number': 1
+                },
+            ]
         ]
     ]
-    ]  
     print("List of Moves for the scenarios")
-    print(target_engine.targets_to_moves(board=board,targets_scenarios_list=targets_scenarios_list))
+    print(target_engine.targets_to_moves(board=board, targets_scenarios_list=targets_scenarios_list))
+
 
 if __name__ == "__main__":
     board_test_1()
@@ -152,8 +155,8 @@ if __name__ == "__main__":
     random_targets_test()
     print("random_targets_test done")
 
-    target_to_move_test()
-    print("target_to_move_test done\n")
+    # target_to_move_test()
+    # print("target_to_move_test done\n")
 
-    targets_to_move_test()
-    print("targets_to_move_test done")
+    # targets_to_move_test()
+    # print("targets_to_move_test done")
