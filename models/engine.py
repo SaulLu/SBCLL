@@ -97,13 +97,7 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         return_board = current_board.deepcopy()
         apply_possible_board_many_moves(return_board, moves_list, attacker_species)
         return return_board
-
-#TO REMOVE
-# def create_possible_board_many_moves(current_board, moves_list, attacker_species, method=None):
-#     """Method that generates a possible board for any given legal combination of moves"""
-#     return_board = current_board.deepcopy()
-#     apply_possible_board_many_moves(return_board, moves_list, attacker_species, method)
-#     return return_board
+        
 
 def create_possible_boards_one_move(current_board, move, attacker_species, method=None):
     """Method that returns all the possible boards resulting from a move on a board and their probabilities
@@ -125,14 +119,6 @@ def create_possible_boards_one_move(current_board, move, attacker_species, metho
         apply_possible_board_one_move(new_board, move, attacker_species, output["output_species"], output["output_qty"])
         all_possibilities.append((new_board, output["output_proba"]))
     return all_possibilities
-
-#TO REMOVE
-# def create_possible_board_one_move(current_board, move, attacker_species, method):
-#     """Method that generates a possible board for any given legal move"""
-#     new_possible_board = current_board.deepcopy()
-#     apply_possible_board_one_move(new_possible_board, move, attacker_species, method)
-#     return new_possible_board
-
 
 
 def adjacent_cells(i_coord, j_coord, board):
