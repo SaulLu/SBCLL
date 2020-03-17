@@ -97,7 +97,7 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         for combination in all_combinations:
             new_board = current_board.deepcopy()
             apply_possible_board_many_moves(new_board, moves_list, attacker_species, combination)
-            print("board validity :", check_validity_board(new_board))
+            #print("board validity :", check_validity_board(new_board))
             combination_probabilities = [x["output_proba"] for x in combination]
             board_probability = np.prod(combination_probabilities)
             all_boards_and_probas.append((new_board, board_probability))
@@ -107,7 +107,7 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
     else:
         return_board = current_board.deepcopy()
         apply_possible_board_many_moves(return_board, moves_list, attacker_species)
-        print("board validity :", check_validity_board(return_board))
+        #print("board validity :", check_validity_board(return_board))
         return [(return_board, 1)]
   
 

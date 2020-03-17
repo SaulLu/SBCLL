@@ -159,7 +159,17 @@ def test_negatif():
                         c+=1
     print("count", count)
   
-
+def ramdom_moves_test():
+    board = Board(5, 5)
+    creature = 'vampires'
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 10, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 3), "humans", 4, "vampires")
+    board.update_cell((1, 1), "werewolves", 4, "vampires")
+    board.update_cell((1, 2), "humans", 5, "vampires")
+    print(get_random_target_turn(board, creature))
 
 def target_to_move_test():
     board = Board(5, 5)
@@ -233,7 +243,8 @@ def targets_to_move_test():
 
 if __name__ == "__main__":
 
-    test_negatif()
+    ramdom_moves_test()
+    #test_negatif()
 
     # esperance_tests()
     # print("esperance_tests done")

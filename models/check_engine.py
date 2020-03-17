@@ -4,25 +4,32 @@ from models.board import Board
 def check_mov_validity(board : Board, mov : Mov):
     if (mov.initial_coordinates[0]<0 or mov.initial_coordinates[1] < 0):
         print("Initial coordinates out of bounds")
-        return (False)
+        print(mov)
+        return False
     if (mov.initial_coordinates[0]>board.max_x or mov.initial_coordinates[1] > board.max_y):
         print("Initial coordinates out of bounds")
-        return (False)
+        print(mov)
+        return False
     if (mov.arrival_coordinates[0]<0 or mov.arrival_coordinates[1] < 0):
         print("Arrival coordinates out of bounds")
-        return (False)
+        print(mov)
+        return False
     if (mov.arrival_coordinates[0]>board.max_x or mov.arrival_coordinates[1] > board.max_y):
         print("Arrival coordinates out of bounds")
-        return (False)
+        print(mov)
+        return False
     if (mov.n_creatures < 0):
         print("Negative number of creatures to move")
-        return (False)
-    if (mov.n_creatures > board.grid[mov.initial_coordinates]):
+        print(mov)
+        return False
+    if (mov.n_creatures > board.get_cell(mov.initial_coordinates).number):
         print("Too many creatures to move")
-        return (False)
+        print(mov)
+        return False
     if  mov is None: 
         print("This move is None")
-        return (False)
+        print(mov)
+        return False
 
     return True
 
@@ -51,6 +58,7 @@ def check_board_validity(board):
                     count += 1
     if count > 0 :
         print("The board is not valid")
+        print(board)
         return False
     
     return True
@@ -65,5 +73,11 @@ def check_boards_validity(list_boards: list):
             print("The boards are not valid")
             return False
 
+    return True
+
+def check_probas_validity(list_probas):
+    for proba in list_probas :
+        if (proba < 0) or (proba > 1):
+            return False
     return True
     
