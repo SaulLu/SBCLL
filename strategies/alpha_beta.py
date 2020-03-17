@@ -9,6 +9,7 @@ class Node:
     def __init__(self, moves, board, player):
         self.moves = moves
         self.potential_boards = engine.create_possible_boards_many_moves(board, moves, player, method="esperance")
+        
 
     # def get_score_node(self, heuristic):
     #     score = 0
@@ -18,10 +19,13 @@ class Node:
 
 def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_depth, heuristic, alpha, beta):
     
+    print("Nouvelle récursion alpha beta")
+    print("Profondeur : ", current_depth)
+
     # on est sur une feuille
     if current_depth == max_depth:
         return (None, heuristic(current_board))
-        
+    
     # sinon
     else:
         list_moves = get_next_moves(current_board, player) # get-next_moves dépend de la strat

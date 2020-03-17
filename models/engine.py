@@ -109,21 +109,7 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         apply_possible_board_many_moves(return_board, moves_list, attacker_species)
         print("board validity :", check_validity_board(return_board))
         return [(return_board, 1)]
-
-def check_validity_board(board):
-    count = 0 
-    for x in range(board.max_x):
-            for y in range(board.max_y):
-                cell = board.get_cell((x,y))
-                if cell.number < 0 :
-                    print("negative people")
-                    print(move)
-                    print(board)
-                    count += 1
-    if count > 0 :
-        return False
-    return True
-    
+  
 
 def create_possible_boards_one_move(current_board, move, attacker_species, method=None):
     """Method that returns all the possible boards resulting from a move on a board and their probabilities
