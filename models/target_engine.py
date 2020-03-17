@@ -173,7 +173,6 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
 
     if len(attack_targets_attribution) + len(merge_targets_attribution) == 0:  # no target and alone
         attack_targets_attribution = __suicidal_target(targets, attackers)
-
     return attack_targets_attribution, merge_targets_attribution
 
 
@@ -220,6 +219,7 @@ def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[
                in targets_coordinates]
     attackers = {coordinate: board.get_cell(coordinate).number for coordinate in board.creatures_list[creature]}
 
+
 def targets_to_moves(targets_scenarios_list: list, board: Board):
     """transforms a list of scenarios in which each cell of "us" is targeting \
         another cell into a list of move scenarios
@@ -250,7 +250,6 @@ def targets_to_moves(targets_scenarios_list: list, board: Board):
                                       number=us_pos_dict['number'])
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
-
         mov_scenarios_list.append(mov_scenario)
     return mov_scenarios_list
 
@@ -305,9 +304,12 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
     except Exception as e:
         print("start", start)
         print("target", target)
+        raise e
 
     if key in calculate_moves:
-        return calculate_moves[key]
+        if calculate_moves:
+            return Mov(start, number, calculate_moves[key])
+        return None
     else:
         arriv = None
         target = np.array(target)
@@ -320,8 +322,8 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 
         if (any((poss_arriv[:] == target).all(1))) and board.grid[target[0], target[1]].creature != 'us':
             arriv = target
-            calculate_moves[key] = Mov(start, number, tuple(arriv))
-            return calculate_moves[key]
+            calculate_moves[key] = tuple(arriv)
+            return Mov(start, number, calculate_moves[key])
 
         scores = __get_scores_adjacent_cells(poss_arriv, target)
         for poss_coord in scores[:, 1:]:
@@ -330,13 +332,13 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
                 break
         try:
             if arriv.any():
-                calculate_moves[key] = Mov(start, number, tuple(arriv))
+                calculate_moves[key] = tuple(arriv)
             else:
                 calculate_moves[key] = None
         except Exception as e:
             print(start, target, number)
             raise e
-        return calculate_moves[key]
+        return Mov(start, number, calculate_moves[key])
 
 
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
