@@ -297,7 +297,11 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
     Returns:
         {Mov} -- an instance of Mov object
     """
-    key = start + target
+    try:
+        key = start + target
+    except Exception as e:
+        print("start", start)
+        print("target", target)
 
     if key in calculate_moves:
         return calculate_moves[key]
