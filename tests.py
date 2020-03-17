@@ -7,7 +7,8 @@ import models.target_engine as target_engine
 from strategies.heuristics import naive_heuristic
 from strategies.heuristics import distance_target_heuristic
 from models.mov import Mov
-from strategies.target_strategy import *
+from strategies.target_strategy import get_random_moves_from_board
+
 
 def __create_random_board(max_x, max_y):
 	board = Board(max_x, max_y)
@@ -161,7 +162,7 @@ def test_negatif():
   
 def ramdom_moves_test():
     board = Board(5, 5)
-    creature = 'vampires'
+    creature = 'us'
     board.update_cell((1, 4), "humans", 2, "vampires")
     board.update_cell((4, 4), "humans", 2, "vampires")
     board.update_cell((1, 3), "werewolves", 10, "vampires")
@@ -169,7 +170,7 @@ def ramdom_moves_test():
     board.update_cell((2, 3), "humans", 4, "vampires")
     board.update_cell((1, 1), "werewolves", 4, "vampires")
     board.update_cell((1, 2), "humans", 5, "vampires")
-    print(get_random_target_turn(board, creature))
+    print(get_random_moves_from_board(board, creature))
 
 def target_to_move_test():
     board = Board(5, 5)

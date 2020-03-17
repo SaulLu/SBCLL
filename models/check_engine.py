@@ -49,7 +49,7 @@ def check_moves_validity(board : Board, moves : list):
         
     for coord in creatures_leaving:
         if board[coord].number < creatures_leaving[coord]:
-            print "Trying to move too many creatures"
+            print("Trying to move too many creatures")
             return False
             
     return True
