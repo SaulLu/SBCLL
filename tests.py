@@ -8,6 +8,8 @@ from strategies.heuristics import naive_heuristic
 from strategies.heuristics import distance_target_heuristic
 from strategies.target_strategy import get_random_moves_from_board
 from models.mov import Mov
+from strategies.target_strategy import get_random_moves_from_board
+
 
 
 def __create_random_board(max_x, max_y):
@@ -161,6 +163,45 @@ def esperance_tests():
     # print(engine.create_possible_boards_many_moves(board, moves_list, "them"))
     # print(engine.create_possible_boards_many_moves(board, moves_list, "them", method="esperance"))
 
+def test_negatif():
+    board = Board(5, 5)
+    our_name = 'vampires'
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 10, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 3), "humans", 4, "vampires")
+    board.update_cell((1, 1), "werewolves", 4, "vampires")
+    board.update_cell((1, 2), "humans", 5, "vampires")
+  
+    
+    for i in range(1000):
+        moves = get_random_moves_from_board(board, "them")
+    
+        count = 0
+        for move in moves[0]:
+            engine.apply_possible_board_one_move(board, move, "them")
+            for x in range(board.max_x):
+                for y in range(board.max_y):
+                    cell = board.get_cell((x,y))
+                    if cell.number < 0 :
+                        print("negative people")
+                        print(move)
+                        print(board)
+                        c+=1
+    print("count", count)
+  
+def ramdom_moves_test():
+    board = Board(5, 5)
+    creature = 'them'
+    board.update_cell((1, 4), "humans", 2, "vampires")
+    board.update_cell((4, 4), "humans", 2, "vampires")
+    board.update_cell((1, 3), "werewolves", 10, "vampires")
+    board.update_cell((3, 3), "werewolves", 4, "vampires")
+    board.update_cell((2, 3), "humans", 4, "vampires")
+    board.update_cell((1, 1), "werewolves", 4, "vampires")
+    board.update_cell((1, 2), "vampires", 5, "vampires")
+    print(get_random_moves_from_board(board, creature))
 
 def target_to_move_test():
     board = Board(5, 5)
@@ -233,6 +274,10 @@ def targets_to_move_test():
 
 
 if __name__ == "__main__":
+
+	ramdom_moves_test()
+    #test_negatif()
+    
     # esperance_tests()
     # print("esperance_tests done")
 
@@ -245,8 +290,6 @@ if __name__ == "__main__":
     random_target_test_2()
     print("random_targets_test_2 done")
 
-    # target_to_move_test()
-    # print("target_to_move_test done")
 
     # targets_to_move_test()
     # print("targets_to_move_test done")
