@@ -162,14 +162,14 @@ def test_negatif():
   
 def ramdom_moves_test():
     board = Board(5, 5)
-    creature = 'us'
+    creature = 'them'
     board.update_cell((1, 4), "humans", 2, "vampires")
     board.update_cell((4, 4), "humans", 2, "vampires")
     board.update_cell((1, 3), "werewolves", 10, "vampires")
     board.update_cell((3, 3), "werewolves", 4, "vampires")
     board.update_cell((2, 3), "humans", 4, "vampires")
     board.update_cell((1, 1), "werewolves", 4, "vampires")
-    board.update_cell((1, 2), "humans", 5, "vampires")
+    board.update_cell((1, 2), "vampires", 5, "vampires")
     print(get_random_moves_from_board(board, creature))
 
 def target_to_move_test():
