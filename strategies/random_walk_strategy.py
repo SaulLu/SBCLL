@@ -20,8 +20,9 @@ class RandomWalkStrategy(Strategy):
         count = 0
         while time.time() - t0 < timeout:
             random_turn_index = np.random.randint(0, len(all_possible_turns))
-            new_board = engine.create_possible_boards_many_moves(self.current_board,
+            potential_boards = engine.create_possible_boards_many_moves(self.current_board,
                                                                 all_possible_turns[random_turn_index], 'us', None)
+            new_board = max(potential_boards,key=lambda item:item[1])[0]
             score = self.random_walk(new_board, 'them', max_step)
             scoring[random_turn_index]['n_walks'] += 1
             scoring[random_turn_index]['sum'] += score
