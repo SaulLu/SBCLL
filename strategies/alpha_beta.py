@@ -21,9 +21,9 @@ class Node:
 
 
 def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_depth, heuristic, alpha, beta):
-    # on est sur une feuille
-    if current_depth == max_depth:
-        return (None, heuristic(current_board))
+    n_us, n_them, _ = current_board.count_creatures()
+    if current_depth == max_depth or n_us * n_them == 0:# on est sur une feuille
+        return None, heuristic(current_board)
 
     # sinon
     else:
@@ -32,8 +32,8 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
 
         if player == "us":
-            bestMove = None
-            bestScore = -math.inf
+            best_move = None
+            best_score = -math.inf
 
             for node in nodes:
                 score = 0
@@ -42,18 +42,18 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
                                                    max_depth, heuristic, alpha, beta)
                     score += proba_board * score_board
 
-                if score > bestScore:
-                    bestScore = score
-                    bestMove = node.moves
+                if score > best_score:
+                    best_score = score
+                    best_move = node.moves
 
-                if bestScore >= beta:
-                    return (bestMove, bestScore)
+                if best_score >= beta:
+                    return best_move, best_score
 
                 alpha = max(alpha, score)
 
         elif player == "them":
-            bestMove = None
-            bestScore = math.inf
+            best_move = None
+            best_score = math.inf
 
             for node in nodes:
                 score = 0
@@ -62,16 +62,16 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
                                                    heuristic, alpha, beta)
                     score += proba_board * score_board
 
-                if score < bestScore:
-                    bestScore = score
-                    bestMove = node.moves
+                if score < best_score:
+                    best_score = score
+                    best_move = node.moves
 
-                if alpha >= bestScore:
-                    return (bestMove, bestScore)
+                if alpha >= best_score:
+                    return best_move, best_score
 
                 beta = min(beta, score)
 
-        return (bestMove, bestScore)
+        return best_move, best_score
 
 
 def alphabeta(root_board, heuristic, get_next_moves, max_depth):
