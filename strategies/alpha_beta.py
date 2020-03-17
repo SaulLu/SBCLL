@@ -10,8 +10,17 @@ class Node:
     def __init__(self, moves, board, player):
         self.moves = moves
         if not(check_engine.check_moves_validity(board, moves)) and moves != None:
-            print("!!! Error in moves in node")
+            raise RuntimeError("!!! Error in moves in node")
         self.potential_boards = engine.create_possible_boards_many_moves(board, moves, player, method="esperance")
+        all_boards = [x[0] for x in self.potential_boards] 
+        all_probas = [x[1] for x in self.potential_boards] 
+        if not(check_engine.check_boards_validity(all_boards)):
+            print(board)
+            print(moves)
+            raise RuntimeError("!!! Error in boards in node")
+        if not(check_engine.check_probas_validity(all_probas)):
+            raise RuntimeError("!!! Error in probas in node")
+
 
 
     # def get_score_node(self, heuristic):
@@ -22,10 +31,11 @@ class Node:
 
 def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_depth, heuristic, alpha, beta):
     
+
     # on est sur une feuille
     if current_depth == max_depth:
         return (None, heuristic(current_board))
-        
+    
     # sinon
     else:
         list_moves = get_next_moves(current_board, player) # get-next_moves dépend de la strat
