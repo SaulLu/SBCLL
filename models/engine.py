@@ -50,10 +50,16 @@ def apply_possible_board_one_move(board, move, attacker_species, output_species=
 
     if output_species is None:
         # Get new states by using random in real time if outputs not given (only one output)
-        output = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures)[0]
+        output = cell_outputs_after_move(defender_cell, attacker_species, move.n_creatures)[0]
         output_species, output_qty = output["output_species"], output["output_qty"]
 
     new_state_defender_cell = Cell(x_dest, y_dest, output_species, output_qty)
+    # if output_qty<0:
+    #     print("output qty", output_qty)
+    #     raise Exception
+    if  board.get_cell(x=x_init, y=y_init).number == move.n_creatures :
+        attacker_species = None
+
     new_state_attacker_cell = Cell(x_init, y_init, attacker_species,
                                    board.get_cell(x=x_init, y=y_init).number - move.n_creatures)
 
@@ -80,7 +86,7 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
     # Get all probable outputs for each move
     for move in moves_list:
         defender_cell = current_board.get_cell(move.arrival_coordinates)
-        possible_outputs = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures, method)
+        possible_outputs = cell_outputs_after_move(defender_cell, attacker_species, move.n_creatures, method)
         # Add list of outputs for this move
         all_moves_possibilities.append(possible_outputs)
 
@@ -91,16 +97,33 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         for combination in all_combinations:
             new_board = current_board.deepcopy()
             apply_possible_board_many_moves(new_board, moves_list, attacker_species, combination)
+            print("board validity :", check_validity_board(new_board))
             combination_probabilities = [x["output_proba"] for x in combination]
             board_probability = np.prod(combination_probabilities)
             all_boards_and_probas.append((new_board, board_probability))
+
         return all_boards_and_probas
 
     else:
         return_board = current_board.deepcopy()
         apply_possible_board_many_moves(return_board, moves_list, attacker_species)
-        return return_board
+        print("board validity :", check_validity_board(return_board))
+        return [(return_board, 1)]
 
+def check_validity_board(board):
+    count = 0 
+    for x in range(board.max_x):
+            for y in range(board.max_y):
+                cell = board.get_cell((x,y))
+                if cell.number < 0 :
+                    print("negative people")
+                    print(move)
+                    print(board)
+                    count += 1
+    if count > 0 :
+        return False
+    return True
+    
 
 def create_possible_boards_one_move(current_board, move, attacker_species, method=None):
     """Method that returns all the possible boards resulting from a move on a board and their probabilities
@@ -116,7 +139,7 @@ def create_possible_boards_one_move(current_board, move, attacker_species, metho
     """
     all_possibilities = []
     defender_cell = current_board.get_cell(move.arrival_coordinates)
-    possible_outputs = cell_outputs_if_attacked(defender_cell, attacker_species, move.n_creatures, method)
+    possible_outputs = cell_outputs_after_move(defender_cell, attacker_species, move.n_creatures, method)
     for output in possible_outputs:
         new_board = current_board.deepcopy()
         apply_possible_board_one_move(new_board, move, attacker_species, output["output_species"], output["output_qty"])

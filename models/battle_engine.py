@@ -12,7 +12,7 @@ from models.mov import Mov
 import models.engine
 
 
-def cell_outputs_if_attacked(defender_cell, attacker_species, attacker_qty, method=None):
+def cell_outputs_after_move(defender_cell, attacker_species, attacker_qty, method=None):
     """Method that gives the hypothetic output state of cell if it is under attack .
 
     Arguments:
@@ -52,6 +52,7 @@ def cell_outputs_if_attacked(defender_cell, attacker_species, attacker_qty, meth
         if method == "esperance":
             outputs = _all_outputs_random_battle(defender_cell, attacker_species, attacker_qty)
         else:
+            # we use real random to generate an output
             outputs.append(__random_battle(defender_cell, attacker_species, attacker_qty))    
     
     return outputs
