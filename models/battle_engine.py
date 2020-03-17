@@ -56,6 +56,7 @@ def cell_outputs_if_attacked(defender_cell, attacker_species, attacker_qty, meth
     
     return outputs
 
+
 def _get_proba_to_win(attacker_qty, defender_qty):
     if attacker_qty == defender_qty:
         p = 0.5

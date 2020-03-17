@@ -85,7 +85,7 @@ def get_min_takeover(cell: Cell) -> int:
     return math.ceil(cell.number * parameters.OPPONENT_TAKEOVER_FACTOR)
 
 
-def assign_closest_ally(ally_coordinates: Tuple[int, int]) -> Dict:
+def assign_closest_ally(ally_coordinates: List[Tuple[int, int]]) -> Dict:
     """
     compute for every coordinate, the closest different coordinate
     :param ally_coordinates: List of coordinate (x,y) on the Board
@@ -171,11 +171,14 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
                 merge_targets_attribution.append({'start': coordinate, 'target': closest_ally[coordinate][1],
                                                   'number': n_creatures})
 
+    if len(attack_targets_attribution) + len(merge_targets_attribution) == 0:  # no target and alone
+        attack_targets_attribution = __suicidal_target(targets, attackers)
+
     return attack_targets_attribution, merge_targets_attribution
 
 
 def __suicidal_target(targets: List[Dict], attackers: Dict) -> List[Dict]:
-    friendly_coordinate = attackers.keys()[0]
+    friendly_coordinate = list(attackers.keys())[0]
     best_min_takeover = np.inf
     target_coordinate = None
     for target in targets:
@@ -299,7 +302,6 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 
     if key in calculate_moves:
         return calculate_moves[key]
-
     else:
         arriv = None
         target = np.array(target)
@@ -320,11 +322,14 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
             if not board.grid[poss_coord[0], poss_coord[1]].creature:
                 arriv = poss_coord
                 break
-
-        if arriv.all():
-            calculate_moves[key] = Mov(start, number, tuple(arriv))
-        else:
-            calculate_moves[key] = None
+        try:
+            if arriv.any():
+                calculate_moves[key] = Mov(start, number, tuple(arriv))
+            else:
+                calculate_moves[key] = None
+        except Exception as e:
+            print(start, target, number)
+            raise e
         return calculate_moves[key]
 
 

@@ -6,19 +6,21 @@ import models.engine as engine
 import models.target_engine as target_engine
 from strategies.heuristics import naive_heuristic
 from strategies.heuristics import distance_target_heuristic
+from strategies.target_strategy import get_random_moves_from_board
 from models.mov import Mov
 
+
 def __create_random_board(max_x, max_y):
-	board = Board(max_x, max_y)
-	for _ in range(20):
-		species = [None, 'us', 'them', 'humans']
-		s = species[np.random.randint(len(species))]
-		if s == None:
-			number = 0
-		else:
-			number = np.random.randint(10)
-		board.update_cell2(Cell(np.random.randint(max_x), np.random.randint(max_y), s, number))
-	print(board)
+    board = Board(max_x, max_y)
+    for _ in range(20):
+        species = [None, 'us', 'them', 'humans']
+        s = species[np.random.randint(len(species))]
+        if s == None:
+            number = 0
+        else:
+            number = np.random.randint(10)
+        board.update_cell2(Cell(np.random.randint(max_x), np.random.randint(max_y), s, number))
+    print(board)
 
 
 def board_test_1():
@@ -51,9 +53,36 @@ def board_test_1():
             print(board.creatures_list)
             raise RuntimeError("creature count error")
 
+
+def random_target_test_2():
+    max_x = 6
+    max_y = 5
+    board = Board(max_x, max_y)
+    our_name = 'vampires'
+
+    board.update_cell((2, 2), 'humans', 1, our_name)
+    board.update_cell((3, 3), 'humans', 1, our_name)
+    board.update_cell((4, 4), 'humans', 1, our_name)
+    board.update_cell((5, 3), 'humans', 1, our_name)
+
+    board.update_cell((5, 4), 'vampires', 2, our_name)
+    board.update_cell((2, 3), 'werewolves', 2, our_name)
+    print(board)
+    for i in range(5000):
+        moves = get_random_moves_from_board(board, 'us')[0]
+        board = engine.create_possible_boards_many_moves(board, moves, 'us')
+
+        for x in range(max_x):
+            for y in range(max_y):
+                if board.grid[x][y].number < 0:
+                    print(board)
+                    print(moves)
+                    raise RuntimeError
+
+
 def distance_target_heuristic_test_1():
-	board = __create_random_board(6,9)
-	print(distance_target_heuristic(board))
+    board = __create_random_board(6, 9)
+    print(distance_target_heuristic(board))
 
 
 def check_targets(board, targets):
@@ -76,6 +105,8 @@ def check_targets(board, targets):
     for start, number_sent in sending_per_start.items():
         if number_sent > board.get_cell(start).number:
             raise RuntimeError("sending too many creatures: start: {start}, number: {number} \n {board}")
+
+    return True
 
 
 def random_targets_test():
@@ -202,17 +233,20 @@ def targets_to_move_test():
 
 
 if __name__ == "__main__":
-    esperance_tests()
-    print("esperance_tests done")
+    # esperance_tests()
+    # print("esperance_tests done")
 
-    board_test_1()
-    print("board_test_1 done")
+    # board_test_1()
+    # print("board_test_1 done")
 
-    random_targets_test()
-    print("random_targets_test done")
+    # random_targets_test()
+    # print("random_targets_test done")
 
-    target_to_move_test()
-    print("target_to_move_test done")
+    random_target_test_2()
+    print("random_targets_test_2 done")
 
-    targets_to_move_test()
-    print("targets_to_move_test done")
+    # target_to_move_test()
+    # print("target_to_move_test done")
+
+    # targets_to_move_test()
+    # print("targets_to_move_test done")
