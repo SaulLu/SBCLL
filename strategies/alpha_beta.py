@@ -1,6 +1,7 @@
 import math 
 import models.target_engine as target_engine
 import models.engine as engine
+import models.check_engine as check_engine
 
 class Node:
     """Class modelizing a node in the alpha beta tree
@@ -8,8 +9,11 @@ class Node:
 
     def __init__(self, moves, board, player):
         self.moves = moves
+        if not(check_engine.check_moves_validity(board, moves)) and moves != None:
+            print("!!! Error in moves in node")
         self.potential_boards = engine.create_possible_boards_many_moves(board, moves, player, method="esperance")
         
+
 
     # def get_score_node(self, heuristic):
     #     score = 0
