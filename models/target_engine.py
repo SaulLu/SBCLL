@@ -331,7 +331,7 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
                 arriv = poss_coord
                 break
         try:
-            if arriv.any():
+            if not isinstance(arriv, type(None)):
                 calculate_moves[key] = tuple(arriv)
             else:
                 calculate_moves[key] = None
