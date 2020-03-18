@@ -41,18 +41,21 @@ class Player():
 
         self.__init_game()
 
-        while True:
-            while not (self.client.is_my_turn() or self.client.has_game_ended()):
-                time.sleep(0.15)
-            if self.client.is_my_turn():
-                board_changes = self.client.get_board_changes()
-                self.strategy.update_board(board_changes, self.our_name)
-                self.client.put_moves_to_send(self.strategy.next_moves(self.think_time))
-            else:
-                print("game has ended")
-                break
-
-        self.client.close()
+        try:
+            while True:
+                while not (self.client.is_my_turn() or self.client.has_game_ended()):
+                    time.sleep(0.15)
+                if self.client.is_my_turn():
+                    board_changes = self.client.get_board_changes()
+                    self.strategy.update_board(board_changes, self.our_name)
+                    self.client.put_moves_to_send(self.strategy.next_moves(self.think_time))
+                else:
+                    print("game has ended")
+                    break
+        except Exception as e:
+            raise e
+        finally:
+            self.client.close()
 
     def __init_game(self):
         """Initialize the game with the info received by the client 
