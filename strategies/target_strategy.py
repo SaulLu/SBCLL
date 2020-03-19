@@ -5,8 +5,8 @@ from strategies.abstract_strategy import Strategy
 from models.board import Board
 import models.engine as engine
 import models.target_engine as target_engine
-from strategies.alpha_beta import alphabeta
-from strategies.alpha_beta_timeout import AlphaBeta
+from strategies.alpha_beta import AlphaBeta
+from strategies.alpha_beta_breadth_first import AlphaBetaBreadthFirst
 
 
 def get_random_moves_from_board(board: Board, creature: str):
@@ -25,8 +25,7 @@ class TargetStrategy(Strategy):
     #     return targets_to_moves(targets, board)
 
     def next_moves(self, think_time):
-        #best_moves, best_score = alphabeta(self.current_board, self.heuristic, get_random_moves_from_board, 7)
-        alphabeta = AlphaBeta(time.time(), 4, get_random_moves_from_board, self.heuristic, 100)
+        alphabeta = AlphaBeta(time.time(), 4, get_random_moves_from_board, self.heuristic, 10)
         best_moves, best_score = alphabeta.alphabeta(self.current_board)        
         print(f"bestMove:{best_moves}, bestScore: {best_score}")
         return best_moves
