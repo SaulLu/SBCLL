@@ -3,7 +3,7 @@ import models.target_engine as target_engine
 import models.engine as engine
 
 
-def __node_pruning(nodes, heuristic, player):
+def node_pruning(nodes, heuristic, player):
     """This function makes a pruning of all"""
     L = []
     for node in nodes:
@@ -48,7 +48,7 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
         list_moves = get_next_moves(current_board, player)  # get-next_moves dépend de la strat
         nodes = [Node(moves, current_board, player) for moves in
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
-        nodes = __node_pruning(nodes, heuristic, player)
+        nodes = node_pruning(nodes, heuristic, player)
         print("nodes:", len(nodes))
 
         if player == "us":

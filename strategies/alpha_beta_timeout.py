@@ -3,6 +3,8 @@ import time
 import models.target_engine as target_engine
 import models.engine as engine
 
+from strategies.alpha_beta import node_pruning
+
 
 class Node:
     """Class modelizing a node in the alpha beta tree
@@ -43,7 +45,8 @@ class AlphaBeta:
             list_moves = self.get_next_moves(current_board, player)  # get_next_moves dépend de la strat
             nodes = [Node(moves, current_board, player, self.heuristic) for moves in
                     list_moves]  # on génère les boards à partir des moves considérés par la strat
-            
+            nodes = node_pruning(nodes, heuristic, player)
+
             if player == "us":
                 best_move = None
                 best_score = -math.inf
