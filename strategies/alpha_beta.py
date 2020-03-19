@@ -3,8 +3,26 @@ import models.target_engine as target_engine
 import models.engine as engine
 
 
+def __node_pruning(nodes, heuristic, player):
+    """This function makes a pruning of all"""
+    L = []
+    for node in nodes:
+        score = 0
+        for board, probability_board in node.potential_boards:
+            score += heuristic(board)*probability_board
+        L.append((node, score))
+
+    if player == "us":
+        L = sorted(L, lambda x: x[1])
+    else:
+        L = sorted(L, lambda x: x[1], reverse=True)
+
+    print("initi", len(L))
+    return [x[0] for x in L[:min(len(L), 10)]]
+
+
 class Node:
-    """Class modelizing a node in the alpha beta tree
+    """Class modelling a node in the alpha beta tree
     """
 
     def __init__(self, moves, board, player):
@@ -30,6 +48,8 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
         list_moves = get_next_moves(current_board, player)  # get-next_moves dépend de la strat
         nodes = [Node(moves, current_board, player) for moves in
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
+        nodes = __node_pruning(nodes, heuristic, player)
+        print("nodes:", len(nodes))
 
         if player == "us":
             best_move = None
