@@ -17,8 +17,8 @@ def __node_pruning(nodes, heuristic, player):
     else:
         L = sorted(L, key=lambda x: x[1], reverse=True)
 
-    print("initi", len(L))
-    print("scores", [x[1] for x in L])
+    #print("initi", len(L))
+    #print("scores", [x[1] for x in L])
     return [x[0] for x in L[:min(len(L), 5)]]
 
 
@@ -45,11 +45,11 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
     # sinon
     else:
         list_moves = get_next_moves(current_board, player)  # get-next_moves dépend de la strat
-        print(list_moves)
+        #print(list_moves)
         nodes = [Node(moves, current_board, player) for moves in
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
         nodes = __node_pruning(nodes, heuristic, player)
-        print("nodes:", len(nodes))
+        #print("nodes:", len(nodes))
 
         if player == "us":
             best_move = None
