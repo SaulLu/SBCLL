@@ -13,12 +13,13 @@ def __node_pruning(nodes, heuristic, player):
         L.append((node, score))
 
     if player == "us":
-        L = sorted(L, lambda x: x[1])
+        L = sorted(L, key=lambda x: x[1])
     else:
-        L = sorted(L, lambda x: x[1], reverse=True)
+        L = sorted(L, key=lambda x: x[1], reverse=True)
 
     print("initi", len(L))
-    return [x[0] for x in L[:min(len(L), 10)]]
+    print("scores", [x[1] for x in L])
+    return [x[0] for x in L[:min(len(L), 5)]]
 
 
 class Node:
@@ -28,8 +29,6 @@ class Node:
     def __init__(self, moves, board, player):
         self.moves = moves
         self.potential_boards = engine.create_possible_boards_many_moves(board, moves, player, method="esperance")
-        all_boards = [x[0] for x in self.potential_boards]
-        all_probas = [x[1] for x in self.potential_boards]
 
     # def get_score_node(self, heuristic):
     #     score = 0
@@ -46,6 +45,7 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
     # sinon
     else:
         list_moves = get_next_moves(current_board, player)  # get-next_moves dépend de la strat
+        print(list_moves)
         nodes = [Node(moves, current_board, player) for moves in
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
         nodes = __node_pruning(nodes, heuristic, player)
