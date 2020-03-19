@@ -48,8 +48,13 @@ def alphabeta_gen(current_board, player, get_next_moves, current_depth, max_dept
         #print(list_moves)
         nodes = [Node(moves, current_board, player) for moves in
                  list_moves]  # on génère les boards à partir des moves considérés par la strat
+<<<<<<< HEAD
         nodes = node_pruning(nodes, heuristic, player)
+        print("nodes:", len(nodes))
+=======
+        nodes = __node_pruning(nodes, heuristic, player)
         #print("nodes:", len(nodes))
+>>>>>>> origin/Elagage_nodes
 
         if player == "us":
             best_move = None

@@ -45,7 +45,7 @@ class AlphaBeta:
             list_moves = self.get_next_moves(current_board, player)  # get_next_moves dépend de la strat
             nodes = [Node(moves, current_board, player, self.heuristic) for moves in
                     list_moves]  # on génère les boards à partir des moves considérés par la strat
-            nodes = node_pruning(nodes, heuristic, player)
+            nodes = node_pruning(nodes, self.heuristic, player)
 
             if player == "us":
                 best_move = None
