@@ -24,6 +24,6 @@ class TargetStrategy(Strategy):
     #     return targets_to_moves(targets, board)
 
     def next_moves(self, think_time):
-        best_moves, best_score = alphabeta(self.current_board, self.heuristic, get_random_moves_from_board, 5)
+        best_moves, best_score = alphabeta(self.current_board, self.heuristic, get_random_moves_from_board, 7)
         print(f"bestMove:{best_moves}, bestScore: {best_score}")
         return best_moves
