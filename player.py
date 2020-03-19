@@ -13,6 +13,7 @@ from strategies.next_best_strategy import NextBestStrategy
 from strategies.random_walk_strategy import RandomWalkStrategy
 from strategies.target_strategy import TargetStrategy
 from strategies.heuristics import naive_heuristic
+from strategies.heuristics import distance_target_heuristic
 
 
 class Player():
@@ -117,7 +118,7 @@ if __name__ == '__main__':
 
     strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
                     "next_best": NextBestStrategy, "target": TargetStrategy}
-    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic}
+    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic, "target": distance_target_heuristic}
 
     parser = argparse.ArgumentParser()
 
