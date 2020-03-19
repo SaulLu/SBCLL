@@ -67,7 +67,6 @@ class AlphaBeta:
                 best_score = -math.inf
 
                 for node in nodes:
-                    #node.initial_moves = node.moves if init_moves is None else init_moves # the initial moves (from root_board) to get to this node 
                     score = 0
                     if (time.time() - self.t0 < self.timeout):
                         for potential_board, proba_board in node.potential_boards:
