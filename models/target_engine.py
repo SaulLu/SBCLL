@@ -316,30 +316,42 @@ def targets_to_moves(targets_scenarios_list: list, board: Board):
         board {Board} -- Board of the current game
     """
     calculate_moves = dict()
-    mov_scenarios_list = []
+    mov_scenarios_dico = dict()
     for targets_scenario in targets_scenarios_list:
         mov_scenario = []
+        keys = []
         targets_scenario_other, targets_scenario_us = targets_scenario
 
         for target_dict in targets_scenario_other:
-            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
-                                      **target_dict)
+            # print(f"target_dict: {target_dict}")
+            # print(f"calculate_moves: {calculate_moves}")
+            key_temp, mov_temp = target_to_move(board=board, calculate_moves=calculate_moves, **target_dict)
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
+                keys.append(key_temp)
 
         for us_pos_dict in targets_scenario_us:
             if us_pos_dict['target'] is None:
                 print(us_pos_dict)
             target_cell = __target_cell(board=board, mov_scenario=mov_scenario,
                                         start=us_pos_dict['start'], target=us_pos_dict['target'])
-            mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
+            key_temp, mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
                                       start=us_pos_dict['start'], target=target_cell,
                                       number=us_pos_dict['number'])
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
-        mov_scenarios_list.append(mov_scenario)
-    return mov_scenarios_list
+                keys.append(key_temp)
+        final_key = __build_key(keys)
+        if final_key not in mov_scenarios_dico:
+            mov_scenarios_dico[final_key] = mov_scenario
+    return list(mov_scenarios_dico.values())
 
+def __build_key(keys):
+    sorted_keys = np.sort(keys)
+    final_key = ''
+    for key in sorted_keys:
+        final_key += str(key)
+    return final_key
 
 def __target_cell(board: Board, mov_scenario: list, start: (int, int), target: (int, int)):
     """Find the cell to target when the target is "us" type
@@ -395,8 +407,11 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 
     if key in calculate_moves:
         if calculate_moves:
-            return Mov(start, number, calculate_moves[key])
-        return None
+            temp_key = start[0] + start[1]*10 + calculate_moves[key][0]*100 + calculate_moves[key][1]*1000 + number * 10000
+            # print(f"temp_key: {temp_key}")
+            # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
+            return temp_key, Mov(start, number, calculate_moves[key])
+        return None, None
     else:
         arriv = None
         target = np.array(target)
@@ -408,9 +423,12 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
         ))
 
         if (any((poss_arriv[:] == target).all(1))) and board.grid[target[0], target[1]].creature != 'us':
-            arriv = target
-            calculate_moves[key] = tuple(arriv)
-            return Mov(start, number, calculate_moves[key])
+            arriv = tuple(target)
+            calculate_moves[key] = arriv
+            temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
+            # print(f"temp_key: {temp_key}")
+            # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
+            return temp_key, Mov(start, number, calculate_moves[key])
 
         scores = __get_scores_adjacent_cells(poss_arriv, target)
         for poss_coord in scores[:, 1:]:
@@ -420,12 +438,16 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
         try:
             if not isinstance(arriv, type(None)):
                 calculate_moves[key] = tuple(arriv)
+                temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
             else:
                 calculate_moves[key] = None
+                temp_key = None
         except Exception as e:
             print(start, target, number)
             raise e
-        return Mov(start, number, calculate_moves[key])
+        # print(f"temp_key: {temp_key}")
+        # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
+        return temp_key, Mov(start, number, calculate_moves[key])
 
 
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
