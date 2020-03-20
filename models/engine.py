@@ -80,7 +80,6 @@ def create_possible_boards_many_moves(current_board: Board, moves_list, attacker
         A list of (board, probability_of_board)
     """
     all_boards_and_probas = []
-
     all_moves_possibilities = []
 
     # Get all probable outputs for each move
