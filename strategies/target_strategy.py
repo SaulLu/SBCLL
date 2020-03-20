@@ -19,7 +19,7 @@ class TargetStrategy(Strategy):
         super().__init__(max_x, max_y, heuristic)
 
     def next_moves(self, think_time):
-        alphabeta = AlphaBetaBreadthFirst(time.time(), 4, get_random_moves_from_board, self.heuristic, 10)
+        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, 8)
         best_moves, best_score = alphabeta.alphabeta(self.current_board)        
         print(f"bestMove:{best_moves}, bestScore: {best_score}")
         return best_moves
