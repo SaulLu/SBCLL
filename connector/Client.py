@@ -124,7 +124,7 @@ class Client:
         self.connect_process = ConnectProcess(self.name, self.IP, self.port, self.sending_queue, self.changes_queue)
         self.connect_process.start()
 
-    def get_board_size(self, timeout=5):
+    def get_board_size(self, timeout=10):
         """ wait for a board size to be received (with a timeout) and return it
 
         Arguments:
@@ -140,7 +140,7 @@ class Client:
         else:
             raise RuntimeError("the client is not running, please call start() method first")
 
-    def get_humans_locations(self, timeout=5):
+    def get_humans_locations(self, timeout=10):
         """ wait for the humans locations to be received (with a timeout) and return them
 
         Arguments:
@@ -156,7 +156,7 @@ class Client:
         else:
             raise RuntimeError("the client is not running, please call start() method first")
 
-    def get_start_location(self, timeout=5):
+    def get_start_location(self, timeout=10):
         """ wait for the starting location to be received (with a timeout) and return it
 
         Arguments:
@@ -172,7 +172,7 @@ class Client:
         else:
             raise RuntimeError("the client is not running, please call start() method first")
 
-    def get_board_changes(self, timeout=5):
+    def get_board_changes(self, timeout=10):
         """ wait for new board changes to be received (with a timeout) and return them
 
         Arguments:
