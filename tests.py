@@ -21,6 +21,9 @@ def __create_random_board(max_x, max_y):
         else:
             number = np.random.randint(10)
         board.update_cell2(Cell(np.random.randint(max_x), np.random.randint(max_y), s, number))
+    n_us, n_them, n_h = board.count_creatures()
+    if n_us * n_them == 0:
+        board = __create_random_board(max_x, max_y)
     return board
 
 
@@ -81,7 +84,6 @@ def random_target_test_2():
                     raise RuntimeError
 
 
-
 def distance_target_heuristic_test_1():
     board = __create_random_board(6, 9)
     print(distance_target_heuristic(board))
@@ -107,7 +109,6 @@ def check_targets(board, targets):
     for start, number_sent in sending_per_start.items():
         if number_sent > board.get_cell(start).number:
             raise RuntimeError("sending too many creatures: start: {start}, number: {number} \n {board}")
-
 
 
 def random_targets_test():
@@ -274,8 +275,24 @@ def targets_to_move_test():
     print(target_engine.targets_to_moves(board=board, targets_scenarios_list=targets_scenarios_list))
 
 
+def target_generation_test():
+    board = __create_random_board(10, 10)
+    print(board)
+
+    all_attributions = target_engine.get_feasible_targets_turns(board, 'us')
+    print(f"nodes number for us: {len(all_attributions)}")
+    for attribution in all_attributions:
+        check_targets(board, attribution)
+
+    all_attributions = target_engine.get_feasible_targets_turns(board, 'them')
+    print(f"nodes number for them: {len(all_attributions)}")
+    for attribution in all_attributions:
+        check_targets(board, attribution)
+
+
 if __name__ == "__main__":
-    ramdom_moves_test()
+    target_generation_test()
+    # ramdom_moves_test()
     # test_negatif()
 
     # esperance_tests()
