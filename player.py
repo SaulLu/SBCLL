@@ -12,15 +12,17 @@ from strategies.random_strategy import RandomStrategy
 from strategies.next_best_strategy import NextBestStrategy
 from strategies.random_walk_strategy import RandomWalkStrategy
 from strategies.target_strategy import TargetStrategy
-from strategies.heuristics import naive_heuristic
+from strategies.random_target_strategy import RandomTargetStrategy
+from strategies.heuristics import naive_heuristic 
 from strategies.heuristics import distance_target_heuristic
+from strategies.heuristics import distance_target_difference_heuristic
 
 
 class Player():
     """Class 
     """
 
-    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time = 9500):
+    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time=9500):
         """ Constructor for player
 
         Arguments:
@@ -124,17 +126,18 @@ if __name__ == '__main__':
     """
 
     strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
-                    "next_best": NextBestStrategy, "target": TargetStrategy}
-    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic, "target": distance_target_heuristic}
+                    "next_best": NextBestStrategy, "target": TargetStrategy, "random_target": RandomTargetStrategy}
+    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic, "target": distance_target_heuristic,
+                      "target_diff": distance_target_difference_heuristic}
 
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=False,
                         help='name of the algo', type=str)
     parser.add_argument('-s', '--strategy_name', metavar="<strategy_name>", required=False,
-                        help=f'name of the strategy, avalaible: {strategy_dic.keys()}', type=str)
+                        help=f'name of the strategy, available: {strategy_dic.keys()}', type=str)
     parser.add_argument('-he', '--heuristic', metavar="<heuristic>", required=False,
-                        help=f'name of the heuristic, avalaible: {heuristics_dic.keys()}', type=str)
+                        help=f'name of the heuristic, available: {heuristics_dic.keys()}', type=str)
 
     args = parser.parse_args()
 

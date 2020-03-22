@@ -16,46 +16,6 @@ import models.engine as engine
 import parameters
 
 
-def __recursive_target_attribution(prev_attributions, remaining_creatures, available_targets):
-    n_available_targets = len(available_targets)
-    if remaining_creatures == 0 or n_available_targets == 0:
-        return [prev_attributions + [(target, 0) for target in available_targets]]
-    else:
-        all_attributions = []
-        target = available_targets[0]
-
-        new_attribution = prev_attributions + [(target, 0)]
-        all_attributions = all_attributions + __recursive_target_attribution(new_attribution,
-                                                                             remaining_creatures,
-                                                                             available_targets[1:])
-        if target['min_takeover'] <= remaining_creatures:
-            for i in range(target['min_takeover'], remaining_creatures + 1):
-                new_attribution = prev_attributions + [(target, i)]
-                all_attributions = all_attributions + __recursive_target_attribution(new_attribution,
-                                                                                     remaining_creatures - i,
-                                                                                     available_targets[1:])
-
-        return all_attributions
-
-
-def get_target_moves(cell: Cell, board: Board):
-    min_takeover_factor = {'them': 1.5, 'humans': 1}
-    creature = cell.creature
-    targets = []
-    for s in board.creatures_list:
-        if s != creature:
-            for cell_coordinates in board.creatures_list[s]:
-                number = board.creatures_list[s][cell_coordinates]
-                min_takeover = int(math.ceil(min_takeover_factor[s] * number))
-                targets.append(
-                    {'target': cell_coordinates, 'number': number, 'creature': s, 'min_takeover': min_takeover})
-
-    global_min = min([t['min_takeover'] for t in targets])
-    all_attributions = __recursive_target_attribution([], cell.number, targets)
-
-    return all_attributions
-
-
 def get_available_targets(creature, board: Board):
     """
     returns the coordinates of the cells that are different from creature (humans or opponent)
@@ -65,13 +25,6 @@ def get_available_targets(creature, board: Board):
     """
     others_creatures = itertools.chain(*[board.creatures_list[s] for s in board.creatures_list.keys() if s != creature])
     return list(others_creatures)
-
-
-def get_target_turns(creature, board: Board):
-    targets_per_cell = []
-    for x, y in board.creatures_list[creature]:
-        targets_per_cell.append(get_target_moves(board.get_cell(x=x, y=y), board))
-    all_attributions = []
 
 
 def get_min_takeover(cell: Cell) -> int:
@@ -99,6 +52,24 @@ def assign_closest_ally(ally_coordinates: List[Tuple[int, int]]) -> Dict:
                 assignment[coo1] = (dist, coo2)
                 assignment[coo2] = (dist, coo1)
     return assignment
+
+
+def __suicidal_target(takeover_targets: Dict, attackers: Dict) -> List[Dict]:
+    """
+    Find the opponent target with the lowest number of creature
+    :param takeover_targets:
+    :param attackers:
+    :return:
+    """
+    friendly_coordinate = list(attackers.keys())[0]
+    best_min_takeover = np.inf
+    target_coordinate = None
+    for target, min_takeover in takeover_targets.items():
+        if min_takeover < best_min_takeover:
+            best_min_takeover = min_takeover
+            target_coordinate = target
+
+    return [{'start': friendly_coordinate, 'target': target_coordinate, 'number': attackers[friendly_coordinate]}]
 
 
 def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dict]]:
@@ -167,47 +138,160 @@ def get_random_target_turn(board: Board, creature) -> Tuple[List[Dict], List[Dic
     if np.sum(attackers.items()):  # if not every creature has a target:
         closest_ally = assign_closest_ally(list(attackers.keys()))
         for coordinate, n_creatures in attackers.items():
-            if n_creatures and not(closest_ally[coordinate][1] is None):
+            if n_creatures and not (closest_ally[coordinate][1] is None):
                 merge_targets_attribution.append({'start': coordinate, 'target': closest_ally[coordinate][1],
                                                   'number': n_creatures})
 
     if len(attack_targets_attribution) + len(merge_targets_attribution) == 0:  # no target and alone
-        attack_targets_attribution = __suicidal_target(targets, attackers)
+        takeover_targets = {coordinate: get_min_takeover(board.get_cell(coordinate)) for coordinate in
+                            targets_coordinates}
+        attack_targets_attribution = __suicidal_target(takeover_targets, attackers)
     return attack_targets_attribution, merge_targets_attribution
 
 
-def __suicidal_target(targets: List[Dict], attackers: Dict) -> List[Dict]:
-    friendly_coordinate = list(attackers.keys())[0]
-    best_min_takeover = np.inf
-    target_coordinate = None
-    for target in targets:
-        if target['min_takeover'] < best_min_takeover:
-            best_min_takeover = target['min_takeover']
-            target_coordinate = target['coordinate']
+def get_targets_per_attackers(takeover_targets: Dict, attackers: Dict) -> Dict:
+    """
+    Look which targets can be aimed at by the attackers
+    :param takeover_targets: dict with target coordinate as key and min_takeover as value
+    :param attackers: dict with attacker coordinate  as key and attacker number as value
+    :return: Dict with attacker coordinate as key and a List of targets coordinates as value
+    """
+    targets_per_attackers = {}
+    for attacker_coo, n_creature in attackers.items():
+        targets_per_attackers[attacker_coo] = [target_coo for target_coo, min_takeover in takeover_targets.items()
+                                               if n_creature >= min_takeover]
+    return targets_per_attackers
 
-    return [{'start': friendly_coordinate, 'target': target_coordinate, 'number': attackers[friendly_coordinate]}]
+
+def get_attackers_per_targets(takeover_targets: Dict, attackers: Dict) -> Dict:
+    """
+    Look which attackers can aim at which target
+    :param takeover_targets: dict with target coordinate as key and min_takeover as value
+    :param attackers: dict with attacker coordinate  as key and attacker number as value
+    :return: Dict with target coordinate as key and a List of attackers coordinates as value
+    """
+    attackers_per_targets = {}
+    for target_coo, min_takeover in takeover_targets.items():
+        attackers_per_targets[target_coo] = [att_coo for att_coo, att_number in attackers.items()
+                                             if att_number >= min_takeover]
+    return attackers_per_targets
 
 
-def __recursive_attribution(targets: List[Dict], attack_targets_attribution: List[Dict], attackers: Dict,
-                            attackers_possible_targets: Dict) -> List[Tuple[List[Dict], List[Dict]]]:
-    if len(attackers_possible_targets) == 0:  # no more target to attack
+def _get_next_target(attackers_per_targets: Dict) -> Optional[Tuple[int, int]]:
+    """
+    return the next target with possible attackers
+    :param attackers_per_targets: Dict with target coordinate as key and a List of attackers coordinates as value
+    :return: None or the next target
+    """
+    for target_coo in attackers_per_targets.keys():
+        if len(attackers_per_targets[target_coo]):
+            return target_coo
+    return None
+
+
+def _update_recursive_attributes(takeover_targets: Dict, temp_attribution: List[Dict], attackers: Dict,
+                                 attackers_per_target: Dict, targets_per_attacker: Dict, target: Tuple,
+                                 attacker: Tuple, n_creature: int) -> Tuple:
+    # deepcopy
+    updated_attribution = [dict(d) for d in temp_attribution]
+    updated_attackers = dict(attackers)
+    updated_attackers_per_target = {k: list(L) for k, L in attackers_per_target.items()}
+    updated_targets_per_attacker = {k: list(L) for k, L in targets_per_attacker.items()}
+
+    updated_attackers_per_target[target] = []
+    infer = False
+    if n_creature:
+        # update the per target
+        updated_attackers[attacker] -= n_creature
+        for t, min_takeover in takeover_targets.items():
+            if min_takeover > updated_attackers[attacker]:
+                try:
+                    updated_attackers_per_target[t].remove(attacker)  # attacker has no more the number to attack this t
+                    updated_targets_per_attacker[attacker].remove(t)
+                    infer = len(updated_attackers_per_target[t]) == 0
+                except ValueError:
+                    pass
+
+        # update per attacker
+        for a in targets_per_attacker.keys():
+            try:
+                updated_targets_per_attacker[a].remove(target)  # only one attacker per target
+            except ValueError:
+                pass
+
+        # update attribution
+        updated_attribution.append({'start': attacker, 'target': target, 'number': n_creature})
+
+    return infer, (updated_attribution, updated_attackers, updated_attackers_per_target, updated_targets_per_attacker)
+
+
+def _recursive_target_attribution(takeover_targets: Dict, temp_attribution: List[Dict], attackers: Dict,
+                                  attackers_per_target: Dict, targets_per_attacker: Dict) -> List:
+    """
+    recursivly attribute targets to cells
+    :param takeover_targets:
+    :param temp_attribution:
+    :param attackers:
+    :param attackers_per_target:
+    :param targets_per_attacker:
+    :return:
+    """
+    next_target = _get_next_target(attackers_per_target)
+    if next_target is not None:
+        attributions = []
+        min_takeover = takeover_targets[next_target]
+        infer = False
+        for attacker_coo in attackers_per_target[next_target]:
+            # print(f"next_target:{next_target}, att {attacker_coo}, call: {n_call}")
+            try:
+                min_other_takeover = np.min([takeover_targets[t] for t in
+                                             targets_per_attacker[attacker_coo] if t != next_target])
+            except ValueError:
+                min_other_takeover = 0
+            max_partial_attribution = attackers[attacker_coo] - min_other_takeover  # no left over
+
+            creature_values = [attackers[attacker_coo]]
+            if min_other_takeover:
+                creature_values = list(range(min_takeover, max_partial_attribution + 1)) + creature_values
+
+            for n_creature in creature_values:
+                updated_infer, updated_attributes = _update_recursive_attributes(takeover_targets, temp_attribution,
+                                                                                 attackers, attackers_per_target,
+                                                                                 targets_per_attacker, next_target,
+                                                                                 attacker_coo, n_creature)
+                infer = infer or updated_infer
+                new_attributions = _recursive_target_attribution(takeover_targets, *updated_attributes)
+                attributions = attributions + new_attributions
+
+        if infer:
+            _, updated_attributes = _update_recursive_attributes(takeover_targets, temp_attribution, attackers,
+                                                                 attackers_per_target, targets_per_attacker,
+                                                                 next_target, (None, None), 0)
+            new_attributions = _recursive_target_attribution(takeover_targets, *updated_attributes)
+            attributions = attributions + new_attributions
+
+        return attributions
+    else:  # No more target to be aimed at
+        effective_attackers = {target['start'] for target in temp_attribution}
         merge_targets_attribution = []
+        updated_attribution = [dict(d) for d in temp_attribution]
         if np.sum(attackers.items()):  # if not every creature has a target:
             closest_ally = assign_closest_ally(list(attackers.keys()))
             for coordinate, n_creatures in attackers.items():
-                if n_creatures:
+                if n_creatures and not (closest_ally[coordinate][1] is None):
+                    if coordinate in effective_attackers:
+                        return []
                     merge_targets_attribution.append({'start': coordinate, 'target': closest_ally[coordinate][1],
                                                       'number': n_creatures})
-        if len(attackers_possible_targets) + len(merge_targets_attribution) == 0: #no target and alone
-            attackers_possible_targets = __suicidal_target(targets, attackers)
-        return [(attackers_possible_targets, merge_targets_attribution)]
-    else:
-        attribution = []
+
+        if len(temp_attribution) + len(merge_targets_attribution) == 0:  # no target and alone
+            updated_attribution = __suicidal_target(takeover_targets, attackers)
+        return [[updated_attribution, merge_targets_attribution]]
 
 
-def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[Dict]]]:
+def get_feasible_targets_turns(board: Board, creature) -> List[Tuple[List[Dict], List[Dict]]]:
     """
-    return at the atrget attribution possible for a turn
+    return all the feasible target attribution possible for a turn
     :param board: actual board
     :param creature: attacker side
     :return: [(List[Dict]],List[Dict]])] the keys of the dicts are: 'start' (coordinate of the attacker Cell),
@@ -215,9 +299,12 @@ def get_feasible_targets(board: Board, creature) -> List[Tuple[List[Dict], List[
                         The first List is opponent's or neutral's target, the second is friendly targets (merge intent)
     """
     targets_coordinates = get_available_targets(creature, board)
-    targets = [{'coordinate': coordinate, 'min_takeover': get_min_takeover(board.get_cell(coordinate))} for coordinate
-               in targets_coordinates]
+    takeover_targets = {coordinate: get_min_takeover(board.get_cell(coordinate)) for coordinate in targets_coordinates}
     attackers = {coordinate: board.get_cell(coordinate).number for coordinate in board.creatures_list[creature]}
+    attackers_per_target = get_attackers_per_targets(takeover_targets, attackers)
+    targets_per_attackers = get_targets_per_attackers(takeover_targets, attackers)
+
+    return _recursive_target_attribution(takeover_targets, [], attackers, attackers_per_target, targets_per_attackers)
 
 
 def targets_to_moves(targets_scenarios_list: list, board: Board):
@@ -289,7 +376,7 @@ def __target_cell(board: Board, mov_scenario: list, start: (int, int), target: (
         j_coord=target[1],
         board=board
     ))
-    
+
     scores = __get_scores_adjacent_cells(poss_targets, start)
     for poss_coord in scores[:, 1:]:
         if not board.grid[poss_coord[0], poss_coord[1]].creature:
@@ -350,7 +437,6 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
                 break
         try:
             if not isinstance(arriv, type(None)):
-                arriv = tuple(arriv)
                 calculate_moves[key] = tuple(arriv)
                 temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
             else:
@@ -367,9 +453,9 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
-    scores = scores[np.argsort(scores[:,0])]
-    return(scores)
-    
+    scores = scores[np.argsort(scores[:, 0])]
+    return (scores)
+
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):
     # asert

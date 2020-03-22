@@ -6,7 +6,6 @@ import time
 from models.mov import Mov
 
 
-
 def load_config():
     config_path = pathlib.Path(__file__).parent / "config.json"
     with open(config_path) as f:
@@ -111,6 +110,7 @@ def process_command(command: str, sock):
         if command == 'UPD':
             send_moves(sock, ask_moves())
 
+
 def ask_moves():
     """ask a player to play by hand"""
     moves = []
@@ -124,12 +124,3 @@ def ask_moves():
         if not "y" in input("continue (y/n) ?").lower():
             break
     return moves
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('-n', '--algo_name', metavar="<algo_name>", required=True,
-                        help='name of the algo', type=str)
-    args = parser.parse_args()
-    run(args.algo_name)
