@@ -217,7 +217,7 @@ if __name__ == '__main__':
     """play by hand
 
     This script uses the classes implemented above to make someone play by hand
-    command: python Client.py -n <player_name>
+    command: python client.py -n <player_name>
     """
     parser = argparse.ArgumentParser()
 

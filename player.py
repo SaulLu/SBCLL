@@ -22,7 +22,7 @@ class Player():
     """Class 
     """
 
-    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time=9500):
+    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time=9.5):
         """ Constructor for player
 
         Arguments:
