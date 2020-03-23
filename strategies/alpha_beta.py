@@ -19,8 +19,26 @@ def node_pruning(nodes, heuristic, player):
         L = sorted(L, key=lambda x: x[1], reverse=True)
 
     # print("initi", len(L))
-    # print("scores", [x[1] for x in L])
-    return [x[0] for x in L[:min(len(L), 5)]]
+    # print("scores", [round(x[1],2) for x in L])
+
+    # [x[0] for x in L[:min(len(L), 5)]]
+
+    # garder seulement le "peloton de tête" si la liste est de taille > 3
+    if len(L) > 3:
+        L_centered = [(x[0],x[1]+L[-1][1]) for x in L] # recentrer les scores pour que le premier ne soit jamais 0
+        # on élimine tous les noeuds dont le score est plus de 50% moins bon que le premier élément (qui est le meilleur)
+        output = []
+        for item in L_centered:
+            if player == "us":
+                if item[1] < (L_centered[0][1] + (L_centered[0][1]/2)):
+                    output.append(item)
+            else:
+                if item[1] > (L_centered[0][1] - (L_centered[0][1]/2)):
+                    output.append(item)
+        # print("kept nodes", [round(x[1],2) for x in output])
+        return [x[0] for x in output]
+    else:
+        return [x[0] for x in L]
 
 
 class Node:
