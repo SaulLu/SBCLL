@@ -407,10 +407,11 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 
     if key in calculate_moves:
         if calculate_moves:
-            temp_key = start[0] + start[1]*10 + calculate_moves[key][0]*100 + calculate_moves[key][1]*1000 + number * 10000
-            # print(f"temp_key: {temp_key}")
-            # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
-            return temp_key, Mov(start, number, calculate_moves[key])
+            if calculate_moves[key]:
+                temp_key = start[0] + start[1]*10 + calculate_moves[key][0]*100 + calculate_moves[key][1]*1000 + number * 10000
+                # print(f"temp_key: {temp_key}")
+                # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
+                return temp_key, Mov(start, number, calculate_moves[key])
         return None, None
     else:
         arriv = None
@@ -441,7 +442,7 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
                 temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
             else:
                 calculate_moves[key] = None
-                temp_key = None
+                return None, None
         except Exception as e:
             print(start, target, number)
             raise e
