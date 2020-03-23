@@ -7,16 +7,14 @@ import models.engine as engine
 def node_pruning(nodes, heuristic, player):
     """This function makes a pruning of all"""
     L = []
+    mult = 1 if player == 'us' else -1
     for node in nodes:
         score = 0
         for board, probability_board in node.potential_boards:
             score += heuristic(board) * probability_board
-        L.append((node, score))
+        L.append((node, mult * score))
 
-    if player == "us":
-        L = sorted(L, key=lambda x: x[1])
-    else:
-        L = sorted(L, key=lambda x: x[1], reverse=True)
+    L = sorted(L, key=lambda x: x[1], reverse=True)
 
     # print("initi", len(L))
     # print("scores", [round(x[1],2) for x in L])
@@ -24,21 +22,18 @@ def node_pruning(nodes, heuristic, player):
     # [x[0] for x in L[:min(len(L), 5)]]
 
     # garder seulement le "peloton de tête" si la liste est de taille > 3
-    if len(L) > 3:
-        L_centered = [(x[0],x[1]+L[-1][1]) for x in L] # recentrer les scores pour que le premier ne soit jamais 0
-        # on élimine tous les noeuds dont le score est plus de 50% moins bon que le premier élément (qui est le meilleur)
-        output = []
-        for item in L_centered:
-            if player == "us":
-                if item[1] < (L_centered[0][1] + (L_centered[0][1]/2)):
-                    output.append(item)
-            else:
-                if item[1] > (L_centered[0][1] - (L_centered[0][1]/2)):
-                    output.append(item)
-        # print("kept nodes", [round(x[1],2) for x in output])
-        return [x[0] for x in output]
-    else:
-        return [x[0] for x in L]
+    len_L = len(L)
+    if len_L > 3:
+        best_score = L[0][1]
+        worst_score = L[-1][1]
+        score_range = best_score - worst_score
+        if score_range:
+            limit_index = 0
+            while (L[limit_index][1] - worst_score) / score_range > 0.98 and limit_index < len_L :
+                limit_index += 1
+            limit_index = min(limit_index, len_L)
+            return [x[0] for x in L[0:limit_index]]
+    return [x[0] for x in L]
 
 
 class Node:
@@ -64,11 +59,16 @@ class AlphaBeta:
         self.get_next_moves = get_next_moves
         self.heuristic = heuristic
         self.max_depth = max_depth
+        self.nodes_count = 0
+        self.depth_reached = 0
 
     def alphabeta(self, root_board):
-        return self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
+        solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
+        print(f"I explored : {self.nodes_count} nodes with a max depth of {self.depth_reached}")
+        return solution
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
+        self.depth_reached = max(current_depth, self.depth_reached)
         n_us, n_them, _ = current_board.count_creatures()
         if current_depth == self.max_depth or n_us * n_them == 0:  # on est sur une feuille
             return None, self.heuristic(current_board)
@@ -82,6 +82,7 @@ class AlphaBeta:
             nodes = [Node(moves, current_board, player, self.heuristic) for moves in
                      list_moves]  # on génère les boards à partir des moves considérés par la strat
             nodes = node_pruning(nodes, self.heuristic, player)
+            self.nodes_count += len(nodes)
 
             if player == "us":
                 best_move = None
