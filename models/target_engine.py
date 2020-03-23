@@ -407,7 +407,6 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
 
     if key in calculate_moves:
         if calculate_moves:
-            print(f"calculate_moves: {calculate_moves}")
             if calculate_moves[key]:
                 temp_key = start[0] + start[1]*10 + calculate_moves[key][0]*100 + calculate_moves[key][1]*1000 + number * 10000
                 # print(f"temp_key: {temp_key}")
