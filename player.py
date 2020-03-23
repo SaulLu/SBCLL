@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
     strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
                     "next_best": NextBestStrategy, "target": TargetStrategy, "random_target": RandomTargetStrategy}
-    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic, "target": distance_target_heuristic,
+    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic,
                       "target_diff": distance_target_difference_heuristic}
 
     parser = argparse.ArgumentParser()
