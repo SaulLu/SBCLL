@@ -49,9 +49,16 @@ class Player():
                 while not (self.client.is_my_turn() or self.client.has_game_ended()):
                     time.sleep(0.15)
                 if self.client.is_my_turn():
+                    print(f"It's my turn")
+                    t0 = time.time()
                     board_changes = self.client.get_board_changes()
+                    print(f"Board changes: \n: {board_changes}")
                     self.strategy.update_board(board_changes, self.our_name)
-                    self.client.put_moves_to_send(self.strategy.next_moves(self.think_time))
+                    next_moves = self.strategy.next_moves(self.think_time)
+                    print(f"Next moves: \n {next_moves}")
+                    self.client.put_moves_to_send(next_moves)
+                    t_final = time.time() - t0
+                    print(f"My turn last: {t_final}")
                 else:
                     print("game has ended")
                     break
