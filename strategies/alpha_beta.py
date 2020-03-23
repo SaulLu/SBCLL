@@ -29,7 +29,7 @@ def node_pruning(nodes, heuristic, player):
         score_range = best_score - worst_score
         if score_range:
             limit_index = 0
-            while (L[limit_index][1] - worst_score) / score_range > 0.70 and limit_index < len_L :
+            while (L[limit_index][1] - worst_score) / score_range > 0.98 and limit_index < len_L :
                 limit_index += 1
             limit_index = min(limit_index, len_L)
             return [x[0] for x in L[0:limit_index]]
