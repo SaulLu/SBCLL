@@ -6,9 +6,8 @@ import models.engine as engine
 import models.target_engine as target_engine
 from strategies.heuristics import naive_heuristic
 from strategies.heuristics import distance_target_heuristic
-from strategies.target_strategy import get_random_moves_from_board
+from strategies.random_target_strategy import get_random_moves_from_board
 from models.mov import Mov
-from strategies.target_strategy import get_random_moves_from_board
 
 
 def __create_random_board(max_x, max_y):

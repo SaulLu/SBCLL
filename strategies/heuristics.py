@@ -31,7 +31,7 @@ def distance_target_heuristic(board: Board, creature='us'):
                         for coordinate in targets_coordinates}
     attackers = {coordinate: board.get_cell(coordinate).number for coordinate in board.creatures_list[creature]}
     targets_per_attackers = target_engine.get_targets_per_attackers(takeover_targets, attackers)
-    return naive_heuristic(board, creature) + __get_score_distance_target(board, targets_per_attackers)
+    return 1000 * naive_heuristic(board, creature) + __get_score_distance_target(board, targets_per_attackers)
 
 
 def __get_score_distance_target(board: Board, targets_per_attackers: dict):
