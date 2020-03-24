@@ -54,7 +54,7 @@ class Player():
                     board_changes = self.client.get_board_changes()
                     print(f"Board changes: \n: {board_changes}")
                     self.strategy.update_board(board_changes, self.our_name)
-                    next_moves = self.strategy.next_moves(self.think_time)
+                    next_moves = self.strategy.next_moves(self.think_time -(time.time() - t0))
                     print(f"Next moves: \n {next_moves}")
                     self.client.put_moves_to_send(next_moves)
                     t_final = time.time() - t0
