@@ -17,9 +17,21 @@ def get_potential_moves_from_board(board: Board, creature: str):
 class TargetStrategy(Strategy):
     def __init__(self, max_x, max_y, heuristic):
         super().__init__(max_x, max_y, heuristic)
+        self.max_depth = 6
 
     def next_moves(self, think_time):
-        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, 8)
-        best_moves, best_score = alphabeta.alphabeta(self.current_board)        
-        print(f"bestMove:{best_moves}, bestScore: {best_score}")
+        t0 = time.time()
+        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, self.max_depth)
+        best_moves, best_score = alphabeta.alphabeta(self.current_board)
+
+        print(f"best score found: {best_score}")
+        if alphabeta.timed_out:
+            if self.max_depth >= 4:
+                self.max_depth -= 1
+                print(f'max_depth changed to {self.max_depth}')
+        elif time.time() - t0 < 0.8 * think_time:
+            self.max_depth += 1
+            print(f'max_depth changed to {self.max_depth}')
+
         return best_moves
+

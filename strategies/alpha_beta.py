@@ -29,7 +29,7 @@ def node_pruning(nodes, heuristic, player):
         score_range = best_score - worst_score
         if score_range:
             limit_index = 0
-            while (L[limit_index][1] - worst_score) / score_range > 0.98 and limit_index < len_L :
+            while (L[limit_index][1] - worst_score) / score_range > 0.3 and limit_index < len_L :
                 limit_index += 1
             limit_index = min(limit_index, len_L)
             return [x[0] for x in L[0:limit_index]]
@@ -61,8 +61,10 @@ class AlphaBeta:
         self.max_depth = max_depth
         self.nodes_count = 0
         self.depth_reached = 0
+        self.timed_out = False
 
     def alphabeta(self, root_board):
+        self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
         print(f"I explored : {self.nodes_count} nodes with a max depth of {self.depth_reached}")
         return solution
@@ -74,7 +76,7 @@ class AlphaBeta:
             return None, self.heuristic(current_board)
 
         if time.time() - self.t0 > self.timeout:  # running out of time
-            print("timeout", current_depth)
+            self.timed_out = True
             return None, self.heuristic(current_board)
 
         else:
@@ -121,7 +123,7 @@ class AlphaBeta:
                             score += proba_board * score_board
 
                     else:
-                        print("timeout", current_depth)
+                        self.timed_out = True
                         score = node.basic_score
 
                     if score < best_score:

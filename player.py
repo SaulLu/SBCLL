@@ -49,7 +49,7 @@ class Player():
                 while not (self.client.is_my_turn() or self.client.has_game_ended()):
                     time.sleep(0.15)
                 if self.client.is_my_turn():
-                    print(f"It's my turn")
+                    print(f"\nIt's my turn")
                     t0 = time.time()
                     board_changes = self.client.get_board_changes()
                     print(f"Board changes: \n: {board_changes}")
