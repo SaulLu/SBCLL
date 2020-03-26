@@ -148,21 +148,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Attacker.cpp" />
+    <ClCompile Include="Attribution.cpp" />
     <ClCompile Include="Attributor.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="Checks.cpp" />
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="target_module_v1.cpp" />
+    <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Attacker.h" />
+    <ClInclude Include="Attribution.h" />
     <ClInclude Include="Attributor.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="Checks.h" />
     <ClInclude Include="enums.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="Target.h" />
+    <ClInclude Include="Test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
