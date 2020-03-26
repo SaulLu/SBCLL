@@ -12,6 +12,7 @@ from strategies.random_strategy import RandomStrategy
 from strategies.next_best_strategy import NextBestStrategy
 from strategies.random_walk_strategy import RandomWalkStrategy
 from strategies.target_strategy import TargetStrategy
+from strategies.target_strategy_v2 import TargetStrategy2
 from strategies.random_target_strategy import RandomTargetStrategy
 from strategies.heuristics import naive_heuristic 
 from strategies.heuristics import distance_target_heuristic
@@ -54,7 +55,7 @@ class Player():
                     board_changes = self.client.get_board_changes()
                     print(f"Board changes: \n: {board_changes}")
                     self.strategy.update_board(board_changes, self.our_name)
-                    next_moves = self.strategy.next_moves(self.think_time -(time.time() - t0))
+                    next_moves = self.strategy.next_moves(self.think_time - (time.time() - t0))
                     print(f"Next moves: \n {next_moves}")
                     self.client.put_moves_to_send(next_moves)
                     t_final = time.time() - t0
@@ -126,7 +127,8 @@ if __name__ == '__main__':
     """
 
     strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
-                    "next_best": NextBestStrategy, "target": TargetStrategy, "random_target": RandomTargetStrategy}
+                    "next_best": NextBestStrategy, "target": TargetStrategy, "target2": TargetStrategy2,
+                    "random_target": RandomTargetStrategy}
     heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic,
                       "target_diff": distance_target_difference_heuristic}
 

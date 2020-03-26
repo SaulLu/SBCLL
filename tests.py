@@ -9,7 +9,6 @@ from strategies.heuristics import distance_target_heuristic
 from strategies.random_target_strategy import get_random_moves_from_board
 from models.mov import Mov
 
-
 def __create_random_board(max_x, max_y):
     board = Board(max_x, max_y)
     for _ in range(20):

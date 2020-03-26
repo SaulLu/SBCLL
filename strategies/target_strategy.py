@@ -29,7 +29,7 @@ class TargetStrategy(Strategy):
             if self.max_depth >= 4:
                 self.max_depth -= 1
                 print(f'max_depth changed to {self.max_depth}')
-        elif time.time() - t0 < 0.8 * think_time:
+        elif (time.time() - t0 < 0.8 * think_time) and alphabeta.depth_reached >= self.max_depth:
             self.max_depth += 1
             print(f'max_depth changed to {self.max_depth}')
 

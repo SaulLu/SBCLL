@@ -208,7 +208,7 @@ def _update_recursive_attributes(takeover_targets: Dict, temp_attribution: List[
                 try:
                     updated_attackers_per_target[t].remove(attacker)  # attacker has no more the number to attack this t
                     updated_targets_per_attacker[attacker].remove(t)
-                    infer = len(updated_attackers_per_target[t]) == 0
+                    infer = infer or len(updated_attackers_per_target[t]) == 0
                 except ValueError:
                     pass
 
@@ -336,8 +336,8 @@ def targets_to_moves(targets_scenarios_list: list, board: Board):
             target_cell = __target_cell(board=board, mov_scenario=mov_scenario,
                                         start=us_pos_dict['start'], target=us_pos_dict['target'])
             key_temp, mov_temp = target_to_move(board=board, calculate_moves=calculate_moves,
-                                      start=us_pos_dict['start'], target=target_cell,
-                                      number=us_pos_dict['number'])
+                                                start=us_pos_dict['start'], target=target_cell,
+                                                number=us_pos_dict['number'])
             if mov_temp is not None:
                 mov_scenario.append(mov_temp)
                 keys.append(key_temp)
@@ -346,12 +346,14 @@ def targets_to_moves(targets_scenarios_list: list, board: Board):
             mov_scenarios_dico[final_key] = mov_scenario
     return list(mov_scenarios_dico.values())
 
+
 def __build_key(keys):
     sorted_keys = np.sort(keys)
     final_key = ''
     for key in sorted_keys:
         final_key += str(key)
     return final_key
+
 
 def __target_cell(board: Board, mov_scenario: list, start: (int, int), target: (int, int)):
     """Find the cell to target when the target is "us" type
@@ -408,7 +410,8 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
     if key in calculate_moves:
         if calculate_moves:
             if calculate_moves[key]:
-                temp_key = start[0] + start[1]*10 + calculate_moves[key][0]*100 + calculate_moves[key][1]*1000 + number * 10000
+                temp_key = start[0] + start[1] * 10 + calculate_moves[key][0] * 100 + calculate_moves[key][
+                    1] * 1000 + number * 10000
                 # print(f"temp_key: {temp_key}")
                 # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
                 return temp_key, Mov(start, number, calculate_moves[key])
@@ -426,7 +429,7 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
         if (any((poss_arriv[:] == target).all(1))) and board.grid[target[0], target[1]].creature != 'us':
             arriv = tuple(target)
             calculate_moves[key] = arriv
-            temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
+            temp_key = start[0] + start[1] * 10 + arriv[0] * 100 + arriv[1] * 1000 + number * 10000
             # print(f"temp_key: {temp_key}")
             # print(f"Mov: {Mov(start, number, calculate_moves[key])}")
             return temp_key, Mov(start, number, calculate_moves[key])
@@ -439,7 +442,7 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
         try:
             if not isinstance(arriv, type(None)):
                 calculate_moves[key] = tuple(arriv)
-                temp_key = start[0] + start[1]*10 + arriv[0]*100 + arriv[1]*1000 + number * 10000
+                temp_key = start[0] + start[1] * 10 + arriv[0] * 100 + arriv[1] * 1000 + number * 10000
             else:
                 calculate_moves[key] = None
                 return None, None
