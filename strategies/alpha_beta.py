@@ -99,7 +99,7 @@ class AlphaBeta:
                             score += proba_board * score_board
 
                     else:
-                        print("timeout", current_depth)
+                        self.timed_out = True
                         score = node.basic_score
 
                     if score > best_score:
