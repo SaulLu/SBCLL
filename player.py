@@ -14,7 +14,7 @@ from strategies.random_walk_strategy import RandomWalkStrategy
 from strategies.target_strategy import TargetStrategy
 from strategies.target_strategy_v2 import TargetStrategy2
 from strategies.random_target_strategy import RandomTargetStrategy
-from strategies.heuristics import naive_heuristic, naive_with_humans_heuristic 
+from strategies.heuristics import naive_heuristic 
 from strategies.heuristics import distance_target_heuristic
 from strategies.heuristics import distance_target_difference_heuristic
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
     strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
                     "next_best": NextBestStrategy, "target": TargetStrategy, "target2": TargetStrategy2,
                     "random_target": RandomTargetStrategy}
-    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic, "naive_humans": naive_with_humans_heuristic,
+    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic,
                       "target_diff": distance_target_difference_heuristic}
 
     parser = argparse.ArgumentParser()

@@ -20,20 +20,6 @@ def naive_heuristic(board: Board, creature='us'):
         return number_of_us - number_of_them
     return number_of_them - number_of_us
 
-def naive_with_humans_heuristic(board: Board, creature='us'):
-    """ A naive heuristic : calculate the difference between the number of us left and the number of others left.
-    
-    Arguments:
-        board {Board} -- the instance of Board to evaluate
-    
-    Returns:
-        int -- difference between the number of us left and the number of others left
-    """
-    number_of_us, number_of_them, number_of_humans = board.count_creatures()
-    if creature == 'us':
-        return number_of_us - number_of_them - number_of_humans
-    return number_of_them - number_of_us - number_of_humans
-
 
 def distance_target_difference_heuristic(board: Board):
     return distance_target_heuristic(board, 'us') - distance_target_heuristic(board, 'them')
