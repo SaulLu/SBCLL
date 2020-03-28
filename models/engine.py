@@ -306,7 +306,7 @@ def reverse_creature(creature):
 def get_distance_between_cells(pos_cell1 : tuple, pos_cell2 : tuple):
     x_1, y_1 = pos_cell1
     x_2, y_2 = pos_cell2
-    return max(abs(x_1 - x_2),abs(y_1 - y_2))
+    return max(abs(x_1 - x_2), abs(y_1 - y_2))
 
 def travel_distance(coo1: Tuple[int, int], coo2: Tuple[int, int]) -> int:
     return np.max([abs(coo1[0] - coo2[0]), abs(coo1[1] - coo2[1])])

@@ -75,7 +75,7 @@ class Player():
         config_player = self.__load_config()
         self.client = Client(self.algo_name, config_connector['IP'], int(config_connector['port']))
         self.client.start()
-        # time.sleep(1)
+        time.sleep(1)  # wait a little before asking configs
 
         board_size = self.client.get_board_size()
         print(f"I just got the board size: {board_size}")

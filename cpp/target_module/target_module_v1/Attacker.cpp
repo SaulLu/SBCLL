@@ -5,7 +5,7 @@ using namespace std;
 
 int Attacker::s_next_id = 0;
 
-Attacker::Attacker() : m_location({ NULL, NULL }), m_number(NULL), m_id(NULL)
+Attacker::Attacker() : m_location({ -1, -1 }), m_number(-1), m_id(-1)
 {
 
 }
