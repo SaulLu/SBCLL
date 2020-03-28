@@ -103,9 +103,6 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 
 	switch (player_int)
 	{
-	case 0:
-		player = Creature::Humans;
-		break;
 	case 1:
 		player = Creature::Us;
 		break;

@@ -4,9 +4,11 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <algorithm>
+#include <cmath>
 
 #include "enums.h"
-#include <algorithm>
+
 
 class Attacker;
 class Target

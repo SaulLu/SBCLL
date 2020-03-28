@@ -6,7 +6,7 @@ using namespace std;
 int Target::s_next_id = 0;
 
 Target::Target() 
-	: m_location({ NULL, NULL }), m_creature(Creature::Empty), m_number(NULL), m_takeover(NULL), m_id(NULL)
+	: m_location({ -1, -1 }), m_creature(Creature::Empty), m_number(-1), m_takeover(-1), m_id(-1)
 {
 
 }
