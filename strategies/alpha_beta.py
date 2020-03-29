@@ -62,6 +62,8 @@ class AlphaBeta:
         self.nodes_count = 0
         self.depth_reached = 0
         self.timed_out = False
+        self.time_per_node = None
+
 
     def alphabeta(self, root_board):
         self.timed_out = False
@@ -70,6 +72,10 @@ class AlphaBeta:
         return solution
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
+        if not self.time_per_node:
+            self.time_per_node = self.__get_time_per_node(current_board)
+            print(f"time heuristic calculate: {self.time_per_node}")
+        
         self.depth_reached = max(current_depth, self.depth_reached)
         n_us, n_them, _ = current_board.count_creatures()
         if current_depth == self.max_depth or n_us * n_them == 0:  # on est sur une feuille
@@ -85,13 +91,16 @@ class AlphaBeta:
                      list_moves]  # on génère les boards à partir des moves considérés par la strat
             nodes = node_pruning(nodes, self.heuristic, player)
             self.nodes_count += len(nodes)
-
+            if self.time_per_node:
+                self.timeout = self.timeout - len(nodes) * self.time_per_node
+            print(f"Update timeout: {self.timeout}")
             if player == "us":
                 best_move = None
                 best_score = -math.inf
 
                 for node in nodes:
                     score = 0
+
                     if time.time() - self.t0 < self.timeout:
                         for potential_board, proba_board in node.potential_boards:
                             _, score_board = self.__alphabeta_gen(potential_board, "them", current_depth + 1, alpha,
@@ -100,6 +109,8 @@ class AlphaBeta:
 
                     else:
                         self.timed_out = True
+                        tf = time.time() - self.t0
+                        # print(f"first timeout node us: {tf}")
                         score = node.basic_score
 
                     if score > best_score:
@@ -124,6 +135,8 @@ class AlphaBeta:
 
                     else:
                         self.timed_out = True
+                        tf = time.time() - self.t0
+                        # print(f"first timeout node them: {tf}")
                         score = node.basic_score
 
                     if score < best_score:
@@ -136,3 +149,8 @@ class AlphaBeta:
                     beta = min(beta, score)
 
             return best_move, best_score
+
+    def __get_time_per_node(self, current_board):
+        t0 = time.time()
+        _ = self.heuristic(current_board)
+        return time.time()-t0
