@@ -50,7 +50,7 @@ Pour jouer :
 ├── <b>player.py</b> : <i>le code relatif au joueur, gère l'interaction client et utilise une stratégie donnée</i> 
 ├── <b>README.md</b>
 ├── <b>speed_test.py</b> : <i>l'un des fichiers de tests</i>
-└──<b>tests.py</b> : <i>l'un des fichiers de tests</i>
+└── <b>tests.py</b> : <i>l'un des fichiers de tests</i>
 </pre>
 
 ## Algorithmes, stratégies et heuristiques
@@ -87,7 +87,7 @@ Cette stratégie calcule tous les coups possibles à partir du plateau actuel et
 Cette stratégie utilise un arbre de décision alpha-bêta. Les fils d'un plateau donné sont calculés à l'aide de fonctions calculant :
 * Pour chacune de nos cases, les cases adverses (humaines ou de l'autre type de créature) pouvant être attaquées sans risques. Ces cases adverses sont les targets potentielles de chacune de nos cases.
 * Pour le plateau, toutes les combinaisons possibles d'attributions de nos cases vers des targets potentielles (en prenant en compte le fait qu'une case puisse se diviser en plusieurs, ou que deux cases peuvent fusionner si aucune target adverse n'est possible).
-* Pour chaque combinaison nos  cases / targets potentielles, la prochaine listes de "mov" que nous devons faire pour avancer vers les-dites targets. 
+* Pour chaque combinaison de nos targets potentielles, la prochaine listes de "mov" que nous devons faire pour avancer vers les-dites targets en essayant d'emprunter le chemin le plus court entre la case initiale et celle de la target et en allant uniquement sur des cases disponibles (ie, la case d'arrivée ne peut pas être une case occupée par notre créature ou par un humain ou l'adversaire si ce n'est pas la target).
 Ce calcul de fils élague donc tous les coups ne nous dirigeant pas vers des targets potentielles.
 #### target2
 Cette stratégie agit selon les mêmes principes que la précédentes. Seulement, les fonctions de calcul des target, de leurs attributions et des "mov" correspondant se fait grâce à un module en C++ que nous avons créé, afin de gagner du temps.
