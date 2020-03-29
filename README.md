@@ -14,41 +14,44 @@ Pour jouer :
 
 ## Structure du code
 
---- **connector** : *le code relatif au serveur client*
-    |   --- **client.py** : *le client et ses fonctions d'interaction* 
-    |   --- **config.json** : *la config client*
-    |   --- **connect.py** : *les fonctions pour encrypter / décrypter les commandes à envoyer / reçues par le client* 
---- **cpp \ target_module** : *module de calcul pour les stratégies de target en C++*
-    |   --- **target_module_v1**
-    |   --- **target_module.sln**
---- **models** : *les classes du jeu et les machines de calcul*
-    |   --- **battle_engine.py** : *fonctions de calculs des issues (espérances) des batailles aléatoires*
-    |   --- **board.py** : *classe pour décrire le plateau de jeu*
-    |   --- **cell.py** : *classe pour décrire une case du plateau de jeu*
-    |   --- **check_engine.py** : *fonctions de vérifications intermédiaires*
-    |   --- **engine.py** : *fonctions de calcul de base sur le plateau de jeu*
-    |   --- **mov.py** : *classe pour décrire un mouvement dans le jeu, tel qu'attendu par la commande MOV*
-    |   --- **target_engine.py** : *fonctions de calcul pour les stratégies de target*
---- **strategies** : *les stratégies et heuristiques*
-    |   --- **abstract_strategy.py** *classe abstraite pour décrire une stratégie*
-    |   --- **alpha_beta.py** : *classe pour calculer le meilleur prochain coup selon alpha-beta* 
-    |   --- **heuristics.py** : *les heuristiques pour calculer le score d'un plateau*
-    |   --- **next_best_strategy.py** : *l'une des classes implémentant une stratégie*
-    |   --- **random_strategy.py** : *l'une des classes implémentant une stratégie*
-    |   --- **random_target_strategy.py** : *l'une des classes implémentant une stratégie* 
-    |   --- **random_walk_strategy.py** : *l'une des classes implémentant une stratégie*
-    |   --- **target_strategy_v2.py** : *l'une des classes implémentant une stratégie*
-    |   --- **target_strategy.py** : *l'une des classes implémentant une stratégie*
-    |   --- **target_walk_strategy.py** : *l'une des classes implémentant une stratégie* ???????
---- **.gitignore**
---- **config.json** : *la config du jeu*
---- **heuristics_tests.py** : *l'un des fichiers de tests*
---- **module_tests.py** : *l'un des fichiers de tests*
---- **parameters.py** : *les paramètres du jeu*
---- **player.py** : *le code relatif au joueur, gère l'interaction client et utilise une stratégie donnée* 
---- **README.md**
---- **speed_test.py** : *l'un des fichiers de tests*
---- **tests.py** : *l'un des fichiers de tests*
+<pre>
+│
+├── <b>connector</b> : <i>le code relatif au serveur client</i>
+│   ├── <b>client.py</b> : <i>le client et ses fonctions d'interaction</i> 
+│   ├── <b>config.json</b> : <i>la config client</i>
+│   ├── <b>connect.py</b> : <i>les fonctions pour encrypter / décrypter les commandes à envoyer / reçues par le client</i> 
+├──  <b>cpp \ target_module</b> : <i>module de calcul pour les stratégies de target en C++</i>
+│   ├── <b>target_module_v1</b>
+│   ├── <b>target_module.sln</b>
+├──  <b>models</b> : <i>les classes du jeu et les machines de calcul</i>
+│   ├── <b>battle_engine.py</b> : <i>fonctions de calculs des issues (espérances) des batailles aléatoires</i>
+│   ├── <b>board.py</b> : <i>classe pour décrire le plateau de jeu</i>
+│   ├── <b>cell.py</b> : <i>classe pour décrire une case du plateau de jeu</i>
+│   ├── <b>check_engine.py</b> : <i>fonctions de vérifications intermédiaires</i>
+│   ├── <b>engine.py</b> : <i>fonctions de calcul de base sur le plateau de jeu</i>
+│   ├── <b>mov.py</b> : <i>classe pour décrire un mouvement dans le jeu, tel qu'attendu par la commande MOV</i>
+│   ├── <b>target_engine.py</b> : <i>fonctions de calcul pour les stratégies de target</i>
+├──  <b>strategies</b> : <i>les stratégies et heuristiques</i>
+│   ├── <b>abstract_strategy.py</b> : <i>classe abstraite pour décrire une stratégie</i>
+│   ├── <b>alpha_beta.py</b> : <i>classe pour calculer le meilleur prochain coup selon alpha-beta</i> 
+│   ├── <b>heuristics.py</b> : <i>les heuristiques pour calculer le score d'un plateau</i>
+│   ├── <b>next_best_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
+│   ├── <b>random_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
+│   ├── <b>random_target_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i> 
+│   ├── <b>random_walk_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
+│   ├── <b>target_strategy_v2.py</b> : <i>l'une des classes implémentant une stratégie</i>
+│   ├── <b>target_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
+│   ├── <b>target_walk_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i> ???????
+├── <b>.gitignore</b>
+├── <b>config.json</b> : <i>la config du jeu</i>
+├── <b>heuristics_tests.py</b> : <i>l'un des fichiers de tests</i>
+├── <b>module_tests.py</b> : <i>l'un des fichiers de tests</i>
+├── <b>parameters.py</b> : <i>les paramètres du jeu</i>
+├── <b>player.py</b> : <i>le code relatif au joueur, gère l'interaction client et utilise une stratégie donnée</i> 
+├── <b>README.md</b>
+├── <b>speed_test.py</b> : <i>l'un des fichiers de tests</i>
+└──<b>tests.py</b> : <i>l'un des fichiers de tests</i>
+</pre>
 
 ## Algorithmes, stratégies et heuristiques
 
