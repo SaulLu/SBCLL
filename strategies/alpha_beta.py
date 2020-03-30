@@ -9,10 +9,7 @@ def node_pruning(nodes, heuristic, player):
     L = []
     mult = 1 if player == 'us' else -1
     for node in nodes:
-        score = 0
-        for board, probability_board in node.potential_boards:
-            score += heuristic(board) * probability_board
-        L.append((node, mult * score))
+        L.append((node, mult * node.basic_score))
 
     L = sorted(L, key=lambda x: x[1], reverse=True)
 
@@ -59,23 +56,26 @@ class AlphaBeta:
         self.get_next_moves = get_next_moves
         self.heuristic = heuristic
         self.max_depth = max_depth
-        self.nodes_count = 0
+        self.visited_board_count = 0
+        self.generated_nodes_count = 0
+        self.generated_boards_count = 0
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
 
-
     def alphabeta(self, root_board):
         self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
-        print(f"I explored : {self.nodes_count} nodes with a max depth of {self.depth_reached}")
+        print(f"I explored  {self.visited_board_count} boards with a max depth of {self.depth_reached} "
+              f"(origin:{self.max_depth}), Timed-out: {self.timed_out}, generated_nodes: {self.generated_nodes_count}, "
+              f"generated_boards: {self.generated_boards_count}")
         return solution
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
-        if not self.time_per_node:
-            self.time_per_node = self.__get_time_per_node(current_board)
-            print(f"time heuristic calculate: {self.time_per_node}")
-        
+        # if not self.time_per_node:
+        #     self.time_per_node = self.__get_time_per_node(current_board)
+        #     print(f"time heuristic calculate: {self.time_per_node}")
+        self.visited_board_count += 1
         self.depth_reached = max(current_depth, self.depth_reached)
         n_us, n_them, _ = current_board.count_creatures()
         if current_depth == self.max_depth or n_us * n_them == 0:  # on est sur une feuille
@@ -89,11 +89,12 @@ class AlphaBeta:
             list_moves = self.get_next_moves(current_board, player)  # get_next_moves dépend de la strat
             nodes = [Node(moves, current_board, player, self.heuristic) for moves in
                      list_moves]  # on génère les boards à partir des moves considérés par la strat
-            nodes = node_pruning(nodes, self.heuristic, player)
-            self.nodes_count += len(nodes)
-            if self.time_per_node:
-                self.timeout = self.timeout - len(nodes) * self.time_per_node
-            print(f"Update timeout: {self.timeout}")
+            # nodes = node_pruning(nodes, self.heuristic, player)
+            self.generated_nodes_count += len(nodes)
+            self.generated_boards_count += sum(map(lambda x: len(x.potential_boards), nodes))
+            #if self.time_per_node:
+                #self.timeout = self.timeout - len(nodes) * self.time_per_node
+                #print(f"Update timeout: {self.timeout}")
             if player == "us":
                 best_move = None
                 best_score = -math.inf

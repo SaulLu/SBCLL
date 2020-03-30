@@ -53,7 +53,7 @@ class Player():
                     print(f"\nIt's my turn")
                     t0 = time.time()
                     board_changes = self.client.get_board_changes()
-                    print(f"Board changes: \n: {board_changes}")
+                    # print(f"Board changes: \n: {board_changes}")
                     self.strategy.update_board(board_changes, self.our_name)
                     next_moves = self.strategy.next_moves(self.think_time - (time.time() - t0))
                     print(f"Next moves: \n {next_moves}")
@@ -170,5 +170,7 @@ if __name__ == '__main__':
     else:
         algo_name = "group 1"
 
-    player = Player(strategy_class, heuristic, algo_name)
+    player = Player(strategy_class, heuristic, algo_name, think_time=9.5)
     player.play()
+
+# python player.py -s target2 -he target_diff
