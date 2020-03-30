@@ -1,5 +1,6 @@
-import numpy as np
 import time
+import threading
+import numpy as np
 
 from strategies.abstract_strategy import Strategy
 from models.board import Board
@@ -73,19 +74,55 @@ class TargetStrategy2(Strategy):
 
     def next_moves(self, think_time):
         t0 = time.time()
-        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, self.max_depth)
-        best_moves, best_score = alphabeta.alphabeta(self.current_board)
+        best_moves, self.max_depth =  timeout(
+            t0=t0,
+            timeout=think_time,
+            get_next_moves=get_potential_moves_from_board,
+            heuristic=self.heuristic,
+            max_depth=self.max_depth,
+            root_board=self.current_board, 
+            timeout_duration=1.99
+        )
 
         if not best_moves:
             best_moves = [engine.get_random_turn(self.current_board, 'us')[0]]
-            print(f"random moves : {best_moves}")
-        # print(f"best score found: {best_score}")
-        if alphabeta.timed_out:
+            print(f"random moves : {best_moves}")       
+
+        return best_moves
+
+class AlphaBetaInterruptableThread(threading.Thread):
+    def __init__(self, t0, timeout, get_next_moves, heuristic, max_depth, root_board):
+        threading.Thread.__init__(self)
+        self.result = None
+        self.alphabeta = AlphaBeta(
+            t0=t0,
+            timeout=timeout,
+            get_next_moves=get_potential_moves_from_board,
+            heuristic=heuristic,
+            max_depth=max_depth
+        )
+        self.root_board = root_board
+        self.max_depth=max_depth
+        self.timeout = timeout
+
+    def run(self):
+        self.result, _ = self.alphabeta.alphabeta(self.root_board)
+        if self.alphabeta.timed_out:
             if self.max_depth >= 4:
                 self.max_depth -= 1
                 print(f'max_depth changed to {self.max_depth}')
-        elif (time.time() - t0 < 0.8 * think_time) and alphabeta.depth_reached >= self.max_depth:
+        elif (time.time() - self.alphabeta.t0 < 0.8 * self.timeout) and self.alphabeta.depth_reached >= self.max_depth:
             self.max_depth += 1
             print(f'max_depth changed to {self.max_depth}')
 
-        return best_moves
+def timeout(t0, timeout, get_next_moves, heuristic, max_depth, root_board, timeout_duration=1):
+    it = AlphaBetaInterruptableThread(t0, timeout, get_next_moves, heuristic, max_depth, root_board)
+    it.start()
+    it.join(timeout_duration)
+    if it.isAlive():
+        print(f"kill")
+        if it.max_depth > 1:
+            it.max_depth -= 1
+        return it.alphabeta.random_move, it.max_depth
+    else:
+        return it.result, it.max_depth
