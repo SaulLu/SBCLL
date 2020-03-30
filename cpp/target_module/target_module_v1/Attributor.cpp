@@ -65,6 +65,8 @@ vector<Attributions> Attributor::recursiveTargetAttribution(Attributions current
 	int target_id = getNextTargetId(targets);
 	if (target_id > 0)
 	{
+		if (target_id == 3)
+			int trash = 0;
 		vector<Attributions> all_attributions;
 		int takeover = targets[target_id].getTakeOver();
 		bool infer = false;
@@ -112,14 +114,17 @@ vector<Attributions> Attributor::recursiveTargetAttribution(Attributions current
 	}
 }
 
-vector<Attributions> Attributor::applyAttribution(Attributions current_attributions, map<int, Attacker> attackers, map<int, Target> targets, const int target_id, const int attacker_id, const int number, bool& infer)
+vector<Attributions> Attributor::applyAttribution(Attributions current_attributions, map<int, Attacker> attackers, map<int, Target> targets, const int target_id, const int attacker_id, const int number_sent, bool& infer)
 {
-	if (number) //si un envoie est effectué (envoi nul => ignorer la target)
+	if (number_sent == 3 && target_id == 1 && attacker_id == 1)
+		int trash = 1;
+
+	if (number_sent) //si un envoie est effectué (envoi nul => ignorer la target)
 	{
-		current_attributions.first.push_back(Attribution(attackers[attacker_id], targets[target_id], number));
-		attackers[attacker_id].lowerNumber(number);
+		current_attributions.first.push_back(Attribution(attackers[attacker_id], targets[target_id], number_sent));
+		attackers[attacker_id].lowerNumber(number_sent);
 		attackers[attacker_id].removeTarget(target_id, targets, attackers);
-		infer = infer || attackers[attacker_id].updateTargets(targets, attackers);
+		infer = attackers[attacker_id].updateTargets(targets, attackers) || infer;
 	}
 
 	targets[target_id].clearAttackers();

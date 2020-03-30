@@ -9,7 +9,7 @@ void printAllAttributions(vector<Attributions>& all_attributions);
 
 int main()
 {
-    vector<Attributions> all_attributions = Test::testViableTargets3();
+    vector<Attributions> all_attributions = Test::testViableTargets4();
     printAllAttributions(all_attributions);
 }
 

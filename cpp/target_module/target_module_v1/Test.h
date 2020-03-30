@@ -16,6 +16,7 @@ public:
 	static std::vector<Attributions> testViableTargets();
 	static std::vector<Attributions> testViableTargets2();
 	static std::vector<Attributions> testViableTargets3();
+	static std::vector<Attributions> testViableTargets4();
 };
 
 #endif

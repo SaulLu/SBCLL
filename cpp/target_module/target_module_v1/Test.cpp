@@ -60,3 +60,35 @@ vector<Attributions> Test::testViableTargets3()
 
 	return all_attributions;
 }
+
+vector<Attributions> Test::testViableTargets4()
+{
+	Creature player = Creature::Us;
+	vector<array<int, 4>> creatures_vector = { {{8, 2, 0, 3}, {1, 0, 0, 2}, {1, 4, 1, 6}, {1, 6, 1, 5}, {7, 3, 2, 4}} };
+
+	map<Creature, vector<array<int, 3>>> creatures;
+
+	for (auto& creature : creatures_vector)
+	{
+		switch (creature[2])
+		{
+		case 0:
+			creatures[Creature::Humans].push_back({ creature[0], creature[1], creature[3] });
+			break;
+		case 1:
+			creatures[Creature::Us].push_back({ creature[0], creature[1], creature[3] });
+			break;
+		case 2:
+			creatures[Creature::Them].push_back({ creature[0], creature[1], creature[3] });
+			break;
+		default:
+			break;
+		}
+	}
+
+	Attributor attributor = Attributor(creatures, player);
+
+	vector<Attributions> all_attributions = attributor.getTargetAttribution();
+
+	return all_attributions;
+}
