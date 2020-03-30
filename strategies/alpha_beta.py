@@ -56,7 +56,7 @@ class AlphaBeta:
     def __init__(self, t0, timeout, get_next_moves, heuristic, max_depth):
         self.t0 = t0
         self.timeout = timeout
-        self.timeout_max = timeout * 0.9
+        self.timeout_max = timeout * 0.95
         self.get_next_moves = get_next_moves
         self.heuristic = heuristic
         self.max_depth = max_depth
@@ -71,7 +71,7 @@ class AlphaBeta:
     def alphabeta(self, root_board):
         self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
-        print(f"I explored : {self.nodes_count}, I generate {self.nodes_gen} nodes with a max depth of {self.depth_reached}")
+        print(f"I explored {self.nodes_count} nodes and generate {self.nodes_gen} nodes with a max depth of {self.depth_reached}")
         return solution
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
@@ -179,6 +179,7 @@ class AlphaBeta:
 
             if current_depth == 0 and not best_move:
                 best_move = self.random_move
+                print(f"best move replace with: {best_move}")
 
             return best_move, best_score
 

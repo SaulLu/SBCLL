@@ -76,7 +76,10 @@ class TargetStrategy2(Strategy):
         alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, self.max_depth)
         best_moves, best_score = alphabeta.alphabeta(self.current_board)
 
-        print(f"best score found: {best_score}")
+        if not best_moves:
+            best_moves = [engine.get_random_turn(self.current_board, 'us')[0]]
+            print(f"random moves : {best_moves}")
+        # print(f"best score found: {best_score}")
         if alphabeta.timed_out:
             if self.max_depth >= 4:
                 self.max_depth -= 1
