@@ -9,10 +9,7 @@ def node_pruning(nodes, heuristic, player):
     L = []
     mult = 1 if player == 'us' else -1
     for node in nodes:
-        score = 0
-        for board, probability_board in node.potential_boards:
-            score += heuristic(board) * probability_board
-        L.append((node, mult * score))
+        L.append((node, mult * node.basic_score))
 
     L = sorted(L, key=lambda x: x[1], reverse=True)
 
@@ -60,22 +57,24 @@ class AlphaBeta:
         self.get_next_moves = get_next_moves
         self.heuristic = heuristic
         self.max_depth = max_depth
-        self.nodes_gen = 0
-        self.nodes_count = 0
+        self.visited_board_count = 0
+        self.generated_nodes_count = 0
+        self.generated_boards_count = 0
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
         self.random_move = None
 
-
     def alphabeta(self, root_board):
         self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
-        print(f"I explored {self.nodes_count} nodes and generate {self.nodes_gen} nodes with a max depth of {self.depth_reached}")
+        print(f"I explored  {self.visited_board_count} boards with a max depth of {self.depth_reached} "
+              f"(origin:{self.max_depth}), Timed-out: {self.timed_out}, generated_nodes: {self.generated_nodes_count}, "
+              f"generated_boards: {self.generated_boards_count}")
         return solution
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
-        self.nodes_count += 1
+        self.visited_board_count += 1
         if time.time() - self.t0 > self.timeout_max:
             default_score = -math.inf
             return self.random_move, default_score
@@ -111,7 +110,8 @@ class AlphaBeta:
             # t_mean = t_mean / len(moves)
             # print(f"mean time to generate a node: {t_mean}, for {len(nodes)} nodes")
             nodes = node_pruning(nodes, self.heuristic, player)
-            self.nodes_gen += len(nodes)
+            self.generated_nodes_count += len(nodes)
+            self.generated_boards_count += sum(map(lambda x: len(x.potential_boards), nodes))
             if self.time_per_node:
                 self.timeout = self.timeout - len(nodes) * self.time_per_node
             # print(f"Update timeout: {self.timeout}")

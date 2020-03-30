@@ -395,7 +395,7 @@ def target_to_move(board: Board, calculate_moves: dict, start: (int, int), targe
         calculate_moves {dict} -- list of movements already compute for a pair of departure and arrival coordinates
         start {(int,int)} -- coordinate of us
         target {(int,int)} -- coordinate of the target
-        number {int} -- number of us from this strat coordinates targeting this target
+        number {int} -- number of creature from this start coordinates targeting this target
     
     Returns:
         {Mov} -- an instance of Mov object
@@ -458,7 +458,7 @@ def __get_scores_adjacent_cells(poss_arriv: np.ndarray, target: (int, int)):
     dist = get_distance_between_array_cells(poss_arriv, target)
     scores = np.column_stack((dist, poss_arriv))
     scores = scores[np.argsort(scores[:, 0])]
-    return (scores)
+    return scores
 
 
 def get_distance_between_array_cells(array_pos_cell1: np.ndarray, pos_cell2):

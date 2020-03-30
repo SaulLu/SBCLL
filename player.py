@@ -170,5 +170,7 @@ if __name__ == '__main__':
     else:
         algo_name = "group 1"
 
-    player = Player(strategy_class, heuristic, algo_name)
+    player = Player(strategy_class, heuristic, algo_name, think_time=9.5)
     player.play()
+
+# python player.py -s target2 -he target_diff

@@ -1,5 +1,6 @@
 import numpy as np
 
+import time
 from models.cell import Cell
 from models.board import Board
 from strategies.target_strategy import TargetStrategy
@@ -48,7 +49,9 @@ def test2():
 	strategy = TargetStrategy2(max_x, max_y, distance_target_difference_heuristic)
 	strategy.current_board = board
 
-	strategy.next_moves(60)
+	t0 = time.time()
+	strategy.next_moves(2)
+	print(f"time spent: {time.time() - t0}")
 
 
 if __name__ == "__main__":  # python -m cProfile -s tottime speed_test.py
