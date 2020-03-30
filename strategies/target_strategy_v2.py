@@ -1,6 +1,7 @@
 import time
 import threading
 import numpy as np
+import copy
 
 from strategies.abstract_strategy import Strategy
 from models.board import Board
@@ -61,7 +62,10 @@ def get_potential_moves_from_board(board: Board, creature: str):
     player_int = 1 if creature == 'us' else 2
     units_list = construct_units_list(board)
     # log_entries(units_list, board, player_int, 'module_entries')
+    print(f"begin c++")
+    t0= time.time()
     targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int)
+    print(f"end c++: {time.time()-t0}")
     targets = construct_targets(targets_list)
     # log_outputs(targets_list, targets, 'module_outputs')
     return target_engine.targets_to_moves(targets, board)
@@ -93,6 +97,8 @@ class TargetStrategy2(Strategy):
 class AlphaBetaInterruptableThread(threading.Thread):
     def __init__(self, t0, timeout, get_next_moves, heuristic, max_depth, root_board):
         threading.Thread.__init__(self)
+        self._stop_event = threading.Event()
+
         self.result = None
         self.alphabeta = AlphaBeta(
             t0=t0,
@@ -114,15 +120,36 @@ class AlphaBetaInterruptableThread(threading.Thread):
         elif (time.time() - self.alphabeta.t0 < 0.8 * self.timeout) and self.alphabeta.depth_reached >= self.max_depth:
             self.max_depth += 1
             print(f'max_depth changed to {self.max_depth}')
+    
+    def stop(self):
+        self._stop_event.set()
+    
+    def stopped(self):
+        return self._stop_event.is_set()
 
+class RandomInterruptableThread(threading.Thread):
+    def __init__(self, board):
+        threading.Thread.__init__(self)
+        self.result = None
+        self.board = board
+        self.get_random_mov = engine.get_random_mov
+
+    def run(self):
+        self.result = self.get_random_mov(self.board, "us")
+    
 def timeout(t0, timeout, get_next_moves, heuristic, max_depth, root_board, timeout_duration=1):
+    current_board = copy.deepcopy(root_board)
+
     it = AlphaBetaInterruptableThread(t0, timeout, get_next_moves, heuristic, max_depth, root_board)
+    rd = RandomInterruptableThread(current_board)
     it.start()
+    rd.start()
     it.join(timeout_duration)
     if it.isAlive():
         print(f"kill")
         if it.max_depth > 1:
             it.max_depth -= 1
-        return it.alphabeta.random_move, it.max_depth
+        it.stop()
+        return rd.result, it.max_depth
     else:
         return it.result, it.max_depth

@@ -144,13 +144,23 @@ def adjacent_cells(i_coord, j_coord, board):
     for x, y in [(i_coord + i, j_coord + j) for i in (-1, 0, 1) for j in (-1, 0, 1) if i != 0 or j != 0]:
         if (x >= 0) and (x < board.max_x) and (y >= 0) and (y < board.max_y):
             adjacents.append((x, y))
-
     return adjacents
-
 
 def get_attainable_cells(i_coord: int, j_coord: int, creature, board: Board):
     return [adj for adj in adjacent_cells(i_coord, j_coord, board) if
             board.grid[adj[0]][adj[1]].creature != creature]
+
+def get_free_cells(i_coord: int, j_coord: int, board: Board):
+    return [adj for adj in adjacent_cells(i_coord, j_coord, board) if
+            not board.grid[adj[0]][adj[1]].creature]
+
+def get_random_mov(board, creature_name):
+    for row in board.grid:
+        for cell in row:
+            if cell.creature == creature_name:
+                free_cells = get_free_cells(i_coord= cell.x, j_coord= cell.y, board= board)
+                if free_cells:
+                    return([Mov((cell.x,cell.y),cell.number, free_cells[0])])
 
 
 def get_cell_moves(cell: Cell, board: Board):
