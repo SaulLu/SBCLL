@@ -19,7 +19,7 @@ Pour jouer :
 ├── <b>connector</b> : <i>le code relatif au serveur client</i>
 │   ├── <b>client.py</b> : <i>le client et ses fonctions d'interaction</i> 
 │   ├── <b>config.json</b> : <i>la config client</i>
-│   ├── <b>connect.py</b> : <i>les fonctions pour encrypter / décrypter les commandes à envoyer / reçues par le client</i> 
+│   ├── <b>connect.py</b> : <i>les fonctions pour encrypter / décrypter les commandes à envoyer / recevoir par le client</i> 
 ├──  <b>cpp \ target_module</b> : <i>module de calcul pour les stratégies de target en C++</i>
 │   ├── <b>target_module_v1</b>
 │   ├── <b>target_module.sln</b>
@@ -41,7 +41,7 @@ Pour jouer :
 │   ├── <b>random_walk_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
 │   ├── <b>target_strategy_v2.py</b> : <i>l'une des classes implémentant une stratégie</i>
 │   ├── <b>target_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
-│   ├── <b>target_walk_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i> ???????
+│   ├── <b>target_walk_strategy.py</b> : <i>l'une des classes implémentant une stratégie</i>
 ├── <b>.gitignore</b>
 ├── <b>config.json</b> : <i>la config du jeu</i>
 ├── <b>heuristics_tests.py</b> : <i>l'un des fichiers de tests</i>
@@ -58,10 +58,10 @@ Pour jouer :
 ### Heuristiques
 Toutes les heuristiques sont présentées dans le fichier `heuristics.py`.
 
-#### naive
+#### a. naive
 Calcule la différence entre le nombre de nos créatures et le nombre de créatures adverses (ne prend pas en compte les humains).
-#### target_diff
-Calcule ???
+#### b. target_diff
+Se base sur sur l'heuristique naive mais ajoute un terme qui prend en compte les potentialités de chaque case de créature. Pour chaque case de créature, on somme toutes les créatures qu'elle peux absorber ou détruire instantanément, pondéré par le carré de l'inverse de la distance qui les sépare. Ce terme est ajouté pour nos créatures et soustrait pour les créatures adverses.
 
 ### Alpha-bêta
 Nous proposons notre propre implémentation du principe alpha-bêta dans le fichier `alpha_beta.py`, sous forme d'une classe. Cette classe a pour attributs :
@@ -77,18 +77,20 @@ En plus de l'élagage inhérent au principe d'alpha-bêta, et de celui éventuel
 ### Stratégies
 Toutes les stratégies découlent de la classe abstraite `Strategy`. Cette classe abstraite contient une méthode permettant de mettre le plateau à jour déjà implémentée, et une méthode `next_moves` décidant du prochain coup du joueur selon le plateau actuel à overrider.
 
-#### random
+#### a. random
 Cette stratégie choisit pour chaque cellule un coup aléatoire parmi tous les coups légaux ; elle prend bien garde à bouger au moins une créature.
-#### random_walk
+#### b. random_walk
 Cette stratégie calcule tous les coups (liste de "mov") possibles à partir du plateau actuel. Elle calcule ensuite des marches aléatoires de profondeur 5 pour chacun de ces coups tant qu'elle a du temps. Enfin, elle choisit le coup menant le plus probablement à des plateaux ayant une bonne heuristique.
-#### next_best
+#### c. next_best
 Cette stratégie calcule tous les coups possibles à partir du plateau actuel et les plateaux résultants. Elle calcule l'heuristique de chaque plateau et choisit le coup menant au meilleur plateau.
-#### target
+#### d. target
 Cette stratégie utilise un arbre de décision alpha-bêta. Les fils d'un plateau donné sont calculés à l'aide de fonctions calculant :
 * Pour chacune de nos cases, les cases adverses (humaines ou de l'autre type de créature) pouvant être attaquées sans risques. Ces cases adverses sont les targets potentielles de chacune de nos cases.
 * Pour le plateau, toutes les combinaisons possibles d'attributions de nos cases vers des targets potentielles (en prenant en compte le fait qu'une case puisse se diviser en plusieurs, ou que deux cases peuvent fusionner si aucune target adverse n'est possible).
 * Pour chaque combinaison de nos targets potentielles, la prochaine listes de "mov" que nous devons faire pour avancer vers les-dites targets en essayant d'emprunter le chemin le plus court entre la case initiale et celle de la target et en allant uniquement sur des cases disponibles (ie, la case d'arrivée ne peut pas être une case occupée par notre créature ou par un humain ou l'adversaire si ce n'est pas la target).
 Ce calcul de fils élague donc tous les coups ne nous dirigeant pas vers des targets potentielles.
-#### target2
+#### e. target2
 Cette stratégie agit selon les mêmes principes que la précédentes. Seulement, les fonctions de calcul des target, de leurs attributions et des "mov" correspondant se fait grâce à un module en C++ que nous avons créé, afin de gagner du temps.
+#### f. target_walk
+Cette stratégie est un mélange entre target_walk et target. On utilise un alpha_bêta comme dans target mais les noeuds fils sont tirés aléatoirements. On a alors seulement un échantillon des fils disponibles. Cette stratégie privilégie la profondeur d'exlploration à l'exactitude des scores attribués à chaque noeuds de l'arbre. Elle n'explore aussi qu'une partie des branches, certaines n'étant pas tirées par le hasard
 
