@@ -5,6 +5,7 @@ Ce projet consiste en l'implémentation d'une IA pouvant jouer au jeu "Vampires 
 ## Mode d'emploi de l'IA
 
 Pour jouer : 
+0. executer les commandes au root `cd cpp\target_module\target_module_v1` puis `python setup.py build_ext --inplace`
 1. Lancer le serveur du jeu.
 2. Exécuter le fichier "player.py" (au niveau de la racine du projet) avec les paramètres suivants : 
     * -n : le nom du joueur (par défaut, pioche le nom du joueur dans le fichier de config du jeu) ;
