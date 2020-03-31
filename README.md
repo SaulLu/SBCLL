@@ -59,6 +59,7 @@ Dans le terminal, il est possible de choisir pour "player.py":
 ├── <b>player.py</b> : <i>le code relatif au joueur, gère l'interaction client et utilise une stratégie donnée</i> 
 ├── <b>README.md</b>
 ├── <b>speed_test.py</b> : <i>l'un des fichiers de tests</i>
+├── <b>stat_test.py</b> : <i>l'un des fichiers de tests</i>
 └── <b>tests.py</b> : <i>l'un des fichiers de tests</i>
 </pre>
 
