@@ -12,6 +12,7 @@ public:
 	Attribution();
 	Attribution(Attacker& attacker, Target& target, int number);
 	Attribution(Attacker& attacker, Attacker& merge_attacker, int number);
+	Attribution(std::array<int,2> start_loc, std::array<int,2> arrival_loc, int number_sent);
 	std::array<int, 2> start;
 	std::array<int, 2> target;
 	int number;
