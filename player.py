@@ -46,7 +46,6 @@ class Player:
         """
 
         self.__init_game()
-
         try:
             while True:
                 while not (self.client.is_my_turn() or self.client.has_game_ended()):
