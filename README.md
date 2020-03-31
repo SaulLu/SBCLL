@@ -4,7 +4,7 @@ Ce projet consiste en l'implémentation d'une IA pouvant jouer au jeu "Vampires 
 
 ## Mode d'emploi de l'IA
 
-Pour installer l'IA :
+Pour installer l'IA
 1. Cloner ce repository
 2. Dans un terminal, lancer la commande `python setup.py build_ext --inplace` dans le dossier `SBCLL\cpp\target_module\target_module_v1`
 

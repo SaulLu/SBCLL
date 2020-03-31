@@ -211,32 +211,3 @@ class AlphaBeta:
         t0 = time.time()
         _ = self.heuristic(current_board)
         return time.time() - t0
-
-    def add_infos(turn_time=None, 
-                    depth_reached=None,
-                    depth_max=None,
-                    Timed_out=None,
-                    visited=None,
-                    cut=None,
-                    unvisited=None, 
-                    generated_boards=None,
-                    ):
-        
-        path_metrics = '../' + os.path.join('test_maps',"metrics.csv")
-        with open(path_metrics, "r") as f:
-            reader = csv.reader(f)
-            mylist = list(reader)
-            f.close()
-
-        mylist[-1][4] = turn_time
-        # mylist[-1][5] = depth_reached
-        # mylist[-1][6] = depth_max
-        # mylist[-1][7] = Timed_out
-        # mylist[-1][8] = visited
-        # mylist[-1][9] = cut
-        # mylist[-1][10] = unvisited
-        # mylist[-1][11] = generated_boards
-
-        with open(path_metrics, 'w', newline = '') as f:
-            csv_writer = csv.writer(f)
-            csv_writer.writerows(mylist)
