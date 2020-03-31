@@ -79,7 +79,6 @@ class AlphaBeta:
         self.generated_boards_count = 0
         self.generated_moves_count = 0
         self.cut_node_count = 0
-        self.cut_board_count = 0
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
@@ -98,7 +97,7 @@ class AlphaBeta:
     def get_free_time(self):
         remaining_time = self.last_timeout - (time.time() - self.t0)
         ungenerated_nodes = self.generated_moves_count - self.generated_nodes_count - self.cut_node_count
-        unvisited_board = self.generated_boards_count - self.visited_board_count - self.cut_board_count
+        unvisited_board = self.generated_boards_count - self.visited_board_count 
         reserved_time = (ungenerated_nodes + unvisited_board) * self.time_per_node
         return remaining_time - reserved_time
 
@@ -147,7 +146,7 @@ class AlphaBeta:
                     self.generated_nodes_count += 1
                     score = 0
 
-                    if self.get_free_time() > self.time_per_node * len(node.potential_boards):
+                    if self.get_free_time() > 0:
                         for potential_board, proba_board in node.potential_boards:
                             _, score_board = self.__alphabeta_gen(potential_board, "them", current_depth + 1, alpha,
                                                                   beta)
@@ -167,7 +166,6 @@ class AlphaBeta:
 
                     if best_score >= beta:
                         self.cut_node_count += len_list_moves - i_moves - 1
-                        self.cut_board_count += len(node.potential_boards)
                         return best_move, best_score
 
                     alpha = max(alpha, score)
@@ -203,7 +201,6 @@ class AlphaBeta:
 
                     if alpha >= best_score:
                         self.cut_node_count += len_list_moves - i_moves - 1
-                        self.cut_board_count += len(node.potential_boards)
                         return best_move, best_score
 
                     beta = min(beta, score)
@@ -221,31 +218,31 @@ class AlphaBeta:
         _ = self.heuristic(current_board)
         return time.time() - t0
 
-    # def add_infos(self, turn_time=None, 
-    #                 depth_reached=None,
-    #                 depth_max=None,
-    #                 Timed_out=None,
-    #                 visited=None,
-    #                 cut=None,
-    #                 unvisited=None, 
-    #                 generated_boards=None,
-    #                 random_move=None):
+    def add_infos(turn_time=None, 
+                    depth_reached=None,
+                    depth_max=None,
+                    Timed_out=None,
+                    visited=None,
+                    cut=None,
+                    unvisited=None, 
+                    generated_boards=None,
+                    ):
         
-    #     path_metrics = os.path.join('test_maps',"metrics.csv")
-    #     with open(path_metrics, "r") as f:
-    #         reader = csv.reader(f)
-    #         mylist = list(reader)
-    #         f.close()
+        path_metrics = '../' + os.path.join('test_maps',"metrics.csv")
+        with open(path_metrics, "r") as f:
+            reader = csv.reader(f)
+            mylist = list(reader)
+            f.close()
 
-    #     mylist[-1][3] = turn_time
-    #     # mylist[-1][4] = depth_reached
-    #     # mylist[-1][5] = depth_max
-    #     # mylist[-1][6] = Timed_out
-    #     # mylist[-1][7] = visited
-    #     # mylist[-1][8] = cut
-    #     # mylist[-1][9] = unvisited
-    #     # mylist[-1][10] = generated_boards
+        mylist[-1][4] = turn_time
+        # mylist[-1][5] = depth_reached
+        # mylist[-1][6] = depth_max
+        # mylist[-1][7] = Timed_out
+        # mylist[-1][8] = visited
+        # mylist[-1][9] = cut
+        # mylist[-1][10] = unvisited
+        # mylist[-1][11] = generated_boards
 
-    #     with open(path_metrics, 'w', newline = '') as f:
-    #         csv_writer = csv.writer(f)
-            # csv_writer.writerows(mylist)
+        with open(path_metrics, 'w', newline = '') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerows(mylist)
