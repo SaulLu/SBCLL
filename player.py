@@ -19,11 +19,11 @@ from strategies.heuristics import distance_target_heuristic
 from strategies.heuristics import distance_target_difference_heuristic
 
 
-class Player():
+class Player:
     """Class 
     """
 
-    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time=1.99):
+    def __init__(self, strategy_class, heuristic, algo_name="group_1", think_time=1.99, debug_mode=False):
         """ Constructor for player
 
         Arguments:
@@ -38,20 +38,20 @@ class Player():
         self.client = None
         self.heuristic = heuristic
         self.think_time = think_time
+        self.turn_num = 0
+        self.debug_mode = debug_mode
 
     def play(self):
         """Initializes the game and loops between our turn and ennemy's turn until the end 
         """
 
         self.__init_game()
-        compt = 0
         try:
             while True:
                 while not (self.client.is_my_turn() or self.client.has_game_ended()):
                     time.sleep(0.15)
                 if self.client.is_my_turn():
-                    compt += 1
-                    print(f"\nIt's my turn n°{compt}")
+                    print(f"\nIt's my turn : {self.turn_num}")
                     t0 = time.time()
                     board_changes = self.client.get_board_changes()
                     # print(f"Board changes: \n: {board_changes}")
@@ -61,6 +61,9 @@ class Player():
                     self.client.put_moves_to_send(next_moves)
                     t_final = time.time() - t0
                     print(f"My turn last: {t_final}")
+                    if self.debug_mode:
+                        self.strategy.current_board.toxml(f'logs/map_logs/{self.turn_num}.xml')
+                    self.turn_num += 2
                 else:
                     print("game has ended")
                     break
@@ -94,6 +97,7 @@ class Player():
 
         self.strategy.update_board(initial_setup, self.our_name)
         print("I just got the initial setup")
+        self.turn_num = 0 if self.our_name == "vampires" else 1
 
     def __init_humans(self, humans_coords):
         # useless apriori
@@ -141,6 +145,7 @@ if __name__ == '__main__':
                         help=f'name of the strategy, available: {strategy_dic.keys()}', type=str)
     parser.add_argument('-he', '--heuristic', metavar="<heuristic>", required=False,
                         help=f'name of the heuristic, available: {heuristics_dic.keys()}', type=str)
+    parser.add_argument("-d", "--debug", help="debug mode", action="store_true")
 
     args = parser.parse_args()
 
@@ -171,7 +176,7 @@ if __name__ == '__main__':
     else:
         algo_name = "group 1"
 
-    player = Player(strategy_class, heuristic, algo_name, think_time=1.95)
+    player = Player(strategy_class, heuristic, algo_name, think_time=1.95, debug_mode=args.debug)
     player.play()
 
 # python player.py -s target2 -he target_diff

@@ -48,13 +48,13 @@ vector<Attributions> Test::testViableTargets3()
 	Creature player = Creature::Us;
 	map<Creature, vector<array<int, 3>>> creatures;
 
-	creatures[Creature::Us].push_back({ 2, 2, 2 });
-	creatures[Creature::Us].push_back({ 3, 3, 2 });
+	creatures[Creature::Us].push_back({ 4, 1, 10 });
+	creatures[Creature::Us].push_back({ 5, 0, 11 });
 
-	creatures[Creature::Them].push_back({ 4, 4 ,2 });
-	creatures[Creature::Them].push_back({ 5, 3 ,2 });
+	creatures[Creature::Them].push_back({ 1, 7 ,19 });
+	creatures[Creature::Them].push_back({ 6, 2 ,6 });
 
-	Attributor attributor = Attributor(creatures, player);
+	Attributor attributor = Attributor(creatures, player, 22.5, 1.95);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 
@@ -63,8 +63,8 @@ vector<Attributions> Test::testViableTargets3()
 
 vector<Attributions> Test::testViableTargets4()
 {
-	Creature player = Creature::Us;
-	vector<array<int, 4>> creatures_vector = { {{0, 1, 0, 3}, {1, 2, 0, 2},{0, 3, 0, 3}, {5, 6, 0, 2},{7, 8, 0, 3}, {0, 6, 0, 2},{9, 3, 0, 3}, {7, 7, 0, 2}, {1, 4, 1, 8}, {1, 6, 1, 5}, {7, 3, 2, 4}} };
+	Creature player = Creature::Them;
+	vector<array<int, 4>> creatures_vector = { {{5, 1, 1, 11}, {1, 7, 2, 19}, {6, 2, 2, 6}} };
 
 	map<Creature, vector<array<int, 3>>> creatures;
 
@@ -87,6 +87,23 @@ vector<Attributions> Test::testViableTargets4()
 	}
 
 	Attributor attributor = Attributor(creatures, player, 22.5, 5);
+
+	vector<Attributions> all_attributions = attributor.getTargetAttribution();
+
+	return all_attributions;
+}
+
+vector<Attributions> Test::testViableTargets5()
+{
+	Creature player = Creature::Them;
+	map<Creature, vector<array<int, 3>>> creatures;
+
+	creatures[Creature::Us].push_back({ 5, 1, 11 });
+
+	creatures[Creature::Them].push_back({ 1, 7 ,19 });
+	creatures[Creature::Them].push_back({ 6, 2 ,6 });
+
+	Attributor attributor = Attributor(creatures, player, 22.5);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 

@@ -66,25 +66,13 @@ def test2():
 
 
 def test3():
-    board = Board(6, 5)
+    board = Board(10, 10)
 
-    board.update_cell2(Cell(3, 0, 'them', 4))
-    board.update_cell2(Cell(0, 2, 'us', 8))
-    board.update_cell2(Cell(5, 0, 'humans', 2))
-    board.update_cell2(Cell(5, 2, 'humans', 1))
-    board.update_cell2(Cell(5, 4, 'humans', 2))
+    board.update_cell2(Cell(2, 8, 'them', 72))
+    board.update_cell2(Cell(7, 1, 'us', 75))
+    board.update_cell2(Cell(1, 9, 'humans', 3))
 
     print_heuristics(board)
-
-    moves = [Mov((0, 2), 7, (1, 1))]
-    board2 = engine.create_possible_boards_many_moves(board, moves, 'us')[0][0]
-
-    print(print_heuristics(board2))
-
-    moves = [Mov((0, 2), 8, (1, 1))]
-    board3 = engine.create_possible_boards_many_moves(board, moves, 'us')[0][0]
-
-    print(print_heuristics(board3))
 
 
 if __name__ == "__main__":

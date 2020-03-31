@@ -102,13 +102,27 @@ class Board:
             for x in range(self.max_x):
                 if not (self.grid[x][y].creature is None):
                     unique_id = unique_id + str(x) + str(y) + str(creature_to_int[self.grid[x][y].creature]) \
-                         + str(self.grid[x][y].number)
+                                + str(self.grid[x][y].number)
         return unique_id
+
+    def toxml(self, path):
+        species_template = '\n<{} X="{}" Y="{}" Count="{}"/>'
+        file_content = f'<?xml version="1.0" encoding="utf-8" ?>\n<Map Columns="{self.max_x}" Rows="{self.max_y}">'
+
+        for x, y in self.creatures_list['humans']:
+            file_content = file_content + species_template.format('Humans', x, y, self.grid[x][y].number)
+        for x, y in self.creatures_list['us']:
+            file_content = file_content + species_template.format('Werewolves', x, y, self.grid[x][y].number)
+        for x, y in self.creatures_list['them']:
+            file_content = file_content + species_template.format('Vampires', x, y, self.grid[x][y].number)
+        file_content = file_content + '\n</Map>'
+        with open(path, "w") as f:
+            f.write(file_content)
 
     @staticmethod
     def from_units_list(units_list, max_x, max_y):
         board = Board(max_x, max_y)
         int_to_creature = ['humans', 'us', 'them']
-        for x,y, creature_int, number in units_list:
+        for x, y, creature_int, number in units_list:
             board.update_cell2(Cell(x, y, int_to_creature[creature_int], number))
         return board
