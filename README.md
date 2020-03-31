@@ -89,10 +89,12 @@ Toutes les stratégies découlent de la classe abstraite `Strategy`. Cette class
 
 #### a. random
 Cette stratégie choisit pour chaque cellule un coup aléatoire parmi tous les coups légaux ; elle prend bien garde à bouger au moins une créature.
+Attention, cette dernière n'est à utiliser que sur des boards simples.
 #### b. random_walk
 Cette stratégie calcule tous les coups (liste de "mov") possibles à partir du plateau actuel. Elle calcule ensuite des marches aléatoires de profondeur 5 pour chacun de ces coups tant qu'elle a du temps. Enfin, elle choisit le coup menant le plus probablement à des plateaux ayant une bonne heuristique.
 #### c. next_best
 Cette stratégie calcule tous les coups possibles à partir du plateau actuel et les plateaux résultants. Elle calcule l'heuristique de chaque plateau et choisit le coup menant au meilleur plateau.
+Attention, cette dernière n'est à utiliser que sur des boards simples.
 #### d. target
 Cette stratégie utilise un arbre de décision alpha-bêta. Les fils d'un plateau donné sont calculés à l'aide de fonctions calculant :
 * Pour chacune de nos cases, les cases adverses (humaines ou de l'autre type de créature) pouvant être attaquées sans risques. Ces cases adverses sont les targets potentielles de chacune de nos cases.
