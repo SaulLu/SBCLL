@@ -14,9 +14,11 @@ class GetNextMoveCaller(threading.Thread):
         self.player = player
         self.next_moves = queue.Queue()
         self.allowed_time = allowed_time
+        self.finished = False
 
     def run(self):
-        self.next_moves.put(self.get_next_moves(self.board, self.player, 10 * self.allowed_time))
+        self.next_moves.put(self.get_next_moves(self.board, self.player, 10*self.allowed_time))
+        self.finished = True
 
     def get_id(self):
 

@@ -77,7 +77,7 @@ def test2():
 
 
 def test3():
-	max_x, max_y, board = loadMap('test_maps/map_10_10_12.xml', "Vampires")
+	max_x, max_y, board = loadMap('test_maps/2.xml', "Vampires")
 	print(board)
 	strategy = TargetStrategy2(max_x, max_y, distance_target_difference_heuristic)
 	strategy.max_depth = 3
