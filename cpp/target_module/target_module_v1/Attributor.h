@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <chrono>
+#include <math.h>
 
 #include "enums.h"
 #include "Move.h"
@@ -12,11 +13,12 @@
 #include "Attacker.h"
 #include "Attribution.h"
 #include "Checks.h"
+#include "Geometry.h"
 
 class Attributor
 {
 public:
-	Attributor(const std::map<Creature, std::vector<std::array<int, 3>>> creatures, const Creature player, const double timeout = 3600);
+	Attributor(const std::map<Creature, std::vector<std::array<int, 3>>> creatures, const Creature player, const double overlap_angle = 22.5, const double timeout = 3600);
 	std::vector<Attributions> getTargetAttribution();
 
 	
@@ -28,8 +30,11 @@ private:
 	std::map<int, Target> m_targets;
 	const double m_timeout;  //in seconds
 	std::chrono::system_clock::time_point m_t0;
+	const double m_overlap_angle;
 
 	void constructTA();
+	void setAllTargets();
+	void setScopeTargets();
 	std::vector<Attributions> recursiveTargetAttribution(Attributions current_attributions, std::map<int, Attacker> attackers,
 														std::map<int, Target> targets);
 	std::vector<Attributions> applyAttribution(Attributions current_attributions, std::map<int, Attacker> attackers,

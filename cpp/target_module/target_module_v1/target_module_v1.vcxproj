@@ -153,6 +153,7 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="Checks.cpp" />
+    <ClCompile Include="Geometry.cpp" />
     <ClCompile Include="Move.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="target_module_v1.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="Cell.h" />
     <ClInclude Include="Checks.h" />
     <ClInclude Include="enums.h" />
+    <ClInclude Include="Geometry.h" />
     <ClInclude Include="Move.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="Test.h" />
