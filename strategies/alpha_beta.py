@@ -77,7 +77,8 @@ class AlphaBeta:
         self.visited_board_count = 0
         self.generated_nodes_count = 0
         self.generated_boards_count = 0
-        self.cut_board_count = 0
+        self.generated_moves_count = 0
+        self.cut_node_count = 0
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
@@ -86,16 +87,16 @@ class AlphaBeta:
         self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
         print(f"\tdepth reached / max: {self.depth_reached} / {self.max_depth}, Timed-out: {self.timed_out}"
-              f"\n\tvisited / cut / unvisited / generated boards: {self.visited_board_count} / "
-              f"{self.cut_board_count} / "
-              f"{self.generated_boards_count + 1 - self.visited_board_count - self.cut_board_count} / "
-              f"{self.generated_boards_count}")
+              f"\n\tvisited / unvisited / generated boards: {self.visited_board_count} / "
+              f"{self.generated_boards_count + 1 - self.visited_board_count} / "
+              f"{self.generated_boards_count}\n\tcut nodes: {self.cut_node_count},"
+              f" unvisited_moves: {self.generated_moves_count - self.generated_nodes_count}")
         return solution
 
     def get_free_time(self):
         remaining_time = self.last_timeout - (time.time() - self.t0)
-        unvisited_boards = self.generated_boards_count + 1 - self.visited_board_count - self.cut_board_count
-        reserved_time = unvisited_boards * self.time_per_node
+        unvisited_nodes = self.generated_moves_count - self.generated_nodes_count - self.cut_node_count
+        reserved_time = unvisited_nodes * self.time_per_node
         return remaining_time - reserved_time
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
@@ -123,23 +124,16 @@ class AlphaBeta:
                 print("### A: get_next_moves took too long")
                 return None, self.heuristic(current_board)
 
-            nodes = []
-            for moves in list_moves:
-                if self.get_free_time() <= 0.2:
-                    print(f"### A: Break nodes generation")
-                    self.timed_out = True
-                    return None, self.heuristic(current_board)
-                nodes.append(Node(moves, current_board, player, self.heuristic))
-
-            nodes = node_pruning(nodes, self.heuristic, player)
-            self.generated_nodes_count += len(nodes)
-            self.generated_boards_count += sum(map(lambda x: len(x.potential_boards), nodes))
-
+            len_list_moves = len(list_moves)
+            self.generated_moves_count += len_list_moves
             if player == "us":
                 best_move = None
                 best_score = -math.inf
 
-                for i_node, node in enumerate(nodes):
+                for i_moves, moves in enumerate(list_moves):
+                    node = Node(moves, current_board, player, self.heuristic)
+                    self.generated_boards_count += len(node.potential_boards)
+                    self.generated_nodes_count += 1
                     score = 0
 
                     if self.get_free_time() > 0:
@@ -150,14 +144,16 @@ class AlphaBeta:
                     else:
                         print(f"### A: Timeout max limit reached: {time.time() - self.t0}")
                         self.timed_out = True
+                        if best_score == -math.inf:
+                            return node.moves, node.basic_score
                         return best_move, best_score
 
-                    if score > best_score and node.moves:
+                    if score > best_score and node.moves and score != math.inf:
                         best_score = score
                         best_move = node.moves
 
                     if best_score >= beta:
-                        self.cut_board_count += sum(map(lambda x: len(x.potential_boards), nodes[i_node + 1:]))
+                        self.cut_node_count += len_list_moves - i_moves - 1
                         return best_move, best_score
 
                     alpha = max(alpha, score)
@@ -166,8 +162,11 @@ class AlphaBeta:
                 best_move = None
                 best_score = math.inf
 
-                for i_node, node in enumerate(nodes):
-                    score = node.basic_score
+                for i_moves, moves in enumerate(list_moves):
+                    node = Node(moves, current_board, player, self.heuristic)
+                    self.generated_boards_count += len(node.potential_boards)
+                    self.generated_nodes_count += 1
+                    score = 0
                     if self.get_free_time() > 0:
                         for potential_board, proba_board in node.potential_boards:
                             _, score_board = self.__alphabeta_gen(potential_board, "us", current_depth + 1, alpha, beta)
@@ -175,14 +174,16 @@ class AlphaBeta:
                     else:
                         print(f"### A: Timeout max limit reached: {time.time() - self.t0}")
                         self.timed_out = True
+                        if best_score == math.inf:
+                            return node.moves, node.basic_score
                         return best_move, best_score
 
-                    if score < best_score and node.moves:
+                    if score < best_score and node.moves and score != -math.inf:
                         best_score = score
                         best_move = node.moves
 
                     if alpha >= best_score:
-                        self.cut_board_count += sum(map(lambda x: len(x.potential_boards), nodes[i_node + 1:]))
+                        self.cut_node_count += len_list_moves - i_moves - 1
                         return best_move, best_score
 
                     beta = min(beta, score)
