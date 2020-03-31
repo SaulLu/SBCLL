@@ -86,23 +86,23 @@ En plus de l'élagage inhérent au principe d'alpha-bêta, et de celui éventuel
 ### Stratégies
 Toutes les stratégies découlent de la classe abstraite `Strategy`. Cette classe abstraite contient une méthode permettant de mettre le plateau à jour déjà implémentée, et une méthode `next_moves` décidant du prochain coup du joueur selon le plateau actuel à overrider.
 
-#### a. random
+#### a. random (random_strategy.py)
 Cette stratégie choisit pour chaque cellule un coup aléatoire parmi tous les coups légaux ; elle prend bien garde à bouger au moins une créature.
 Attention, cette dernière n'est à utiliser que sur des boards simples.
-#### b. random_walk
+#### b. random_walk (random_walk_strategy.py)
 Cette stratégie calcule tous les coups (liste de "mov") possibles à partir du plateau actuel. Elle calcule ensuite des marches aléatoires de profondeur 5 pour chacun de ces coups tant qu'elle a du temps. Enfin, elle choisit le coup menant le plus probablement à des plateaux ayant une bonne heuristique.
-#### c. next_best
+#### c. next_best (next_best_strategy.py)
 Cette stratégie calcule tous les coups possibles à partir du plateau actuel et les plateaux résultants. Elle calcule l'heuristique de chaque plateau et choisit le coup menant au meilleur plateau.
 Attention, cette dernière n'est à utiliser que sur des boards simples.
-#### d. target
+#### d. target (target_strategy.py)
 Cette stratégie utilise un arbre de décision alpha-bêta. Les fils d'un plateau donné sont calculés à l'aide de fonctions calculant :
 * Pour chacune de nos cases, les cases adverses (humaines ou de l'autre type de créature) pouvant être attaquées sans risques. Ces cases adverses sont les targets potentielles de chacune de nos cases.
 * Pour le plateau, toutes les combinaisons possibles d'attributions de nos cases vers des targets potentielles (en prenant en compte le fait qu'une case puisse se diviser en plusieurs, ou que deux cases peuvent fusionner si aucune target adverse n'est possible).
 * Pour limiter l'explosion combinatoire, on limite le nombre de targets par angle de vue pour chacune des cases attaquantes. Par exemple pour chaque cône de 30°, l'attaquant retiendra seulement la target la plus proche dans ce cône. Nous partons du principe que pour aller chercher une target ignorée par cette règle, il faut déja avancer vers la target retenue.
 * Pour chaque combinaison de nos targets potentielles, la prochaine listes de "mov" que nous devons faire pour avancer vers les-dites targets en essayant d'emprunter le chemin le plus court entre la case initiale et celle de la target et en allant uniquement sur des cases disponibles (ie, la case d'arrivée ne peut pas être une case occupée par notre créature ou par un humain ou l'adversaire si ce n'est pas la target).
 Ce calcul de fils élague donc tous les coups ne nous dirigeant pas vers des targets potentielles.
-#### e. target2
+#### e. target2 (target_strategy_v2.py)
 Cette stratégie agit selon les mêmes principes que la précédentes. Seulement, les fonctions de calcul des target, de leurs attributions se fait grâce à un module en C++ que nous avons créé, afin de gagner du temps.
-#### f. target_walk
+#### f. target_walk (random_target_strategy.py)
 Cette stratégie est un mélange entre target_walk et target. On utilise un alpha_bêta comme dans target mais les noeuds fils sont tirés aléatoirements. On a alors seulement un échantillon des fils disponibles. Cette stratégie privilégie la profondeur d'exlploration à l'exactitude des scores attribués à chaque noeuds de l'arbre. Elle n'explore aussi qu'une partie des branches, certaines n'étant pas tirées par le hasard
 
