@@ -9,7 +9,7 @@ from strategies.alpha_beta import AlphaBeta
 from strategies.alpha_beta_breadth_first import AlphaBetaBreadthFirst
 
 
-def get_potential_moves_from_board(board: Board, creature: str):
+def get_potential_moves_from_board(board: Board, creature: str, timeout):
     targets = target_engine.get_feasible_targets_turns(board, creature)
     return target_engine.targets_to_moves(targets, board)
 

@@ -1,14 +1,14 @@
-import numpy as np
+
 import time
+import threading
+import datetime
 
 from strategies.abstract_strategy import Strategy
 from models.board import Board
 import models.engine as engine
 import models.target_engine as target_engine
 from strategies.alpha_beta import AlphaBeta
-from strategies.alpha_beta_breadth_first import AlphaBetaBreadthFirst
 from cpp.target_module.target_module_v1 import _target_module
-import datetime
 
 
 def construct_units_list(board: Board):
@@ -56,20 +56,20 @@ def log_outputs(targets_list, targets, filename, mode='w'):
         f.write(str(targets))
 
 
-def get_potential_moves_from_board(board: Board, creature: str):
+def get_potential_moves_from_board(board: Board, creature: str, timeout: float):
     player_int = 1 if creature == 'us' else 2
     units_list = construct_units_list(board)
-    # log_entries(units_list, board, player_int, 'module_entries')
-    targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int)
+    #log_entries(units_list, board, player_int, 'module_entries')
+    targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int, timeout)
     targets = construct_targets(targets_list)
-    # log_outputs(targets_list, targets, 'module_outputs')
+    #log_outputs(targets_list, targets, 'module_outputs')
     return target_engine.targets_to_moves(targets, board)
 
 
 class TargetStrategy2(Strategy):
     def __init__(self, max_x, max_y, heuristic):
         super().__init__(max_x, max_y, heuristic)
-        self.max_depth = 6
+        self.max_depth = 3
 
     def next_moves(self, think_time):
         t0 = time.time()
@@ -79,7 +79,7 @@ class TargetStrategy2(Strategy):
         if not best_moves:
             best_moves = [engine.get_random_turn(self.current_board, 'us')[0]]
             print(f"random moves : {best_moves}")
-        # print(f"best score found: {best_score}")
+        print(f"best score found: {best_score}")
         if alphabeta.timed_out:
             if self.max_depth >= 4:
                 self.max_depth -= 1

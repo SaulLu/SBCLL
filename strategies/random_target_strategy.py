@@ -8,7 +8,7 @@ import models.target_engine as target_engine
 from strategies.alpha_beta import AlphaBeta
 
 
-def get_random_moves_from_board(board: Board, creature: str):
+def get_random_moves_from_board(board: Board, creature: str, timeout):
     targets = []
     for _ in range(10):
         targets.append(target_engine.get_random_target_turn(board, creature))
