@@ -97,7 +97,8 @@ void Attributor::setScopeTargets()
 				}
 				if (!overlap)
 				{
-					scope_targets.push_back(targets_distance[j_target - 1][1]);
+					scope_targets.push_back(targets_distance[i_target][1]);
+					n_scope_targets += 1;
 				}
 			}
 
