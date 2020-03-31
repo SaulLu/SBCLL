@@ -3,7 +3,7 @@ import queue
 
 from cpp.target_module.target_module_v1 import _target_module
 from speed_test import loadMap
-from strategies.target_strategy_v2 import construct_units_list, construct_targets, get_potential_moves_from_board
+from strategies.target_strategy_v2 import construct_units_list, construct_targets, create_get_next_moves
 from models import target_engine
 from models.board import Board
 from strategies.caller import GetNextMoveCaller
@@ -129,9 +129,9 @@ def trad():
 def interrupt():
     player = 'us'
     max_x, max_y, board = loadMap('test_maps/12.xml', "Vampires")
-    allowed_time = 2
+    allowed_time = 1000
     t0 = time.time()
-    caller = GetNextMoveCaller(get_potential_moves_from_board, board, player, allowed_time)
+    caller = GetNextMoveCaller(create_get_next_moves(max_x, max_y), board, player, allowed_time)
     caller.start()
     list_moves = []
     while time.time() - t0 < allowed_time and len(list_moves) == 0:
@@ -141,7 +141,7 @@ def interrupt():
             pass
     print(f"time: {time.time() - t0}")
     print(f"size_list_moves: {len(list_moves)}")
-    caller.raise_exception()
+    caller.kill()
     print(f"time: {time.time() - t0}")
     caller.join()
     print(f"time: {time.time() - t0}")
