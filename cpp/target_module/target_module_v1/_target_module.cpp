@@ -57,6 +57,7 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 
 	int n_units;
 	int player_int;
+	double timeout; // in seconds
 
 	//output variables
 	PyObject* ret;
@@ -68,7 +69,7 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 	
 
 	/* Parse the input tuple */
-	if (!PyArg_ParseTuple(args, "Oii", &units_list, &n_units, &player_int))
+	if (!PyArg_ParseTuple(args, "Oiid", &units_list, &n_units, &player_int, &timeout))
 		return NULL;
 
 
@@ -113,7 +114,7 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 
 
 	//computations
-	Attributor attributor = Attributor(creatures, player);
+	Attributor attributor = Attributor(creatures, player, timeout);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 	Attribution empty_attribution = Attribution();

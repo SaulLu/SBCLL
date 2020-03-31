@@ -2,8 +2,9 @@
 
 using namespace std;
 
-Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player)
+Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const double timeout) : m_timeout(timeout)
 {
+	m_t0 = chrono::high_resolution_clock::now();
 	m_creatures = creatures;
 	m_player = player;
 	constructTA();
@@ -62,62 +63,67 @@ void Attributor::constructTA()
 
 vector<Attributions> Attributor::recursiveTargetAttribution(Attributions current_attribution, map<int, Attacker> attackers, map<int, Target> targets)
 {
-	int target_id = getNextTargetId(targets);
-	if (target_id > 0)
+
+	if (this->getRemainingTime() > 0)
 	{
-		if (target_id == 3)
-			int trash = 0;
-		vector<Attributions> all_attributions;
-		int takeover = targets[target_id].getTakeOver();
-		bool infer = false;
-
-		const vector<int>* target_attackers_p = targets[target_id].getAttackersIdsPointer();
-		for (auto& attacker_id : *target_attackers_p)
+		int target_id = getNextTargetId(targets);
+		if (target_id > 0)
 		{
-			Attacker& attacker = attackers[attacker_id];
-			int min_takeovers = attacker.getMinTakeOvers(targets, target_id);
+			vector<Attributions> all_attributions;
+			int takeover = targets[target_id].getTakeOver();
+			bool infer = false;
 
-			int attacker_number = attacker.getNumber();
-			int max_partial_attribution = attacker_number - min_takeovers;
-
-			vector<int> creature_numbers = { attacker_number };
-			if (min_takeovers)
+			const vector<int>* target_attackers_p = targets[target_id].getAttackersIdsPointer();
+			for (auto& attacker_id : *target_attackers_p)
 			{
-				for (int n = takeover; n <= max_partial_attribution; n++)
-					creature_numbers.push_back(n);
+				Attacker& attacker = attackers[attacker_id];
+				int min_takeovers = attacker.getMinTakeOvers(targets, target_id);
+
+				int attacker_number = attacker.getNumber();
+				int max_partial_attribution = attacker_number - min_takeovers;
+
+				vector<int> creature_numbers = { attacker_number };
+				if (min_takeovers)
+				{
+					for (int n = takeover; n <= max_partial_attribution; n++)
+						creature_numbers.push_back(n);
+				}
+
+				for (auto& number_sent : creature_numbers)
+				{
+					vector<Attributions> new_attributions = applyAttribution(current_attribution, attackers, targets, target_id,
+						attacker_id, number_sent, infer);
+					all_attributions.insert(all_attributions.end(), new_attributions.begin(), new_attributions.end());
+				}
 			}
 
-			for (auto& number_sent : creature_numbers)
+			if (infer) //need to ignore this target at least once
 			{
-				vector<Attributions> new_attributions = applyAttribution(current_attribution, attackers, targets, target_id,
-																			attacker_id, number_sent, infer);
+				vector<Attributions> new_attributions = applyAttribution(current_attribution, attackers, targets, target_id, -1, 0, infer);
 				all_attributions.insert(all_attributions.end(), new_attributions.begin(), new_attributions.end());
 			}
-		}
 
-		if (infer) //need to ignore this target at least once
+			return all_attributions;
+		}
+		else
 		{
-			vector<Attributions> new_attributions = applyAttribution(current_attribution, attackers, targets, target_id, -1, 0, infer);
-			all_attributions.insert(all_attributions.end(), new_attributions.begin(), new_attributions.end());
+			if (Checks::checkAttributions(current_attribution, m_attackers, m_targets) != TargetError::noError)
+				return {};
+			applyMergeAttribution(current_attribution, attackers);
+			if (current_attribution.first.size() + current_attribution.second.size() == 0) // alone and outnumbered
+				applySuicidalAttribution(current_attribution, attackers, targets);
+			return { current_attribution };
 		}
-
-		return all_attributions;
 	}
 	else
 	{
-		if (Checks::checkAttributions(current_attribution, m_attackers, m_targets) != TargetError::noError)
-			return {};
-		applyMergeAttribution(current_attribution, attackers);
-		if (current_attribution.first.size() + current_attribution.second.size() == 0) // alone and outnumbered
-			applySuicidalAttribution(current_attribution, attackers, targets);
-		return { current_attribution };
+		return {};
 	}
+	
 }
 
 vector<Attributions> Attributor::applyAttribution(Attributions current_attributions, map<int, Attacker> attackers, map<int, Target> targets, const int target_id, const int attacker_id, const int number_sent, bool& infer)
 {
-	if (number_sent == 3 && target_id == 1 && attacker_id == 1)
-		int trash = 1;
 
 	if (number_sent) //si un envoie est effectué (envoi nul => ignorer la target)
 	{
@@ -208,3 +214,11 @@ void Attributor::applySuicidalAttribution(Attributions& current_attributions, st
 }
 
 
+const double Attributor::getRemainingTime()
+{
+	auto t1 = chrono::high_resolution_clock::now();
+	chrono::duration<float> fs = t1 - m_t0;
+	chrono::milliseconds d = chrono::duration_cast<chrono::milliseconds>(fs);
+
+	return m_timeout - d.count() / 1000;
+}

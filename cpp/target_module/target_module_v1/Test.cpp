@@ -64,7 +64,7 @@ vector<Attributions> Test::testViableTargets3()
 vector<Attributions> Test::testViableTargets4()
 {
 	Creature player = Creature::Us;
-	vector<array<int, 4>> creatures_vector = { {{8, 2, 0, 3}, {1, 0, 0, 2}, {1, 4, 1, 6}, {1, 6, 1, 5}, {7, 3, 2, 4}} };
+	vector<array<int, 4>> creatures_vector = { {{8, 2, 0, 3}, {1, 0, 0, 2},{8, 2, 0, 3}, {1, 0, 0, 2},{8, 2, 0, 3}, {1, 0, 0, 2},{8, 2, 0, 3}, {1, 0, 0, 2}, {1, 4, 1, 15}, {1, 6, 1, 15}, {7, 3, 2, 4}} };
 
 	map<Creature, vector<array<int, 3>>> creatures;
 
@@ -86,7 +86,7 @@ vector<Attributions> Test::testViableTargets4()
 		}
 	}
 
-	Attributor attributor = Attributor(creatures, player);
+	Attributor attributor = Attributor(creatures, player, 2);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 
