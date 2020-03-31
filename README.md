@@ -13,8 +13,7 @@ Pour jouer :
 2. Exécuter le fichier "player.py" (au niveau de la racine du projet) avec les paramètres suivants: `python player.py -s target2 -he target_diff`
 3. Les étapes importantes sont décrites dans la console.
 
-Bonus :
-Dans le terminal, il est possible de choisir pour "player.py":
+Bonus, dans le terminal, il est possible de choisir pour "player.py":
 ```
     -n : le nom du joueur (par défaut, pioche le nom du joueur dans le fichier de config du jeu);
     -s : la stratégie utilisée - toutes les stratégie décrite en partie 3 sont disponibles (par défaut, utilise la stratégie "random");
@@ -99,7 +98,7 @@ Attention, cette dernière n'est à utiliser que sur des boards simples.
 Cette stratégie utilise un arbre de décision alpha-bêta. Les fils d'un plateau donné sont calculés à l'aide de fonctions calculant :
 * Pour chacune de nos cases, les cases adverses (humaines ou de l'autre type de créature) pouvant être attaquées sans risques. Ces cases adverses sont les targets potentielles de chacune de nos cases.
 * Pour le plateau, toutes les combinaisons possibles d'attributions de nos cases vers des targets potentielles (en prenant en compte le fait qu'une case puisse se diviser en plusieurs, ou que deux cases peuvent fusionner si aucune target adverse n'est possible).
-* Pour limiter l'explosion combinatoire, on limite le nombre de target par angle de vue pour chacune des cases attaquantes. Par exemple pour chaque cône de 30°, l'attaquant retiendra seulement la target la plus proche dans ce cône. Nous partons du principe que pour aller chercher une target ignorée par cette règle, il faut déja avancer vers la target retenue.
+* Pour limiter l'explosion combinatoire, on limite le nombre de targets par angle de vue pour chacune des cases attaquantes. Par exemple pour chaque cône de 30°, l'attaquant retiendra seulement la target la plus proche dans ce cône. Nous partons du principe que pour aller chercher une target ignorée par cette règle, il faut déja avancer vers la target retenue.
 * Pour chaque combinaison de nos targets potentielles, la prochaine listes de "mov" que nous devons faire pour avancer vers les-dites targets en essayant d'emprunter le chemin le plus court entre la case initiale et celle de la target et en allant uniquement sur des cases disponibles (ie, la case d'arrivée ne peut pas être une case occupée par notre créature ou par un humain ou l'adversaire si ce n'est pas la target).
 Ce calcul de fils élague donc tous les coups ne nous dirigeant pas vers des targets potentielles.
 #### e. target2
