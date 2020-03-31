@@ -62,7 +62,7 @@ def create_get_next_moves(max_x, max_y):
         units_list = construct_units_list(board)
         # log_entries(units_list, board, player_int, 'module_entries')
         targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int,
-                                                         max_x, max_y, 30, 0.6 * timeout)
+                                                         max_x, max_y, 45, 0.7 * timeout)
         targets = construct_targets(targets_list)
         # print(f"n_targets:{len(targets)}")
         # log_outputs(targets_list, targets, 'module_outputs')
