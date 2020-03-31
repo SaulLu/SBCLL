@@ -72,8 +72,6 @@ Nous proposons notre propre implémentation du principe alpha-bêta dans le fich
 Parmi ces derniers attributs, `timed_out` peut être utilisé au sein d'une stratégie pour adapter la profondeur maximale entre chaque tour. Il est intéressant d'adapter cette profondeur maximale car en cas de time-out, certaines branches ne sont pas du tout explorées à la même profondeur que celles pour lesquelles on avait encore le temps ; éviter le timeout permet une exploration équilibrée et donc plus juste.
 Notons que chaque fils d'un plateau est un noeud obtenu à partir d'une liste d'objets "mov", qui mène à plusieurs plateaux possibles associés à des probabilités (en fonction des batailles aléatoires). Le score d'un tel noeud est la somme des multiplications du score de chaque plateau fils et de la probabilité d'apparition dudit plateau.
 
-En plus de l'élagage inhérent au principe d'alpha-bêta, et de celui éventuellement présent dans le calcul des noeuds fils (dépendant de la stratégie), nous avons rajouté un troisième moment d'élagage, à l'aide de la méthode `nodes_pruning`. Cette méthode prend place juste après le calcul des noeuds fils, et supprime les noeuds dont l'heuristique est trop éloignée du meilleur noeud fils.
-
 ### Stratégies
 Toutes les stratégies découlent de la classe abstraite `Strategy`. Cette classe abstraite contient une méthode permettant de mettre le plateau à jour déjà implémentée, et une méthode `next_moves` décidant du prochain coup du joueur selon le plateau actuel à overrider.
 
