@@ -81,6 +81,7 @@ class AlphaBeta:
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
+        self.random_move = None
 
     def alphabeta(self, root_board):
         self.timed_out = False
@@ -90,6 +91,7 @@ class AlphaBeta:
               f"{self.cut_board_count} / "
               f"{self.generated_boards_count + 1 - self.visited_board_count - self.cut_board_count} / "
               f"{self.generated_boards_count}")
+        
         return solution
 
     def get_free_time(self):
@@ -133,8 +135,8 @@ class AlphaBeta:
 
             nodes = []
             for moves in list_moves:
-                # if not self.random_move and current_depth==0:
-                #     self.random_move = moves
+                if not self.random_move and current_depth==0:
+                    self.random_move = moves
 
                 if self.get_free_time() <= 0.2:
                     self.timed_out = True
@@ -165,6 +167,8 @@ class AlphaBeta:
                     else:
                         print(f"### A: ('us') Timeout max limit reached: {time.time() - self.t0}, remaining free time : {self.get_free_time()}, with current best_score: {round(best_score,0)} at the {current_depth} depth")
                         self.timed_out = True
+                        if best_score == -math.inf:
+                            best_score = node.basic_score
                         return best_move, best_score
 
                     if score > best_score and node.moves:
@@ -196,6 +200,8 @@ class AlphaBeta:
                     else:
                         print(f"### A: ('them') Timeout max limit reached: {time.time() - self.t0}, remaining free time : {self.get_free_time()}, current best_score: {round(best_score,0)} at the {current_depth} depth")
                         self.timed_out = True
+                        if best_score == math.inf:
+                            best_score = node.basic_score
                         return best_move, best_score
 
                     if score < best_score and node.moves:
@@ -213,10 +219,9 @@ class AlphaBeta:
                 
                 # print(f"### A: ('them') Exploration of the {current_depth} depth finished, return a best_move with {round(best_score,0)}")
 
-
-            # if current_depth == 0 and not best_move:
-            #     best_move = self.random_move
-            #     print(f"best move replace with: {best_move}")
+            if current_depth == 0 and not best_move:
+                best_move = self.random_move
+                print(f"best move replace with: {best_move}")
 
             return best_move, best_score
 
@@ -224,3 +229,32 @@ class AlphaBeta:
         t0 = time.time()
         _ = self.heuristic(current_board)
         return time.time() - t0
+
+    # def add_infos(self, turn_time=None, 
+    #                 depth_reached=None,
+    #                 depth_max=None,
+    #                 Timed_out=None,
+    #                 visited=None,
+    #                 cut=None,
+    #                 unvisited=None, 
+    #                 generated_boards=None,
+    #                 random_move=None):
+        
+    #     path_metrics = os.path.join('test_maps',"metrics.csv")
+    #     with open(path_metrics, "r") as f:
+    #         reader = csv.reader(f)
+    #         mylist = list(reader)
+    #         f.close()
+
+    #     mylist[-1][3] = turn_time
+    #     # mylist[-1][4] = depth_reached
+    #     # mylist[-1][5] = depth_max
+    #     # mylist[-1][6] = Timed_out
+    #     # mylist[-1][7] = visited
+    #     # mylist[-1][8] = cut
+    #     # mylist[-1][9] = unvisited
+    #     # mylist[-1][10] = generated_boards
+
+    #     with open(path_metrics, 'w', newline = '') as f:
+    #         csv_writer = csv.writer(f)
+            # csv_writer.writerows(mylist)
