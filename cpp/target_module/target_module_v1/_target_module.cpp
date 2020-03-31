@@ -57,6 +57,8 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 
 	int n_units;
 	int player_int;
+	int max_x;
+	int max_y;
 	double overlap_angle; //in degrees
 	double timeout; // in seconds
 
@@ -70,7 +72,7 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 	
 
 	/* Parse the input tuple */
-	if (!PyArg_ParseTuple(args, "Oiidd", &units_list, &n_units, &player_int, &overlap_angle, &timeout))
+	if (!PyArg_ParseTuple(args, "Oiiiidd", &units_list, &n_units, &player_int, &max_x, &max_y, &overlap_angle, &timeout))
 		return NULL;
 
 
@@ -115,7 +117,7 @@ static PyObject* targetsAttribution_target_module(PyObject* self, PyObject* args
 
 
 	//computations
-	Attributor attributor = Attributor(creatures, player, overlap_angle, timeout);
+	Attributor attributor = Attributor(creatures, player, max_x, max_y, overlap_angle, timeout);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 	Attribution empty_attribution = Attribution();
