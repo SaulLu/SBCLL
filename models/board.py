@@ -1,7 +1,6 @@
 from __future__ import annotations
 import numpy as np
 
-
 from models.cell import Cell
 
 
@@ -69,9 +68,9 @@ class Board:
 
     def get_cell(self, coordinate=None, x=None, y=None) -> Cell:
         """This method returns a cell element for a given coordinate"""
-        if not(coordinate is None):
+        if not (coordinate is None):
             return self.grid[coordinate[0]][coordinate[1]]
-        if not(x is None or y is None):
+        if not (x is None or y is None):
             return self.grid[x][y]
         raise RuntimeError("please specify coordinate or x and y")
 
@@ -79,7 +78,7 @@ class Board:
         grid_s = ""
         for y in range(self.max_y):
             for x in range(self.max_x):
-                c = self.grid[x][y].creature if not(self.grid[x][y].creature is None) else "-"
+                c = self.grid[x][y].creature if not (self.grid[x][y].creature is None) else "-"
                 grid_s += f"{c[0]}-{self.grid[x][y].number}\t"
             grid_s += "\n"
         return grid_s
@@ -92,6 +91,24 @@ class Board:
                     new_board.update_cell2(self.grid[x][y])
         return new_board
 
-    def count_creatures(self) -> int:
+    def count_creatures(self) -> (int, int, int):
         return sum(self.creatures_list['us'].values()), sum(self.creatures_list['them'].values()), sum(
             self.creatures_list['humans'].values())
+
+    def get_unique_id(self):
+        creature_to_int = {'humans': 0, 'us': 1, 'them': 2}
+        unique_id = ""
+        for y in range(self.max_y):
+            for x in range(self.max_x):
+                if not (self.grid[x][y].creature is None):
+                    unique_id = unique_id + str(x) + str(y) + str(creature_to_int[self.grid[x][y].creature]) \
+                         + str(self.grid[x][y].number)
+        return unique_id
+
+    @staticmethod
+    def from_units_list(units_list, max_x, max_y):
+        board = Board(max_x, max_y)
+        int_to_creature = ['humans', 'us', 'them']
+        for x,y, creature_int, number in units_list:
+            board.update_cell2(Cell(x, y, int_to_creature[creature_int], number))
+        return board
