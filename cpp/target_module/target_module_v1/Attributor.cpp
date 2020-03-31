@@ -85,7 +85,7 @@ void Attributor::setScopeTargets()
 		{
 			vector<int> scope_targets = { targets_distance[0][1] };
 			int n_scope_targets = 1;
-			for (int i_target = 0; i_target < n_targets; i_target++)
+			for (int i_target = 1; i_target < n_targets; i_target++)
 			{
 				bool overlap = false;
 				int j_target = 0;
@@ -97,7 +97,7 @@ void Attributor::setScopeTargets()
 				}
 				if (!overlap)
 				{
-					scope_targets.push_back(targets_distance[j_target][1]);
+					scope_targets.push_back(targets_distance[j_target - 1][1]);
 				}
 			}
 
