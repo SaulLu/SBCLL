@@ -1,4 +1,3 @@
-#%%
 import csv
 import os
 import re
@@ -40,8 +39,11 @@ def test_stat():
         if file.endswith(".xml"):
             map_path = os.path.join('test_maps', file)
 
-            row, mons, hums, _ = file.split('_')
-            row = re.sub('map', '', row)
+            try:
+                row, mons, hums, _ = file.split('_')
+                row = re.sub('map', '', row)
+            except:
+                row, mons, hums = None, None, None
 
 
             with open(path_metrics, "a") as f:
@@ -69,14 +71,14 @@ def test_stat():
             strategy.current_board = board
 
             t0 = time.time()
-            select_moves = strategy.next_moves(2)
+            _ = strategy.next_moves(2)
             tf = time.time() - t0
             add_infos(turn_time=tf)
 
-# def show_stat():
-#     path = os.path.join('test_maps','metrics.csv')
-#     df = pd.read_csv(path)
-#     print(df.describe())
+def show_stat():
+    path = os.path.join('test_maps','metrics.csv')
+    df = pd.read_csv(path)
+    print(df.describe())
 
 def add_infos(turn_time=None, 
                 depth_reached=None,
@@ -107,8 +109,6 @@ def add_infos(turn_time=None,
         csv_writer = csv.writer(f)
         csv_writer.writerows(mylist)
     
-#%%
+if __name__ == "__main__":
     test_stat()
-    # show_stat()
-
-# %%
+    show_stat()
