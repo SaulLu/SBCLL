@@ -1,6 +1,8 @@
 import numpy as np
 
 import time
+import xml.etree.ElementTree as ET
+
 from models.cell import Cell
 from models.board import Board
 from strategies.target_strategy import TargetStrategy
@@ -8,6 +10,27 @@ from strategies.target_strategy_v2 import TargetStrategy2
 from strategies.heuristics import distance_target_difference_heuristic
 import cProfile
 
+
+def loadMap(map_path):
+	tree = ET.parse(map_path)
+	root = tree.getroot()
+
+	max_x, max_y = int(root.attrib['Columns']), int(root.attrib['Rows'])
+	board = Board(max_x, max_y)
+
+	for element in root.iter('Humans'):
+		attribs = element.attrib
+		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'humans', int(attribs['Count'])))
+
+	for element in root.iter('Werewolves'):
+		attribs = element.attrib
+		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'us', int(attribs['Count'])))
+
+	for element in root.iter('Vampires'):
+		attribs = element.attrib
+		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'them', int(attribs['Count'])))
+
+		return max_x, max_y, board
 
 def test1():
 
@@ -54,5 +77,13 @@ def test2():
 	print(f"time spent: {time.time() - t0}")
 
 
+def test3():
+	max_x, max_y, board = loadMap('test_maps/map_10_10_8.xml')
+	strategy = TargetStrategy2(max_x, max_y, distance_target_difference_heuristic)
+	strategy.current_board = board
+
+	strategy.next_moves(2)
+
+
 if __name__ == "__main__":  # python -m cProfile -s tottime speed_test.py
-	test2()
+	test3()
