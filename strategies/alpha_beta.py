@@ -79,6 +79,7 @@ class AlphaBeta:
         self.generated_boards_count = 0
         self.generated_moves_count = 0
         self.cut_node_count = 0
+        self.cut_board_count = 0
         self.depth_reached = 0
         self.timed_out = False
         self.time_per_node = None
@@ -96,8 +97,9 @@ class AlphaBeta:
 
     def get_free_time(self):
         remaining_time = self.last_timeout - (time.time() - self.t0)
-        unvisited_nodes = self.generated_moves_count - self.generated_nodes_count - self.cut_node_count
-        reserved_time = unvisited_nodes * self.time_per_node
+        ungenerated_nodes = self.generated_moves_count - self.generated_nodes_count - self.cut_node_count
+        unvisited_board = self.generated_boards_count - self.visited_board_count - self.cut_board_count
+        reserved_time = (ungenerated_nodes + unvisited_board) * self.time_per_node
         return remaining_time - reserved_time
 
     def __alphabeta_gen(self, current_board, player, current_depth, alpha, beta):
@@ -165,6 +167,7 @@ class AlphaBeta:
 
                     if best_score >= beta:
                         self.cut_node_count += len_list_moves - i_moves - 1
+                        self.cut_board_count += len(node.potential_boards)
                         return best_move, best_score
 
                     alpha = max(alpha, score)
@@ -200,6 +203,7 @@ class AlphaBeta:
 
                     if alpha >= best_score:
                         self.cut_node_count += len_list_moves - i_moves - 1
+                        self.cut_board_count += len(node.potential_boards)
                         return best_move, best_score
 
                     beta = min(beta, score)
