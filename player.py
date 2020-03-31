@@ -44,13 +44,14 @@ class Player():
         """
 
         self.__init_game()
-
+        compt = 0
         try:
             while True:
                 while not (self.client.is_my_turn() or self.client.has_game_ended()):
                     time.sleep(0.15)
                 if self.client.is_my_turn():
-                    print(f"\nIt's my turn")
+                    compt += 1
+                    print(f"\nIt's my turn n°{compt}")
                     t0 = time.time()
                     board_changes = self.client.get_board_changes()
                     # print(f"Board changes: \n: {board_changes}")
