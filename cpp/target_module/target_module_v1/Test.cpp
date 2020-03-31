@@ -125,3 +125,29 @@ vector<Attributions> Test::testViableTargets6()
 
 	return all_attributions;
 }
+
+vector<Attributions> Test::testViableTargets7()
+{
+	Creature player = Creature::Us;
+	map<Creature, vector<array<int, 3>>> creatures;
+
+	creatures[Creature::Humans].push_back({ 0, 1,8 });
+	creatures[Creature::Humans].push_back({ 0, 9,8 });
+	creatures[Creature::Humans].push_back({ 1,3,8 });
+	creatures[Creature::Humans].push_back({ 1, 7,8 });
+	creatures[Creature::Humans].push_back({ 2, 3,8 });
+	creatures[Creature::Humans].push_back({ 2, 6,8 });
+	creatures[Creature::Humans].push_back({ 2, 7,8 });
+	creatures[Creature::Humans].push_back({ 2, 9,8 });
+	creatures[Creature::Humans].push_back({ 7, 0,8 });
+
+	creatures[Creature::Us].push_back({ 2, 1, 8 });
+
+	creatures[Creature::Them].push_back({ 7, 8, 8 });
+
+	Attributor attributor = Attributor(creatures, player, 20, 20, 40, 60);
+
+	vector<Attributions> all_attributions = attributor.getTargetAttribution();
+
+	return all_attributions;
+}

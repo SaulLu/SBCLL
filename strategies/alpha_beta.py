@@ -54,7 +54,7 @@ class Node:
 
 
 class AlphaBeta:
-    def __init__(self, t0, timeout, get_next_moves, heuristic, max_depth):
+    def __init__(self, t0, timeout, get_next_moves, heuristic, max_depth, max_x, max_y):
         self.t0 = t0
         self.timeout = timeout
         self.gen_time_max = timeout
@@ -71,6 +71,8 @@ class AlphaBeta:
         self.timed_out = False
         self.time_per_node = None
         self.random_move = None
+        self.max_x = max_x
+        self.max_y = max_y
 
     def alphabeta(self, root_board):
         self.timed_out = False
@@ -113,7 +115,8 @@ class AlphaBeta:
         else:
             allowed_time = max(0, self.get_free_time() - 0.05 * self.timeout)
             allowed_t0 = time.time()
-            get_next_move_caller = GetNextMoveCaller(self.get_next_moves, current_board, player, allowed_time)
+            get_next_move_caller = GetNextMoveCaller(self.get_next_moves, current_board, player,
+                                                     allowed_time, self.max_x, self.max_y)
             get_next_move_caller.start()
             list_moves = []
             while time.time() - allowed_t0 < allowed_time and len(list_moves) == 0:
@@ -127,7 +130,7 @@ class AlphaBeta:
                 self.timed_out = True
                 score = self.heuristic(current_board)
                 print(f"### A: get_next_moves took too long (f:{get_next_move_caller.finished}, continue with score:"
-                      f" {round(score,0)} remaining free time : {self.get_free_time()}")
+                      f" {round(score,0)} remaining free time : {self.get_free_time()} {current_depth}")
                 return None, score
 
             self.generated_moves_count += len_list_moves

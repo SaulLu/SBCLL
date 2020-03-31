@@ -56,18 +56,16 @@ def log_outputs(targets_list, targets, filename, mode='w'):
         f.write(str(targets))
 
 
-def create_get_next_moves(max_x, max_y):
-    def get_potential_moves_from_board(board: Board, creature: str, timeout: float):
-        player_int = 1 if creature == 'us' else 2
-        units_list = construct_units_list(board)
-        # log_entries(units_list, board, player_int, 'module_entries')
-        targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int,
-                                                         max_x, max_y, 45, 0.7 * timeout)
-        targets = construct_targets(targets_list)
-        # print(f"n_targets:{len(targets)}")
-        # log_outputs(targets_list, targets, 'module_outputs')
-        return target_engine.targets_to_moves(targets, board)
-    return get_potential_moves_from_board
+def get_potential_moves_from_board(board: Board, creature: str, timeout: float, max_x, max_y):
+    player_int = 1 if creature == 'us' else 2
+    units_list = construct_units_list(board)
+    # log_entries(units_list, board, player_int, 'module_entries')
+    targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int,
+                                                     max_x, max_y, 45, 0.7 * timeout)
+    targets = construct_targets(targets_list)
+    # print(f"n_targets:{len(targets)}")
+    # log_outputs(targets_list, targets, 'module_outputs')
+    return target_engine.targets_to_moves(targets, board)
 
 
 class TargetStrategy2(Strategy):
@@ -79,8 +77,8 @@ class TargetStrategy2(Strategy):
 
     def next_moves(self, think_time):
         t0 = time.time()
-        alphabeta = AlphaBeta(time.time(), think_time, create_get_next_moves(self.max_x, self.max_y),
-                              self.heuristic, self.max_depth)
+        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board,
+                              self.heuristic, self.max_depth, self.max_x, self.max_y)
         best_moves, best_score = alphabeta.alphabeta(self.current_board)
 
         if not best_moves:

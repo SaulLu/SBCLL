@@ -1,9 +1,10 @@
 import time
 import queue
+from copy import deepcopy
 
 from cpp.target_module.target_module_v1 import _target_module
 from speed_test import loadMap
-from strategies.target_strategy_v2 import construct_units_list, construct_targets, create_get_next_moves
+from strategies.target_strategy_v2 import construct_units_list, construct_targets, get_potential_moves_from_board
 from models import target_engine
 from models.board import Board
 from strategies.caller import GetNextMoveCaller
@@ -128,10 +129,11 @@ def trad():
 
 def interrupt():
     player = 'us'
-    max_x, max_y, board = loadMap('test_maps/12.xml', "Vampires")
-    allowed_time = 1000
+    max_x, max_y, board = loadMap('test_maps/4.xml', "Vampires")
+    print(board)
+    allowed_time = 2
     t0 = time.time()
-    caller = GetNextMoveCaller(create_get_next_moves(max_x, max_y), board, player, allowed_time)
+    caller = GetNextMoveCaller(get_potential_moves_from_board, board, player, allowed_time, max_x, max_y)
     caller.start()
     list_moves = []
     while time.time() - t0 < allowed_time and len(list_moves) == 0:
@@ -141,11 +143,29 @@ def interrupt():
             pass
     print(f"time: {time.time() - t0}")
     print(f"size_list_moves: {len(list_moves)}")
-    caller.kill()
+    # caller.kill()
     print(f"time: {time.time() - t0}")
     caller.join()
     print(f"time: {time.time() - t0}")
 
+    player = 'us'
+    max_x, max_y, board = loadMap('test_maps/4.xml', "Vampires")
+    allowed_time = 2
+    t0 = time.time()
+    caller2 = GetNextMoveCaller(get_potential_moves_from_board, board, player, allowed_time, max_x, max_y)
+    caller2.start()
+    list_moves = []
+    while time.time() - t0 < allowed_time and len(list_moves) == 0:
+        try:
+            list_moves = caller2.next_moves.get(timeout=0.001)
+        except queue.Empty:
+            pass
+    print(f"time: {time.time() - t0}")
+    print(f"size_list_moves: {len(list_moves)}")
+    caller2.kill()
+    print(f"time: {time.time() - t0}")
+    caller2.join()
+    print(f"time: {time.time() - t0}")
 
 
 if __name__ == "__main__":

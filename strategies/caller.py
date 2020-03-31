@@ -7,7 +7,7 @@ import ctypes
 
 
 class GetNextMoveCaller(threading.Thread):
-    def __init__(self, get_next_moves, board, player, allowed_time):
+    def __init__(self, get_next_moves, board, player, allowed_time, max_x, max_y):
         threading.Thread.__init__(self)
         self.get_next_moves = get_next_moves
         self.board = board
@@ -15,9 +15,11 @@ class GetNextMoveCaller(threading.Thread):
         self.next_moves = queue.Queue()
         self.allowed_time = allowed_time
         self.finished = False
+        self.max_x = max_x
+        self.max_y = max_y
 
     def run(self):
-        self.next_moves.put(self.get_next_moves(self.board, self.player, 10*self.allowed_time))
+        self.next_moves.put(self.get_next_moves(self.board, self.player, self.allowed_time, self.max_x, self.max_y))
         self.finished = True
 
     def get_id(self):

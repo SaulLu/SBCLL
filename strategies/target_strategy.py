@@ -9,7 +9,7 @@ from strategies.alpha_beta import AlphaBeta
 from strategies.alpha_beta_breadth_first import AlphaBetaBreadthFirst
 
 
-def get_potential_moves_from_board(board: Board, creature: str, timeout):
+def get_potential_moves_from_board(board: Board, creature: str, timeout, max_x, max_y):
     targets = target_engine.get_feasible_targets_turns(board, creature)
     return target_engine.targets_to_moves(targets, board)
 
@@ -18,10 +18,13 @@ class TargetStrategy(Strategy):
     def __init__(self, max_x, max_y, heuristic):
         super().__init__(max_x, max_y, heuristic)
         self.max_depth = 6
+        self.max_x = max_x
+        self.max_y = max_y
 
     def next_moves(self, think_time):
         t0 = time.time()
-        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic, self.max_depth)
+        alphabeta = AlphaBeta(time.time(), think_time, get_potential_moves_from_board, self.heuristic,
+                              self.max_depth, self.max_x, self.max_y)
         best_moves, best_score = alphabeta.alphabeta(self.current_board)
 
         print(f"best score found: {best_score}")
