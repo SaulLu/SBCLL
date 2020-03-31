@@ -4,7 +4,7 @@ using namespace std;
 
 Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const double timeout) : m_timeout(timeout)
 {
-	m_t0 = chrono::high_resolution_clock::now();
+	m_t0 = chrono::system_clock::now();
 	m_creatures = creatures;
 	m_player = player;
 	constructTA();
@@ -216,7 +216,7 @@ void Attributor::applySuicidalAttribution(Attributions& current_attributions, st
 
 const double Attributor::getRemainingTime()
 {
-	auto t1 = chrono::high_resolution_clock::now();
+	auto t1 = chrono::system_clock::now();
 	chrono::duration<float> fs = t1 - m_t0;
 	chrono::milliseconds d = chrono::duration_cast<chrono::milliseconds>(fs);
 

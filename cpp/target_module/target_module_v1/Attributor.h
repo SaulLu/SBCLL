@@ -27,7 +27,7 @@ private:
 	std::map<int, Attacker> m_attackers;
 	std::map<int, Target> m_targets;
 	const double m_timeout;  //in seconds
-	std::chrono::steady_clock::time_point m_t0;
+	std::chrono::system_clock::time_point m_t0;
 
 	void constructTA();
 	std::vector<Attributions> recursiveTargetAttribution(Attributions current_attributions, std::map<int, Attacker> attackers,

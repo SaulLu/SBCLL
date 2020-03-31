@@ -86,7 +86,7 @@ vector<Attributions> Test::testViableTargets4()
 		}
 	}
 
-	Attributor attributor = Attributor(creatures, player, 2);
+	Attributor attributor = Attributor(creatures, player, 0.5);
 
 	vector<Attributions> all_attributions = attributor.getTargetAttribution();
 
