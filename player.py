@@ -126,10 +126,10 @@ if __name__ == '__main__':
     command: python Client.py -n <player_name>
     """
 
-    strategy_dic = {"default": RandomStrategy, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
+    strategy_dic = {"default": TargetStrategy2, "random": RandomStrategy, "random_walk": RandomWalkStrategy,
                     "next_best": NextBestStrategy, "target": TargetStrategy, "target2": TargetStrategy2,
                     "random_target": RandomTargetStrategy}
-    heuristics_dic = {"default": naive_heuristic, "naive": naive_heuristic,
+    heuristics_dic = {"default": distance_target_difference_heuristic, "naive": naive_heuristic,
                       "target_diff": distance_target_difference_heuristic}
 
     parser = argparse.ArgumentParser()
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     else:
         algo_name = "group 1"
 
-    player = Player(strategy_class, heuristic, algo_name, think_time=9.5)
+    player = Player(strategy_class, heuristic, algo_name, think_time=1.95)
     player.play()
 
 # python player.py -s target2 -he target_diff
