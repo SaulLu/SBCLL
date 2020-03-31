@@ -107,11 +107,18 @@ class AlphaBeta:
         self.depth_reached = max(current_depth, self.depth_reached)
         n_us, n_them, _ = current_board.count_creatures()
         if current_depth == self.max_depth or n_us * n_them == 0:  # on est sur une feuille
-            return None, self.heuristic(current_board)
+            score = self.heuristic(current_board)
+            # if player == "us":
+            #     print(f"### O: We are on a leaf 'us' with current score {round(score,0)}")
+            # else:
+            #     print(f"### O: We are on a leaf 'them' with current score {round(score,0)}")
+            return None, score
 
         if self.get_free_time() <= 0:  # no more time to generate nodes
             self.timed_out = True
-            return None, self.heuristic(current_board)
+            score = self.heuristic(current_board)
+            print(f"### A: no time to explore child nodes continue with score: {round(score,0)}")
+            return None, score
         else:
             allowed_time = max(0, self.get_free_time() - 0.05 * self.timeout)
             get_next_move_caller = GetNextMoveCaller(self.get_next_moves, current_board, player, allowed_time)
@@ -120,15 +127,23 @@ class AlphaBeta:
                 list_moves = get_next_move_caller.next_moves.get(timeout=allowed_time)
             except queue.Empty:
                 self.timed_out = True
-                print("### A: get_next_moves took too long")
-                return None, self.heuristic(current_board)
+                score = self.heuristic(current_board)
+                print(f"### A: get_next_moves took too long, continue with score: {round(score,0)} remaining free time : {self.get_free_time()}")
+                return None, score
 
             nodes = []
             for moves in list_moves:
+                # if not self.random_move and current_depth==0:
+                #     self.random_move = moves
+
                 if self.get_free_time() <= 0.2:
-                    print(f"### A: Break nodes generation")
                     self.timed_out = True
-                    return None, self.heuristic(current_board)
+                    score = self.heuristic(current_board)
+                    if player == "us":
+                        print(f"### A: ('us') Break nodes generation with score: {round(score,0)}")
+                    else:
+                        print(f"### A: ('them') Break nodes generation with score: {round(score,0)}")
+                    return None, score
                 nodes.append(Node(moves, current_board, player, self.heuristic))
 
             nodes = node_pruning(nodes, self.heuristic, player)
@@ -142,25 +157,31 @@ class AlphaBeta:
                 for i_node, node in enumerate(nodes):
                     score = 0
 
-                    if self.get_free_time() > 0:
+                    if self.get_free_time() > self.time_per_node * len(node.potential_boards):
                         for potential_board, proba_board in node.potential_boards:
                             _, score_board = self.__alphabeta_gen(potential_board, "them", current_depth + 1, alpha,
                                                                   beta)
                             score += proba_board * score_board
                     else:
-                        print(f"### A: Timeout max limit reached: {time.time() - self.t0}")
+                        print(f"### A: ('us') Timeout max limit reached: {time.time() - self.t0}, remaining free time : {self.get_free_time()}, with current best_score: {round(best_score,0)} at the {current_depth} depth")
                         self.timed_out = True
                         return best_move, best_score
 
                     if score > best_score and node.moves:
                         best_score = score
                         best_move = node.moves
+                        if current_depth == 0:
+                            print(f"### O: ('us') At the root found a best_move with a score of {round(best_score,0)}")
 
                     if best_score >= beta:
                         self.cut_board_count += sum(map(lambda x: len(x.potential_boards), nodes[i_node + 1:]))
+                        # print(f"### O: ('us') At the {current_depth} depth cut exploration and return a best_move with a score of {round(best_score,0)}")
                         return best_move, best_score
 
                     alpha = max(alpha, score)
+                
+                # print(f"### A: ('us') Exploration of the {current_depth} depth finished, return a best_move with {round(best_score,0)}")
+
 
             elif player == "them":
                 best_move = None
@@ -173,19 +194,25 @@ class AlphaBeta:
                             _, score_board = self.__alphabeta_gen(potential_board, "us", current_depth + 1, alpha, beta)
                             score += proba_board * score_board
                     else:
-                        print(f"### A: Timeout max limit reached: {time.time() - self.t0}")
+                        print(f"### A: ('them') Timeout max limit reached: {time.time() - self.t0}, remaining free time : {self.get_free_time()}, current best_score: {round(best_score,0)} at the {current_depth} depth")
                         self.timed_out = True
                         return best_move, best_score
 
                     if score < best_score and node.moves:
                         best_score = score
                         best_move = node.moves
+                        if current_depth == 0:
+                            print(f"### O: ('them') At the root found a best_move with a score of {round(best_score,0)}")
 
                     if alpha >= best_score:
                         self.cut_board_count += sum(map(lambda x: len(x.potential_boards), nodes[i_node + 1:]))
+                        # print(f"### O: ('them') At the {current_depth} depth cut exploration and return a best_move with a score of {round(best_score,0)}")
                         return best_move, best_score
 
                     beta = min(beta, score)
+                
+                # print(f"### A: ('them') Exploration of the {current_depth} depth finished, return a best_move with {round(best_score,0)}")
+
 
             # if current_depth == 0 and not best_move:
             #     best_move = self.random_move
