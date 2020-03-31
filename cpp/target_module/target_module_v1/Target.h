@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "enums.h"
+#include "Geometry.h"
 
 
 class Attacker;
@@ -22,6 +23,7 @@ public:
 	bool removeAttacker(const int attacker_id);
 	void purgeAttackers(std::map<int, Target>& targets, std::map<int, Attacker>& attackers);
 	void clearAttackers();
+	void sortAttacker(std::map<int, Attacker>& attackers);
 	const std::array<int, 2> getLocation();
 
 	const std::vector<int>* getAttackersIdsPointer();
