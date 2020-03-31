@@ -86,10 +86,10 @@ class AlphaBeta:
         self.timed_out = False
         solution = self.__alphabeta_gen(root_board, "us", 0, alpha=-math.inf, beta=math.inf)
         print(f"\tdepth reached / max: {self.depth_reached} / {self.max_depth}, Timed-out: {self.timed_out}"
-              f"\n\tvisited / cut / unvisited / generated boards {self.visited_board_count} / "
-              f" {self.cut_board_count} / "
-              f"{self.generated_boards_count + 1 - self.visited_board_count - self.cut_board_count} "
-              f" / {self.generated_boards_count}")
+              f"\n\tvisited / cut / unvisited / generated boards: {self.visited_board_count} / "
+              f"{self.cut_board_count} / "
+              f"{self.generated_boards_count + 1 - self.visited_board_count - self.cut_board_count} / "
+              f"{self.generated_boards_count}")
         return solution
 
     def get_free_time(self):

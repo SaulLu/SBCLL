@@ -40,9 +40,9 @@ def test_duplicates_from_board(board, creature):
     print(f"Python: I have found {len(targets)} targets scenarios in {time.time() - t0} seconds")
 
 def module_test():
-    units_list = [[2, 2, 1, 2], [3, 3, 1, 2], [4, 4, 2, 2], [5, 3, 2, 2]]
-    player_int = 1
-    all_attributions = _target_module.targetsAttribution(units_list, len(units_list), player_int)
+    units_list = [[5, 1, 1, 11], [1, 7, 2, 19], [6, 2, 2, 6]]
+    player_int = 2
+    all_attributions = _target_module.targetsAttribution(units_list, len(units_list), player_int, 22.5, 2)
     for attacks, merges in all_attributions:
         print('\nattacks:')
         for x_start, y_start, x_target, y_target, number in attacks:
@@ -118,7 +118,7 @@ def turn_to_id(turn):
 
 
 def trad():
-    units_list = [[8, 2, 0, 3], [1, 0, 0, 2], [1, 4, 1, 6], [1, 6, 1, 5], [7, 3, 2, 4]]
+    units_list = [[5, 1, 1, 11], [1, 7, 2, 19], [6, 2, 2, 6]]
     s = str(units_list)
     s = s.replace('[', '{')
     s = s.replace(']', '}')
@@ -126,4 +126,4 @@ def trad():
 
 
 if __name__ == "__main__":
-    test4()
+    module_test()

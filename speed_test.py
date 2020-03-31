@@ -11,10 +11,10 @@ from strategies.heuristics import distance_target_difference_heuristic
 import cProfile
 
 
-def loadMap(map_path):
+def loadMap(map_path, player_species):
 	tree = ET.parse(map_path)
 	root = tree.getroot()
-
+	enemy_species = "Vampires" if player_species == "Werewolves" else "Werewolves"
 	max_x, max_y = int(root.attrib['Columns']), int(root.attrib['Rows'])
 	board = Board(max_x, max_y)
 
@@ -22,15 +22,14 @@ def loadMap(map_path):
 		attribs = element.attrib
 		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'humans', int(attribs['Count'])))
 
-	for element in root.iter('Werewolves'):
+	for element in root.iter(player_species):
 		attribs = element.attrib
 		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'us', int(attribs['Count'])))
 
-	for element in root.iter('Vampires'):
+	for element in root.findall(enemy_species):
 		attribs = element.attrib
 		board.update_cell2(Cell(int(attribs['X']), int(attribs['Y']), 'them', int(attribs['Count'])))
-
-		return max_x, max_y, board
+	return max_x, max_y, board
 
 def test1():
 
@@ -78,11 +77,13 @@ def test2():
 
 
 def test3():
-	max_x, max_y, board = loadMap('test_maps/map_10_10_12.xml')
+	max_x, max_y, board = loadMap('test_maps/map_10_10_12.xml', "Vampires")
+	print(board)
 	strategy = TargetStrategy2(max_x, max_y, distance_target_difference_heuristic)
+	strategy.max_depth = 3
 	strategy.current_board = board
 	t0 = time.time()
-	strategy.next_moves(2)
+	strategy.next_moves(1.95)
 	print(f"time spent: {time.time() - t0}")
 
 if __name__ == "__main__":  # python -m cProfile -s tottime speed_test.py
