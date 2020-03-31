@@ -78,12 +78,12 @@ def test2():
 
 
 def test3():
-	max_x, max_y, board = loadMap('test_maps/map_10_10_8.xml')
+	max_x, max_y, board = loadMap('test_maps/map_10_10_12.xml')
 	strategy = TargetStrategy2(max_x, max_y, distance_target_difference_heuristic)
 	strategy.current_board = board
-
+	t0 = time.time()
 	strategy.next_moves(2)
-
+	print(f"time spent: {time.time() - t0}")
 
 if __name__ == "__main__":  # python -m cProfile -s tottime speed_test.py
 	test3()
