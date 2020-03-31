@@ -5,6 +5,7 @@ import queue
 
 import models.target_engine as target_engine
 import models.engine as engine
+from strategies.caller import GetNextMoveCaller
 
 
 def node_pruning(nodes, heuristic, player):
@@ -50,19 +51,6 @@ class Node:
         for board, proba in self.potential_boards:
             score += heuristic(board) * proba
         return score
-
-
-class GetNextMoveCaller(threading.Thread):
-    def __init__(self, get_next_moves, board, player, allowed_time):
-        threading.Thread.__init__(self)
-        self.get_next_moves = get_next_moves
-        self.board = board
-        self.player = player
-        self.next_moves = queue.Queue()
-        self.allowed_time = allowed_time
-
-    def run(self):
-        self.next_moves.put(self.get_next_moves(self.board, self.player, 0.95 * self.allowed_time))
 
 
 class AlphaBeta:
@@ -124,17 +112,23 @@ class AlphaBeta:
             return None, score
         else:
             allowed_time = max(0, self.get_free_time() - 0.05 * self.timeout)
+            allowed_t0 = time.time()
             get_next_move_caller = GetNextMoveCaller(self.get_next_moves, current_board, player, allowed_time)
             get_next_move_caller.start()
-            try:
-                list_moves = get_next_move_caller.next_moves.get(timeout=allowed_time)
-            except queue.Empty:
+            list_moves = []
+            while time.time() - allowed_t0 < allowed_time and len(list_moves) == 0:
+                try:
+                    list_moves = get_next_move_caller.next_moves.get(timeout=0.001)
+                except queue.Empty:
+                    pass
+            get_next_move_caller.kill()
+            len_list_moves = len(list_moves)
+            if len_list_moves == 0:
                 self.timed_out = True
                 score = self.heuristic(current_board)
                 print(f"### A: get_next_moves took too long, continue with score: {round(score,0)} remaining free time : {self.get_free_time()}")
                 return None, score
 
-            len_list_moves = len(list_moves)
             self.generated_moves_count += len_list_moves
             if player == "us":
                 best_move = None

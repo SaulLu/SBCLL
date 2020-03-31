@@ -1,10 +1,12 @@
 import time
+import queue
 
 from cpp.target_module.target_module_v1 import _target_module
 from speed_test import loadMap
-from strategies.target_strategy_v2 import construct_units_list, construct_targets
+from strategies.target_strategy_v2 import construct_units_list, construct_targets, get_potential_moves_from_board
 from models import target_engine
 from models.board import Board
+from strategies.caller import GetNextMoveCaller
 
 
 def print_targets(targets_list):
@@ -124,6 +126,27 @@ def trad():
     s = s.replace(']', '}')
     print("{", s, "};")
 
+def interrupt():
+    player = 'us'
+    max_x, max_y, board = loadMap('test_maps/12.xml', "Vampires")
+    allowed_time = 2
+    t0 = time.time()
+    caller = GetNextMoveCaller(get_potential_moves_from_board, board, player, allowed_time)
+    caller.start()
+    list_moves = []
+    while time.time() - t0 < allowed_time and len(list_moves) == 0:
+        try:
+            list_moves = caller.next_moves.get(timeout=0.001)
+        except queue.Empty:
+            pass
+    print(f"time: {time.time() - t0}")
+    print(f"size_list_moves: {len(list_moves)}")
+    caller.raise_exception()
+    print(f"time: {time.time() - t0}")
+    caller.join()
+    print(f"time: {time.time() - t0}")
+
+
 
 if __name__ == "__main__":
-    module_test()
+    interrupt()
