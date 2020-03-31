@@ -4,13 +4,18 @@ Ce projet consiste en l'implémentation d'une IA pouvant jouer au jeu "Vampires 
 
 ## Mode d'emploi de l'IA
 
+Pour installer l'IA
+1. Cloner ce repository
+2. Dans un terminal, lancer la commande `python setup.py build_ext --inplace` dans le dossier `SBCLL\cpp\target_module\target_module_v1`
+
 Pour jouer : 
 1. Lancer le serveur du jeu.
-2. Exécuter le fichier "player.py" (au niveau de la racine du projet) avec les paramètres suivants : 
-    * -n : le nom du joueur (par défaut, pioche le nom du joueur dans le fichier de config du jeu) ;
-    * -s : la stratégie utilisée - toutes les stratégie décrite en partie 3 sont disponibles (par défaut, utilise la stratégie "random") ;
+2. Exécuter le fichier "player.py" (au niveau de la racine du projet) avec les paramètres suivants: 
+    * -n : le nom du joueur (par défaut, pioche le nom du joueur dans le fichier de config du jeu);
+    * -s : la stratégie utilisée - toutes les stratégie décrite en partie 3 sont disponibles (par défaut, utilise la stratégie "random");
     * -he : l'heuristique utilisée - toutes les heuristiques décrites en partie 3 sont disponibles (par défaut, utilise l'heuristique "naive").
-3. Les étapes importantes sont décrites dans la console et un fichier de log est créé.
+Nous vous conseillons d'utiliser `python player.py -s target2 -he target_diff`
+3. Les étapes importantes sont décrites dans la console.
 
 ## Structure du code
 
