@@ -6,7 +6,7 @@ from distutils.core import setup, Extension
 
 
 
-c_ext = Extension("_target_module", ["_target_module.cpp","Attacker.cpp","Attribution.cpp","Attributor.cpp","Checks.cpp","Target.cpp"], 
+c_ext = Extension("_target_module", ["_target_module.cpp","Attacker.cpp","Attribution.cpp","Attributor.cpp","Checks.cpp","Target.cpp","Geometry.cpp"], 
 				extra_compile_args=['-std=c++11'], language = 'c++')
 
 setup(

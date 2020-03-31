@@ -2,25 +2,28 @@
 
 using namespace std;
 
-Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const double timeout) : m_timeout(timeout)
+Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const double overlap_angle, const double timeout) 
+	: m_timeout(timeout), m_overlap_angle(overlap_angle)
 {
 	m_t0 = chrono::system_clock::now();
 	m_creatures = creatures;
 	m_player = player;
 	constructTA();
+	if (m_overlap_angle)
+	{
+		setScopeTargets();
+	}
+	else
+	{
+		setAllTargets();
+	}
+	
 }
 
 vector<Attributions> Attributor::getTargetAttribution()
 {
-	/*Attributions attributions;
-	auto it = m_attackers.begin();
-	auto it2 = m_attackers.begin(); it2++;
-	attributions.second.push_back(Attribution(it->second, it2->second, it->second.getNumber()));
-	attributions.second.push_back(Attribution(it2->second, it->second, it2->second.getNumber()));
-	return { attributions };*/
 	Attributions empty_attributions;
 	return recursiveTargetAttribution(empty_attributions, m_attackers, m_targets);
-
 }
 
 void Attributor::constructTA()
@@ -45,8 +48,10 @@ void Attributor::constructTA()
 		int new_id = Target::getNextId();
 		m_targets.insert(make_pair(new_id, Target({ unit[0], unit[1] }, enemy, unit[2], new_id)));
 	}
+}
 
-	//set attackers and targets attributes
+void Attributor::setAllTargets()
+{
 	for (auto& attacker_obj : m_attackers)
 	{
 		for (auto& target_obj : m_targets)
@@ -58,7 +63,52 @@ void Attributor::constructTA()
 			}
 		}
 	}
+}
 
+void Attributor::setScopeTargets()
+{
+	for (auto& attacker_obj : m_attackers)
+	{
+		vector<array<int, 2>> targets_distance;
+		for (auto& target_obj : m_targets)
+		{
+			if (attacker_obj.second.getNumber() >= target_obj.second.getTakeOver())
+			{
+				int distance = Geometry::getMovementDistance(attacker_obj.second.getLocation(), target_obj.second.getLocation());
+				targets_distance.push_back({ distance, target_obj.first });
+			}
+		}
+
+		sort(targets_distance.begin(), targets_distance.end());
+		size_t n_targets = targets_distance.size();
+		if (n_targets > 0)
+		{
+			vector<int> scope_targets = { targets_distance[0][1] };
+			int n_scope_targets = 1;
+			for (int i_target = 0; i_target < n_targets; i_target++)
+			{
+				bool overlap = false;
+				int j_target = 0;
+				while (!overlap && j_target < n_scope_targets)
+				{
+					double separation_angle = Geometry::getSeparationAngle(attacker_obj.second.getLocation(), m_targets[scope_targets[j_target]].getLocation(), m_targets[targets_distance[i_target][1]].getLocation());
+					overlap = separation_angle < m_overlap_angle;
+					j_target++;
+				}
+				if (!overlap)
+				{
+					scope_targets.push_back(targets_distance[j_target][1]);
+				}
+			}
+
+			for (auto& target_id : scope_targets)
+			{
+				attacker_obj.second.addTarget(target_id);
+				m_targets[target_id].addAttacker(attacker_obj.first);
+			}
+
+		}
+	}
 }
 
 vector<Attributions> Attributor::recursiveTargetAttribution(Attributions current_attribution, map<int, Attacker> attackers, map<int, Target> targets)
