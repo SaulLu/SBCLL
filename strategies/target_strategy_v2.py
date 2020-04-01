@@ -79,7 +79,8 @@ class TargetStrategy2(Strategy):
         best_moves, best_score = alphabeta.alphabeta(self.current_board)
 
         if not best_moves:
-            best_moves = [engine.get_random_turn(self.current_board, 'us')[0]]
+            targets = [target_engine.get_random_target_turn(self.current_board, 'us')]
+            best_moves = target_engine.targets_to_moves(targets, self.current_board)[0]
             print(f"random moves : {best_moves}")
         print(f"best score found: {best_score}")
         if alphabeta.timed_out:
