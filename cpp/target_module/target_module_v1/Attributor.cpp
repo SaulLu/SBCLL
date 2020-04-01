@@ -2,8 +2,9 @@
 
 using namespace std;
 
-Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const double overlap_angle, const double timeout) 
-	: m_timeout(timeout), m_overlap_angle(overlap_angle)
+Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, const Creature player, const int max_x, const int max_y,
+	const double overlap_angle, const double timeout)
+	: m_max_x(max_x), m_max_y(max_y), m_timeout(timeout), m_overlap_angle(overlap_angle)
 {
 	m_t0 = chrono::system_clock::now();
 	m_creatures = creatures;
@@ -22,8 +23,19 @@ Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, con
 
 vector<Attributions> Attributor::getTargetAttribution()
 {
-	Attributions empty_attributions;
-	return recursiveTargetAttribution(empty_attributions, m_attackers, m_targets);
+	if (isRunSituation())
+	{
+		vector<Attributions> all_attributions;
+		all_attributions = applyRunAttribution();
+		if (all_attributions.size() == 0)
+		{
+			Attributions empty_attributions;
+			all_attributions = recursiveTargetAttribution(empty_attributions, m_attackers, m_targets);
+		}
+		return all_attributions;
+	}
+	Attributions empty_attributions2;
+	return recursiveTargetAttribution(empty_attributions2, m_attackers, m_targets);
 }
 
 void Attributor::constructTA()
@@ -272,4 +284,81 @@ const double Attributor::getRemainingTime()
 	chrono::milliseconds d = chrono::duration_cast<chrono::milliseconds>(fs);
 
 	return m_timeout - d.count() / 1000;
+}
+
+const bool Attributor::isRunSituation()
+{
+	if (m_attackers.size() != 1)
+		return false;
+	auto it = m_attackers.begin();
+	if (it->second.getNTargets())
+		return false;
+	int n_opponents = 0;
+	for (auto& target_obj : m_targets)
+	{
+		n_opponents += target_obj.second.getNumber();
+	}
+	return it->second.getNumber() >= n_opponents;
+}
+
+const std::vector<std::array<int, 2>> Attributor::getAvailableRunLocations()
+{
+	vector<array<int, 2>> locations;
+	array<int, 2> attacker_location = m_attackers[1].getLocation();
+	int x = attacker_location[0];
+	int y = attacker_location[1];
+
+	bool xm = x - 1 >= 0;
+	bool xM = x + 1 < m_max_x;
+	bool ym = y - 1 >= 0;
+	bool yM = y + 1 < m_max_y;
+
+	if (xm)
+	{
+		if (ym)
+			locations.push_back({ x - 1, y - 1 });
+		locations.push_back({ x - 1, y });
+		if (yM)
+			locations.push_back({ x - 1, y + 1 });
+	}
+	if (ym)
+		locations.push_back({ x, y - 1 });
+	if (yM)
+		locations.push_back({ x, y + 1 });
+	if (xM)
+	{
+		if (ym)
+			locations.push_back({ x + 1, y - 1 });
+		locations.push_back({ x + 1, y });
+		if (yM)
+			locations.push_back({ x + 1, y + 1 });
+	}
+
+	for (auto& target_obj : m_targets)
+	{
+		array<int, 2> target_loc = target_obj.second.getLocation();
+		auto it = find(locations.begin(), locations.end(), target_loc);
+		if (it != locations.end())
+			locations.erase(it);
+	}
+
+
+	return locations;
+}
+
+const std::vector<Attributions> Attributor::applyRunAttribution()
+{
+	vector<Attributions> all_attributions;
+	vector<array<int, 2>> run_locations = getAvailableRunLocations();
+	int number = m_attackers[1].getNumber();
+	array<int, 2> attacker_location = m_attackers[1].getLocation();
+
+	for (auto& loc : run_locations)
+	{
+		Attributions attributions;
+		attributions.first.push_back(Attribution(attacker_location, loc, number));
+		all_attributions.push_back(attributions);
+	}
+
+	return all_attributions;
 }

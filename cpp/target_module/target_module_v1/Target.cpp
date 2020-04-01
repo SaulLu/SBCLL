@@ -17,7 +17,12 @@ Target::Target(const std::array<int, 2> location, const Creature creature, const
 
 }
 
-int Target::getTakeOver()
+const int Target::getNumber()
+{
+	return m_number;
+}
+
+const int Target::getTakeOver()
 {
 	return m_takeover;
 }

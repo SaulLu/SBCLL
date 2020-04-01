@@ -18,7 +18,8 @@
 class Attributor
 {
 public:
-	Attributor(const std::map<Creature, std::vector<std::array<int, 3>>> creatures, const Creature player, const double overlap_angle = 22.5, const double timeout = 3600);
+	Attributor(const std::map<Creature, std::vector<std::array<int, 3>>> creatures, const Creature player, const int max_x, const int max_y,
+		const double overlap_angle = 22.5, const double timeout = 3600); 
 	std::vector<Attributions> getTargetAttribution();
 
 	
@@ -31,6 +32,8 @@ private:
 	const double m_timeout;  //in seconds
 	std::chrono::system_clock::time_point m_t0;
 	const double m_overlap_angle;
+	const int m_max_x;
+	const int m_max_y;
 
 	void constructTA();
 	void setAllTargets();
@@ -45,6 +48,9 @@ private:
 	void applyMergeAttribution(Attributions& current_attributions, std::map<int, Attacker>& attackers);
 	void applySuicidalAttribution(Attributions& current_attributions, std::map<int, Attacker>& attackers, std::map<int, Target>& targets);
 	const double getRemainingTime();
+	const bool isRunSituation();
+	const std::vector<std::array<int, 2>> getAvailableRunLocations();
+	const std::vector<Attributions> applyRunAttribution();
 };
 
 

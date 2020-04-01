@@ -16,7 +16,8 @@ class Target
 public:
 	Target();
 	Target(const std::array<int, 2> location, const Creature creature, const int number, const int id);
-	int getTakeOver();
+	const int getNumber();
+	const int getTakeOver();
 	void addAttacker(const int attacker_id);
 	bool removeAttacker(const int attacker_id);
 	void purgeAttackers(std::map<int, Target>& targets, std::map<int, Attacker>& attackers);

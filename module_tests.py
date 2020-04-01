@@ -128,7 +128,7 @@ def trad():
 
 def interrupt():
     player = 'us'
-    max_x, max_y, board = loadMap('test_maps/12.xml', "Vampires")
+    max_x, max_y, board = loadMap('test_maps/testmap2.xml', "Vampires")
     allowed_time = 2
     t0 = time.time()
     caller = GetNextMoveCaller(get_potential_moves_from_board, board, player, allowed_time)
@@ -141,11 +141,10 @@ def interrupt():
             pass
     print(f"time: {time.time() - t0}")
     print(f"size_list_moves: {len(list_moves)}")
-    caller.raise_exception()
+    caller.kill()
     print(f"time: {time.time() - t0}")
     caller.join()
     print(f"time: {time.time() - t0}")
-
 
 
 if __name__ == "__main__":
