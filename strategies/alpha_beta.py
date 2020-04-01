@@ -58,7 +58,7 @@ class AlphaBeta:
         self.t0 = t0
         self.timeout = timeout
         self.gen_time_max = timeout
-        self.last_timeout = 0.90 * timeout
+        self.last_timeout = 0.98 * timeout
         self.get_next_moves = get_next_moves
         self.heuristic = heuristic
         self.max_depth = max_depth
@@ -79,7 +79,7 @@ class AlphaBeta:
               f"\n\tvisited / unvisited / generated boards: {self.visited_board_count} / "
               f"{self.generated_boards_count + 1 - self.visited_board_count} / "
               f"{self.generated_boards_count}\n\tcut nodes: {self.cut_node_count},"
-              f" unvisited_moves: {self.generated_moves_count - self.generated_nodes_count}")
+              f" unvisited_moves: {self.generated_moves_count - self.generated_nodes_count - self.cut_node_count}")
         return solution
 
     def get_free_time(self):

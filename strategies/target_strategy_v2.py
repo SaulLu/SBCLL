@@ -59,12 +59,12 @@ def log_outputs(targets_list, targets, filename, mode='w'):
 def get_potential_moves_from_board(board: Board, creature: str, timeout: float):
     player_int = 1 if creature == 'us' else 2
     units_list = construct_units_list(board)
-    log_entries(units_list, board, player_int, 'module_entries')
+    # log_entries(units_list, board, player_int, 'module_entries')
     targets_list = _target_module.targetsAttribution(units_list, len(units_list), player_int,
-                                                     board.max_x, board.max_y, 30, timeout)
+                                                     board.max_x, board.max_y, 30, 0.7 * timeout)
     targets = construct_targets(targets_list)
     # print(f"n_targets:{len(targets)}")
-    log_outputs(targets_list, targets, 'module_outputs')
+    # log_outputs(targets_list, targets, 'module_outputs')
     return target_engine.targets_to_moves(targets, board)
 
 
@@ -87,6 +87,9 @@ class TargetStrategy2(Strategy):
             if self.max_depth >= 4:
                 self.max_depth -= 1
                 print(f'max_depth changed to {self.max_depth}')
+        elif (time.time() - t0 < 0.2 * think_time) and alphabeta.depth_reached >= self.max_depth:
+            self.max_depth += 2
+            print(f'max_depth changed to {self.max_depth}')
         elif (time.time() - t0 < 0.8 * think_time) and alphabeta.depth_reached >= self.max_depth:
             self.max_depth += 1
             print(f'max_depth changed to {self.max_depth}')
