@@ -19,6 +19,11 @@ Attributor::Attributor(const map<Creature, vector<array<int, 3>>> creatures, con
 		setAllTargets();
 	}
 	
+
+	for (auto& target_obj : m_targets)
+	{
+		target_obj.second.sortAttacker(m_attackers);
+	}
 }
 
 vector<Attributions> Attributor::getTargetAttribution()

@@ -67,6 +67,24 @@ void Target::clearAttackers()
 	m_attackers_ids.clear();
 }
 
+void Target::sortAttacker(map<int, Attacker>& attackers)
+{
+	vector<array<int, 2>> scores;
+	for (auto& attacker_id : m_attackers_ids)
+	{
+		int dist = Geometry::getMovementDistance(attackers[attacker_id].getLocation(), m_location);
+		scores.push_back({ dist, attacker_id });
+	}
+	sort(scores.begin(), scores.end());
+
+	m_attackers_ids.clear();
+	for (auto& score : scores)
+	{
+		m_attackers_ids.push_back(score[1]);
+	}
+}
+
+
 const std::array<int, 2> Target::getLocation()
 {
 	return m_location;
