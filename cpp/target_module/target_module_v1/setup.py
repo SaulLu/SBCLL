@@ -2,6 +2,7 @@ from distutils.core import setup, Extension
 
 
 # cmd python3 setup.py build_ext --inplace
+# cmd python setup.py build_ext --inplace
 
 
 

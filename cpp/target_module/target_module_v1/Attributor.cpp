@@ -136,7 +136,7 @@ vector<Attributions> Attributor::recursiveTargetAttribution(Attributions current
 				vector<int> creature_numbers = { attacker_number };
 				if (min_takeovers)
 				{
-					for (int n = takeover; n <= max_partial_attribution; n++)
+					for (int n = takeover; n <= max_partial_attribution; n = n + 3)
 						creature_numbers.push_back(n);
 				}
 
